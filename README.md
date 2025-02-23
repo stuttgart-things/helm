@@ -2,7 +2,104 @@
 
 declaratively deploy Kubernetes manifests, kustomize configs &amp; and charts as helm releases
 
-## GENERAL USAGE
+## APPS
+
+<details><summary>METALLB</summary>
+
+```bash
+cat <<EOF > metallb.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/metallb.yaml?ref=feature/add-nfs-chart
+    values:
+      - ipRange: 10.31.103.4-10.31.103.4 # example range
+EOF
+
+helmfile pull/template/apply/sync -f metallb.yaml
+```
+
+</details>
+
+<details><summary>CERT-MANAGER</summary>
+
+```bash
+cat <<EOF > cert-manager.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/flux.git@cert-manager.yaml?ref=feature/add-nfs-chart
+    values:
+      - pkiServer: https://vault-vsphere.labul.sva.de:8200
+      - pkiPath: pki/sign/sthings-vsphere.labul.sva.de
+      - issuer: cluster-issuer-approle
+      - approleSecret: ref+vault://apps/vault/secretID
+      - approleID: ref+vault://apps/vault/roleID
+      - pkiCA: ref+vault://apps/vault/vaultCA
+EOF
+
+export VAULT_AUTH_METHOD=approle
+export VAULT_ADDR=https://<VAULT-URL>:8200
+export VAULT_SECRET_ID=623c991f-d.. #example value
+export VAULT_ROLE_ID=1d42d7e7-8.. #example value
+export VAULT_NAMESPACE=root
+
+helmfile pull/template/apply/sync -f cert-manager.yaml
+```
+
+</details>
+
+<details><summary>INGRESS-NGINX</summary>
+
+```bash
+cat <<EOF > ingress-nginx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/ingress-nginx.yaml?ref=feature/add-nfs-chart
+EOF
+
+helmfile pull/template/apply/sync -f ingress-nginx.yaml
+```
+
+</details>
+
+</details>
+
+
+<details><summary>NFS-CSI</summary>
+
+```bash
+cat <<EOF > nfs-csi.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/nfs-csi.yaml?ref=feature/add-nfs-chart
+    values:
+      - nfsServerFQDN: 10.31.101.26
+      - nfsSharePath: /data/col1/sthings
+      - clusterName: k3d-my-cluster
+      - nfsSharePath: /data/col1/sthings
+EOF
+
+helmfile pull/template/apply/sync -f nfs-csi.yaml
+```
+
+</details>
+
+<details><summary>NGINX</summary>
+
+```bash
+cat <<EOF > nginx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/nginx.yaml?ref=feature/add-keycloak
+    values:
+      - serviceType: ClusterIP
+EOF
+
+helmfile pull/template/apply/sync -f nginx.yaml
+```
+
+</details>
+
+## USAGE
 
 <details><summary>HELMFILE</summary>
 
@@ -20,24 +117,6 @@ rm -rf /tmp/helmfile
 helmfile render -f nginx.yaml
 helmfile apply -f nginx.yaml
 helmfile sync -f nginx.yaml
-```
-
-</details>
-
-## APPS
-
-<details><summary>NGINX</summary>
-
-```bash
-cat <<EOF > nginx.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/nginx.yaml?ref=feature/add-keycloak
-    values:
-      - serviceType: ClusterIP
-EOF
-
-helmfile pull/template/apply/sync -f nginx.yaml
 ```
 
 </details>
