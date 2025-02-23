@@ -10,7 +10,7 @@ declaratively deploy Kubernetes manifests, kustomize configs and charts as helm 
 cat <<EOF > metallb.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/metallb.yaml?ref=feature/add-nfs-chart
+  - path: git::https://github.com/stuttgart-things/helm.git@metallb.yaml?ref=v1.0.0
     values:
       - ipRange: 10.31.103.4-10.31.103.4 # example range
 EOF
@@ -26,7 +26,7 @@ helmfile pull/template/apply/sync -f metallb.yaml
 cat <<EOF > cert-manager.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@cert-manager.yaml?ref=feature/add-nfs-chart
+  - path: git::https://github.com/stuttgart-things/helm.git@cert-manager.yaml?ref=v1.0.0
     values:
       - pkiServer: https://vault-vsphere.labul.sva.de:8200
       - pkiPath: pki/sign/sthings-vsphere.labul.sva.de
@@ -53,7 +53,7 @@ helmfile pull/template/apply/sync -f cert-manager.yaml
 cat <<EOF > ingress-nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/ingress-nginx.yaml?ref=feature/add-nfs-chart
+  - path: git::https://github.com/stuttgart-things/helm.git@ingress-nginx.yaml?ref=v1.0.0
 EOF
 
 helmfile pull/template/apply/sync -f ingress-nginx.yaml
@@ -68,7 +68,7 @@ helmfile pull/template/apply/sync -f ingress-nginx.yaml
 cat <<EOF > nfs-csi.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/nfs-csi.yaml?ref=feature/add-nfs-chart
+  - path: git::https://github.com/stuttgart-things/helm.git@nfs-csi.yaml?ref=v1.0.0
     values:
       - nfsServerFQDN: 10.31.101.26
       - nfsSharePath: /data/col1/sthings
@@ -87,7 +87,7 @@ helmfile pull/template/apply/sync -f nfs-csi.yaml
 cat <<EOF > nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/flux.git@helmfiles/nginx.yaml?ref=feature/add-keycloak
+  - path: git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0
     values:
       - serviceType: ClusterIP
 EOF
@@ -102,6 +102,9 @@ helmfile pull/template/apply/sync -f nginx.yaml
 <details><summary>HELMFILE</summary>
 
 ```bash
+# INIT HELMFILE PLUGINS
+helmfile init
+
 # SET CACHE DIR AND EXECUTE HELMFILE OPERATION (WHICH IS PULLING)
 export HELMFILE_CACHE_HOME=/tmp/helmfile
 helmfile template -f nginx.yaml
