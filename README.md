@@ -1,6 +1,6 @@
 # helm
 
-declaratively deploy Kubernetes manifests, kustomize configs &amp; and charts as helm releases
+declaratively deploy Kubernetes manifests, kustomize configs and charts as helm releases.
 
 ## APPS
 
@@ -58,8 +58,6 @@ EOF
 
 helmfile pull/template/apply/sync -f ingress-nginx.yaml
 ```
-
-</details>
 
 </details>
 
