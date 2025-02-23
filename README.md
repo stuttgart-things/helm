@@ -61,7 +61,6 @@ helmfile pull/template/apply/sync -f ingress-nginx.yaml
 
 </details>
 
-
 <details><summary>NFS-CSI</summary>
 
 ```bash
@@ -122,7 +121,7 @@ helmfile sync -f nginx.yaml
 
 </details>
 
-## LICENSES
+## LICENSE
 
 <details><summary>APACHE LICENSE</summary>
 
@@ -332,8 +331,10 @@ helmfile sync -f nginx.yaml
 
 </details>
 
+## AUTHORS
 
-
-Author Information
-------------------
-Patrick Hermann, stuttgart-things 03/2023
+```yaml
+---
+authors:
+  - Patrick Hermann, stuttgart-things 03/2025
+```
