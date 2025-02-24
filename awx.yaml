@@ -1,0 +1,47 @@
+---
+releases:
+  - name: awx-certificates
+    disableValidationOnInstall: true
+    installed: true
+    namespace: awx
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-certificates.values.yaml.gotmpl"
+
+  - name: awx-secrets
+    disableValidationOnInstall: true
+    installed: true
+    namespace: awx
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-secrets.values.yaml.gotmpl"
+
+  - name: awx-operator
+    disableValidationOnInstall: true
+    installed: true
+    namespace: awx
+    chart: awx/awx-operator
+    version: 2.19.1
+    needs:
+      - awx/awx-certificates
+    values:
+      - "values/awx-operator.values.yaml.gotmpl"
+
+  - name: awx-instances
+    disableValidationOnInstall: true
+    installed: true
+    namespace: awx
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-instances.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+  - name: awx
+    url: https://ansible-community.github.io/awx-operator-helm/
+    oci: false
