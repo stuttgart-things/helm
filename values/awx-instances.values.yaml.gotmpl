@@ -1,0 +1,36 @@
+---
+customresources:
+{{- range $k, $v := .Values.instances }}
+  {{ $k }}:
+    apiVersion: awx.ansible.com/v1beta1
+    kind: AWX
+    metadata:
+      name: {{ $v.name }}
+      namespace: {{ $v.namespace }}
+    spec:
+      admin_user: {{ $v.adminUser }}
+      {{ if $v.adminPasswordSecret }}
+      admin_password_secret: {{ $v.adminPasswordSecret }}
+      {{ end }}
+      {{ if $v.bundleCacertSecret }}
+      bundle_cacert_secret: {{ $v.bundleCacertSecret }}
+      {{ end }}
+      hostname: {{ $v.hostname }}.{{ $v.domain }}
+      ingress_class_name: {{ $v.ingressClassName }}
+      ingress_tls_secret: {{ $v.ingressSecret }}-tls
+      ingress_type: {{ $.Values.ingressType }}
+      postgres_storage_class: {{ $.Values.postgresStorageClass }}
+      postgres_storage_requirements:
+        limits:
+          storage: {{ $v.postgresStorageLimits }}
+        requests:
+          storage: {{ $v.postgresStorageRequest }}
+      projects_persistence: {{ $v.projectPersistence }}
+      projects_storage_access_mode: {{ $v.projectsStorageAccessMode }}
+      projects_storage_class: {{ $.Values.projectStorageClass }}
+      security_context_settings:
+        runAsGroup: 0
+        runAsUser: 0
+        fsGroup: 0
+        fsGroupChangePolicy: {{ $v.fsGroupChangePolicy }}
+{{- end }}
