@@ -96,6 +96,23 @@ helmfile pull/template/apply/sync -f nginx.yaml
 
 </details>
 
+<details><summary>LONGHORN</summary>
+
+```bash
+cat <<EOF > longhorn.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@longhorn.yaml?ref=v1.0.0
+    values:
+      - longhornDefaultClass: false
+EOF
+
+helmfile pull/template/apply/sync -f longhorn.yaml
+```
+
+</details>
+
+
 ## USAGE
 
 <details><summary>HELMFILE</summary>
