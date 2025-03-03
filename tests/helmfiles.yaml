@@ -7,11 +7,12 @@ template:
         values:
           - profile: nginx
           - serviceType: ClusterIP
-          
+
   ingress-nginx: |
     ---
     helmfiles:
       - path: {{ .source }}
+
   keycloak: |
     ---
     helmfiles:
@@ -25,11 +26,11 @@ template:
           - storageClass: nfs4-csi
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
-          
+
   openldap: |
     ---
     helmfiles:
-      - path: {{ .source }} 
+      - path: {{ .source }}
         values:
           - adminUser: admin
           - adminPassword: whatever4711
@@ -40,7 +41,6 @@ template:
           #- storageClass: longhorn # -> only needed if enablePersistence is true
           - replicas: 1
           - replication: false
-      - path: {{ .source }}
 
   cert-manager: |
     ---

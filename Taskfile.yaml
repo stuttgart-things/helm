@@ -38,6 +38,23 @@ tasks:
         branch=$(printf "%s\n" "${branches[@]}" | gum choose)
         git checkout ${branch} && git pull
 
+  create-test-app:
+    desc: Switch to local branch
+    cmds:
+      - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
+      - |
+        app=$(yq '.template | keys | .[]' tests/helmfiles.yaml | gum choose)
+
+        machineshop render \
+        --source local \
+        --template {{ .TEST_FILES }} \
+        --output file \
+        --kind multikey \
+        --key ${app} \
+        --destination {{ .TEST_DIR }}/${app}.yaml \
+        --values "source={{ .USER_WORKING_DIR }}/${app}.yaml"
+
+        helmfile template -f {{ .TEST_DIR }}/${app}.yaml
   tests-create-includes:
     desc: Create test files
     cmds:

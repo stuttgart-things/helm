@@ -235,14 +235,21 @@ helmfile sync -f nginx.yaml
 <details><summary>TEMPLATE TEST</summary>
 
 ```bash
+TEST_DIR=/tmp/helmfiles
+rm -rf ${TEST_DIR}/* && mkdir ${TEST_DIR} || true
+
+app=$(yq '.template | keys | .[]' tests/helmfiles.yaml | gum choose)
+
 machineshop render \
 --source local \
---template /home/sthings/projects/helm/tests/helmfiles.yaml \
+--template tests/helmfiles.yaml \
 --output file \
 --kind multikey \
---key ingress-nginx \
---destination /tmp/helmfiles/ingress-nginx.yaml \
---values source=/home/sthings/projects/helm/ingress-nginx.yaml
+--key ${app} \
+--destination ${TEST_DIR}/${app}.yaml \
+--values "source=$(pwd)/${app}.yaml"
+
+helmfile template ${TEST_DIR}/${app}.yaml
 ```
 
 </details>
