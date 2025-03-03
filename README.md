@@ -1,6 +1,6 @@
-# helm
+# stuttgart-things/helm
 
-declaratively deploy Kubernetes manifests, kustomize configs and charts as helm releases.
+declaratively deploy Kubernetes manifests, kustomize configs and charts as helm releases
 
 ## APPS
 
@@ -12,7 +12,7 @@ cat <<EOF > metallb.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@metallb.yaml?ref=v1.0.0
     values:
-      - ipRange: 10.31.103.4-10.31.103.4 # example range
+      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
 EOF
 
 helmfile pull/template/apply/sync -f metallb.yaml
@@ -153,7 +153,8 @@ helmfiles:
       - postgresPassword: <postgres-password> # password for postgres user
 EOF
 
-helmfile pull/template/apply/sync -f postgresql.yaml
+helmfile template -f postgresql.yaml # RENDER ONLY
+helmfile apply -f postgresql.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -216,14 +217,13 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 helmfile init
 
 # SET CACHE DIR AND EXECUTE HELMFILE OPERATION (WHICH IS PULLING)
-export HELMFILE_CACHE_HOME=/tmp/helmfile
+export HELMFILE_CACHE_HOME=/tmp/helmfile/cache
 helmfile template -f nginx.yaml
 
 # CHECK DOWNLOAD GIT REPO STRUCTURE
-ls -lta /tmp/helmfile
-
+ls -lta ${HELMFILE_CACHE_HOME}
 # DELETE CACHE FOR TRY 'N ERROR W/ GIT SOURCES
-rm -rf /tmp/helmfile
+rm -rf ${HELMFILE_CACHE_HOME}
 
 helmfile template -f nginx.yaml
 helmfile apply -f nginx.yaml
