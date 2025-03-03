@@ -1,7 +1,7 @@
 ---
 ingress:
   enabled: true
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.ingressClassName }}
   labels: {}
   path: /
   pathType: Prefix
