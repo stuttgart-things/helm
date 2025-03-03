@@ -1,19 +1,4 @@
 ---
-serviceAccounts:
-  keycloak-admin:
-    namespace: {{ .Release.Namespace }}
-
-clusterRoleBindings:
-  keycloak-cluster-admin:
-    roleRef:
-      kind: ClusterRole
-      name: cluster-admin
-      apiGroup: rbac.authorization.k8s.io
-    subjects:
-      - kind: ServiceAccount
-        name: keycloak-admin
-        namespace: keycloak
-
 customresources:
   ingress-certificate-keycloak:
     apiVersion: cert-manager.io/v1

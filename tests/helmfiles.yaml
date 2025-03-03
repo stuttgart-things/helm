@@ -11,3 +11,16 @@ template:
     ---
     helmfiles:
       - path: git::https://github.com/stuttgart-things/helm.git@ingress-nginx.yaml?ref=v1.0.0
+  keycloak: |
+    ---
+    helmfiles:
+      - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+        values:
+          - ingressClassName: nginx
+          - hostname: keycloak.k8scluster
+          - domain: sthings-vsphere.example.com
+          - adminUser: admin
+          - adminPassword: <your-password>
+          - storageClass: nfs4-csi
+          - clusterIssuer: cluster-issuer-approle
+          - issuerKind: ClusterIssuer
