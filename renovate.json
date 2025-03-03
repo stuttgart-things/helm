@@ -9,7 +9,7 @@
   "commitMessageTopic": "helm chart {{depName}}",
   "helmfile": {
     "fileMatch": [
-      "(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?$"
+      "(^|/)\\.ya?ml(?:\\.gotmpl)?$"
     ]
   },
   "helm-values": {
