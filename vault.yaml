@@ -5,7 +5,7 @@ releases:
     installed: true
     namespace: vault
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.10
+    version: 0.3.15
     values:
       - "values/vault-certs.values.yaml.gotmpl"
 
