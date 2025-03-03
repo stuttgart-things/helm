@@ -28,6 +28,7 @@ cat <<EOF > cert-manager.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cert-manager.yaml?ref=v1.0.0
     values:
+      - config: vault
       - pkiServer: https://vault-vsphere.labul.sva.de:8200
       - pkiPath: pki/sign/sthings-vsphere.labul.sva.de
       - issuer: cluster-issuer-approle
@@ -227,6 +228,21 @@ rm -rf /tmp/helmfile
 helmfile template -f nginx.yaml
 helmfile apply -f nginx.yaml
 helmfile sync -f nginx.yaml
+```
+
+</details>
+
+<details><summary>TEMPLATE TEST</summary>
+
+```bash
+machineshop render \
+--source local \
+--template /home/sthings/projects/helm/tests/helmfiles.yaml \
+--output file \
+--kind multikey \
+--key ingress-nginx \
+--destination /tmp/helmfiles/ingress-nginx.yaml \
+--values source=/home/sthings/projects/helm/ingress-nginx.yaml
 ```
 
 </details>

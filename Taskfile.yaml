@@ -10,6 +10,7 @@ vars:
   DAGGER_CROSSPLANE_MODULE_VERSION: v0.0.2
   TEST_FILES: tests/helmfiles.yaml
   TEST_DIR: /tmp/helmfiles
+  TEST_DEFAULTS: tests/defaults.yaml
 
 tasks:
   tasks:
@@ -18,6 +19,24 @@ tasks:
       - |
         task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
         task ${task}
+
+  switch-remote:
+    desc: Switch to remote branch
+    cmds:
+      - |
+        git fetch
+        branches=($(git branch -r | grep -v 'origin/HEAD' | sed 's|origin/||'))
+        branch=$(printf "%s\n" "${branches[@]}" | gum choose)
+        git switch -c ${branch} --track origin/${branch}
+        git branch && git status
+
+  switch-local:
+    desc: Switch to local branch
+    cmds:
+      - |
+        branches=$(git branch -a | grep -v 'remotes')
+        branch=$(printf "%s\n" "${branches[@]}" | gum choose)
+        git checkout ${branch} && git pull
 
   tests-create-includes:
     desc: Create test files
@@ -34,7 +53,9 @@ tasks:
           --output file \
           --kind multikey \
           --key ${app} \
-          --destination {{ .TEST_DIR }}/${app}.yaml
+          --destination {{ .TEST_DIR }}/${app}.yaml \
+          --defaults {{ .TEST_DEFAULTS }}
+
         done
 
   tests-render-includes:

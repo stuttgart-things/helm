@@ -23,6 +23,6 @@ releases:
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
-      - "values/cert-manager.values.yaml.gotmpl"
+      - "values/cert-manager-{{ .Values.config }}.values.yaml.gotmpl"
     needs:
       - cert-manager/cert-manager

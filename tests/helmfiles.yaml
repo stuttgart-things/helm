@@ -3,18 +3,19 @@ template:
   nginx: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0
+      - path: {{ .source }}
         values:
           - profile: nginx
           - serviceType: ClusterIP
+          
   ingress-nginx: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@ingress-nginx.yaml?ref=v1.0.0
+      - path: {{ .source }}
   keycloak: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+      - path: {{ .source }}
         values:
           - ingressClassName: nginx
           - hostname: keycloak.k8scluster
@@ -24,10 +25,11 @@ template:
           - storageClass: nfs4-csi
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
+          
   openldap: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+      - path: {{ .source }} 
         values:
           - adminUser: admin
           - adminPassword: whatever4711
@@ -38,3 +40,11 @@ template:
           #- storageClass: longhorn # -> only needed if enablePersistence is true
           - replicas: 1
           - replication: false
+      - path: {{ .source }}
+
+  cert-manager: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - config: selfsigned
