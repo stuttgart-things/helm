@@ -1,0 +1,35 @@
+---
+ingress:
+  enabled: {{ .Values.ingressEnabled }}
+  ingressClassName: nginx
+  labels: {}
+  path: /
+  pathType: Prefix
+  hostname: {{ .Values.hostname }}.{{ .Values.domain }}
+  tls: false
+  extraTls:
+    - hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+
+auth:
+    adminUser: {{ .Values.adminUser }}
+    adminPassword: {{ .Values.adminPassword }}
+proxy: edge
+service:
+    type: ClusterIP
+
+extraEnvVars:
+    - name: KEYCLOAK_LOG_LEVEL
+      value: DEBUG
+    - name: KEYCLOAK_EXTRA_ARGS
+      value: "--import-realm"
+
+global:
+    defaultStorageClass: nfs4-csi
+    storageClass: {{ .Values.storageClass }}
+
+startupProbe:
+    enabled: true
+    failureThreshold: 30
+    periodSeconds: 10

@@ -1,0 +1,31 @@
+---
+serviceAccounts:
+  keycloak-admin:
+    namespace: {{ .Release.Namespace }}
+
+clusterRoleBindings:
+  keycloak-cluster-admin:
+    roleRef:
+      kind: ClusterRole
+      name: cluster-admin
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: keycloak-admin
+        namespace: keycloak
+
+customresources:
+  ingress-certificate-keycloak:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: keycloak-ingress
+      namespace: {{ .Release.Namespace }}
+    spec:
+      commonName: {{ .Values.hostname }}.{{ .Values.domain }}
+      dnsNames:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      issuerRef:
+        name: {{ .Values.clusterIssuer }}
+        kind: {{ .Values.issuerKind }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls

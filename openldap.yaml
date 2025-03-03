@@ -1,0 +1,15 @@
+---
+repositories:
+  - name: helm-openldap
+    url: https://jp-gouin.github.io/helm-openldap/
+    oci: false
+
+releases:
+  - name: openldap
+    disableValidationOnInstall: true
+    installed: true
+    namespace: openldap
+    chart: helm-openldap/openldap-stack-ha
+    version: 4.3.1
+    values:
+      - "values/openldap.values.yaml.gotmpl"
