@@ -88,6 +88,7 @@ cat <<EOF > nginx.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0
     values:
+      - profile: nginx
       - serviceType: ClusterIP
 EOF
 

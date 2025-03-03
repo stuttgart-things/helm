@@ -1,3 +1,4 @@
+---
 releases:
   - name: metallb-deployment
     installed: true

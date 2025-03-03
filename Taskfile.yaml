@@ -8,8 +8,49 @@ vars:
   CROSSPLANE_PACKAGE_REGISTRY: ghcr.io
   DAGGER_CROSSPLANE_MODULE: github.com/stuttgart-things/dagger/crossplane
   DAGGER_CROSSPLANE_MODULE_VERSION: v0.0.2
+  TEST_FILES: tests/helmfiles.yaml
+  TEST_DIR: /tmp/helmfiles
 
 tasks:
+  tasks:
+    desc: Select a task to run
+    cmds:
+      - |
+        task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
+        task ${task}
+
+  tests-create-includes:
+    desc: Create test files
+    cmds:
+      - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
+      - |
+        for app in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
+
+          echo "Creating: ${app} include"
+
+          machineshop render \
+          --source local \
+          --template {{ .TEST_FILES }} \
+          --output file \
+          --kind multikey \
+          --key ${app} \
+          --destination {{ .TEST_DIR }}/${app}.yaml
+        done
+
+  tests-render-includes:
+    desc: Test render includes
+    cmds:
+      - task: tests-create-includes
+      - |
+        for app in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
+
+          echo "Rendering: ${app}"
+          export HELMFILE_CACHE_HOME={{ .TEST_DIR }}/cache
+          helmfile deps -f {{ .TEST_DIR }}/${app}.yaml
+          helmfile template -f {{ .TEST_DIR }}/${app}.yaml
+
+        done
+
   branch:
     desc: Create branch from main
     cmds:
