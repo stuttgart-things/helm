@@ -1,0 +1,15 @@
+---
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    oci: false
+
+releases:
+  - name: postgresql
+    disableValidationOnInstall: true
+    installed: true
+    namespace: postgresql
+    chart: bitnami/postgresql
+    version: 16.4.14
+    values:
+      - "values/postgresql.values.yaml.gotmpl"

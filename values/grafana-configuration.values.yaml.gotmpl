@@ -1,0 +1,31 @@
+---
+serviceAccounts:
+  grafana-admin:
+    namespace: {{ .Release.Namespace }}
+
+clusterRoleBindings:
+  grafana-cluster-admin:
+    roleRef:
+      kind: ClusterRole
+      name: cluster-admin
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: grafana-admin
+        namespace: grafana
+
+customresources:
+  ingress-certificate-grafana:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: grafana-ingress
+      namespace: {{ .Release.Namespace }}
+    spec:
+      commonName: {{ .Values.hostname }}.{{ .Values.domain }}
+      dnsNames:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      issuerRef:
+        name: {{ .Values.clusterIssuer }}
+        kind: {{ .Values.issuerKind }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls

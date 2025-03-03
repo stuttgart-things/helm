@@ -1,0 +1,29 @@
+---
+releases:
+  - name: grafana-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: grafana
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/grafana-configuration.values.yaml.gotmpl"
+
+  - name: grafana-deployment
+    disableValidationOnInstall: true
+    installed: true
+    namespace: grafana
+    chart: grafana/grafana
+    version: 8.10.1
+    needs:
+      - grafana/grafana-configuration
+    values:
+      - "values/grafana.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+  - name: grafana
+    url: https://grafana.github.io/helm-charts/
+    oci: false

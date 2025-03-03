@@ -1,0 +1,11 @@
+---
+helmfiles:
+    - path: /root/helm/grafana.yaml
+      values:
+        - ingressEnabled: true
+        - hostname: grafana.rahul-story-test-rke
+        - domain: sthings-vsphere.labul.sva.de
+        - storageClassName: longhorn
+        - size: 1Gi
+        - clusterIssuer: cluster-issuer-approle
+        - issuerKind: ClusterIssuer
