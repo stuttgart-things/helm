@@ -28,6 +28,7 @@ cat <<EOF > cert-manager.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cert-manager.yaml?ref=v1.0.0
     values:
+      - config: vault
       - pkiServer: https://vault-vsphere.labul.sva.de:8200
       - pkiPath: pki/sign/sthings-vsphere.labul.sva.de
       - issuer: cluster-issuer-approle
