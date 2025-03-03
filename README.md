@@ -114,7 +114,6 @@ helmfile pull/template/apply/sync -f longhorn.yaml
 
 </details>
 
-
 ## USAGE
 
 <details><summary>HELMFILE</summary>
@@ -136,6 +135,21 @@ rm -rf /tmp/helmfile
 helmfile render -f nginx.yaml
 helmfile apply -f nginx.yaml
 helmfile sync -f nginx.yaml
+```
+
+</details>
+
+<details><summary>TEMPLATE TEST</summary>
+
+```bash
+machineshop render \
+--source local \
+--template /home/sthings/projects/helm/tests/helmfiles.yaml \
+--output file \
+--kind multikey \
+--key ingress-nginx \
+--destination /tmp/helmfiles/ingress-nginx.yaml \
+--values source=/home/sthings/projects/helm/ingress-nginx.yaml
 ```
 
 </details>
