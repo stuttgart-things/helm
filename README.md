@@ -1,6 +1,6 @@
 # stuttgart-things/helm
 
-declaratively deploy Kubernetes manifests, kustomize configs and charts as helm releases
+declaratively deploy charts as helm releases
 
 ## APPS
 
