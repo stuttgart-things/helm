@@ -7,7 +7,14 @@
     "stable": "https://charts.helm.sh/stable"
   },
   "commitMessageTopic": "helm chart {{depName}}",
-  "fileMatch": [
-    "(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?$"
-  ]
+  "helmfile": {
+    "fileMatch": [
+      "(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "(^|/)values\\.ya?ml$"
+    ]
+  }
 }
