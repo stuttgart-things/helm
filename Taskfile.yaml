@@ -10,6 +10,7 @@ vars:
   DAGGER_CROSSPLANE_MODULE_VERSION: v0.0.2
   TEST_FILES: tests/helmfiles.yaml
   TEST_DIR: /tmp/helmfiles
+  TEST_DEFAULTS: tests/defaults.yaml
 
 tasks:
   tasks:
@@ -34,7 +35,9 @@ tasks:
           --output file \
           --kind multikey \
           --key ${app} \
-          --destination {{ .TEST_DIR }}/${app}.yaml
+          --destination {{ .TEST_DIR }}/${app}.yaml \
+          --defaults {{ .TEST_DEFAULTS }}
+
         done
 
   tests-render-includes:

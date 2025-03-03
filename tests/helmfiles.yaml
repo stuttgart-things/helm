@@ -3,11 +3,19 @@ template:
   nginx: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0
+      - path: {{ .source }}
         values:
           - profile: nginx
           - serviceType: ClusterIP
+
   ingress-nginx: |
     ---
     helmfiles:
-      - path: git::https://github.com/stuttgart-things/helm.git@ingress-nginx.yaml?ref=v1.0.0
+      - path: {{ .source }}
+
+  cert-manager: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - config: selfsigned

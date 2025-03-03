@@ -1,0 +1,2 @@
+---
+source: "git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0"
