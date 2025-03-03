@@ -208,7 +208,27 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 
 </details>
 
-## USAGE
+## USAGE/DEV
+
+<details><summary>TASKS</summary>
+
+```bash
+task: Available tasks for this project:
+* branch:                      Create branch from main
+* check:                       Run pre-commit hooks
+* commit:                      Commit + push code into branch
+* create-test-app:             Switch to local branch
+* pr:                          Create pull request into main
+* release:                     push new version
+* run-pre-commit-hook:         Run the pre-commit hook script to replace .example.com with .example.com
+* switch-local:                Switch to local branch
+* switch-remote:               Switch to remote branch
+* tasks:                       Select a task to run
+* tests-create-includes:       Create test files
+* tests-render-includes:       Test render includes
+```
+
+</details>
 
 <details><summary>HELMFILE</summary>
 
