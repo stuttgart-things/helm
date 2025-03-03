@@ -113,6 +113,50 @@ helmfile pull/template/apply/sync -f longhorn.yaml
 
 </details>
 
+<details><summary>GRAFANA</summary>
+
+```bash
+cat <<EOF > grafana.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@grafana.yaml?ref=v1.0.0
+    values:
+      - ingressEnabled: true
+      - hostname: grafana.k8scluster
+      - domain: sthings-vsphere.example.com
+      - storageClassName: longhorn 
+      - size: 1 # storage size in Gi
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+EOF
+
+helmfile pull/template/apply/sync -f grafana.yaml
+```
+
+</details>
+
+<details><summary>POSTGRESQL</summary>
+
+```bash
+cat <<EOF > postgresql.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@postgresql.yaml?ref=v1.0.0
+    values:
+      - persistenceEnabled: true
+      - storageClass: longhorn
+      - persistenceSize: 1 # size in Gi
+      - database: my_database # example database
+      - username: admin
+      - password: <your-password>
+      - postgresPassword: <postgres-password> # password for postgres user
+EOF
+
+helmfile pull/template/apply/sync -f postgresql.yaml
+```
+
+</details>
+
 
 ## USAGE
 

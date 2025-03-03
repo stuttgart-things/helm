@@ -20,7 +20,7 @@ persistence:
   storageClassName: {{ .Values.storageClassName }}
   accessModes:
     - ReadWriteOnce
-  size: {{ .Values.size }}
+  size: {{ .Values.size }}Gi
   finalizers:
     - kubernetes.io/pvc-protection
   extraPvcLabels: {}
