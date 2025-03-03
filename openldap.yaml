@@ -10,6 +10,6 @@ releases:
     installed: true
     namespace: openldap
     chart: helm-openldap/openldap-stack-ha
-    version: 4.3.1
+    version: 4.3.3
     values:
       - "values/openldap.values.yaml.gotmpl"
