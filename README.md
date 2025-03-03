@@ -114,6 +114,99 @@ helmfile pull/template/apply/sync -f longhorn.yaml
 
 </details>
 
+<details><summary>GRAFANA</summary>
+
+```bash
+cat <<EOF > grafana.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@grafana.yaml?ref=v1.0.0
+    values:
+      - ingressEnabled: true
+      - hostname: grafana.k8scluster
+      - domain: sthings-vsphere.example.com
+      - storageClassName: longhorn
+      - size: 1 # storage size in Gi
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+EOF
+
+helmfile pull/template/apply/sync -f grafana.yaml
+```
+
+</details>
+
+<details><summary>POSTGRESQL</summary>
+
+```bash
+cat <<EOF > postgresql.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@postgresql.yaml?ref=v1.0.0
+    values:
+      - persistenceEnabled: true
+      - storageClass: longhorn
+      - persistenceSize: 1 # size in Gi
+      - database: my_database # example database
+      - username: admin
+      - password: <your-password>
+      - postgresPassword: <postgres-password> # password for postgres user
+EOF
+
+helmfile pull/template/apply/sync -f postgresql.yaml
+```
+
+</details>
+
+<details><summary>KEYCLOAK</summary>
+
+```bash
+cat <<EOF > keycloak.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+    values:
+      - ingressClassName: nginx
+      - hostname: keycloak
+      - domain: k8scluster.sthings-vsphere.example.com
+      - adminUser: admin
+      - adminPassword: <your-password>
+      - storageClass: nfs4-csi
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+EOF
+
+helmfile template -f keycloak.yaml # RENDER ONLY
+helmfile apply -f keycloak.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>OPENLDAP</summary>
+
+```bash
+cat <<EOF > openldap.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@openldap.yaml?ref=v1.0.0
+    values:
+      - adminUser: admin
+      - adminPassword: whatever4711
+      - ldapDomain: dc=sthings,dc=de
+      - configUser: sthings
+      - configPassword: whatever0815
+      - enablePersistence: false
+      #- storageClass: longhorn # -> only needed if enablePersistence is true
+      - replicas: 1
+      - replication: false
+EOF
+
+helmfile template -f openldap.yaml # RENDER ONLY
+helmfile apply -f openldap.yaml # APPLY HELMFILE
+```
+
+</details>
+
 ## USAGE
 
 <details><summary>HELMFILE</summary>
@@ -132,7 +225,7 @@ ls -lta /tmp/helmfile
 # DELETE CACHE FOR TRY 'N ERROR W/ GIT SOURCES
 rm -rf /tmp/helmfile
 
-helmfile render -f nginx.yaml
+helmfile template -f nginx.yaml
 helmfile apply -f nginx.yaml
 helmfile sync -f nginx.yaml
 ```

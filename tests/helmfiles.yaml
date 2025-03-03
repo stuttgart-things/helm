@@ -7,10 +7,39 @@ template:
         values:
           - profile: nginx
           - serviceType: ClusterIP
-
+          
   ingress-nginx: |
     ---
     helmfiles:
+      - path: {{ .source }}
+  keycloak: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - ingressClassName: nginx
+          - hostname: keycloak.k8scluster
+          - domain: sthings-vsphere.example.com
+          - adminUser: admin
+          - adminPassword: <your-password>
+          - storageClass: nfs4-csi
+          - clusterIssuer: cluster-issuer-approle
+          - issuerKind: ClusterIssuer
+          
+  openldap: |
+    ---
+    helmfiles:
+      - path: {{ .source }} 
+        values:
+          - adminUser: admin
+          - adminPassword: whatever4711
+          - ldapDomain: dc=sthings,dc=de
+          - configUser: sthings
+          - configPassword: whatever0815
+          - enablePersistence: false
+          #- storageClass: longhorn # -> only needed if enablePersistence is true
+          - replicas: 1
+          - replication: false
       - path: {{ .source }}
 
   cert-manager: |

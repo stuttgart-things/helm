@@ -1,0 +1,52 @@
+---
+global:
+    postgresql:
+        auth:
+            username: {{ .Values.username }}
+            password: {{ .Values.password }}
+            database: {{ .Values.database }}
+            postgresPassword: {{ .Values.postgresPassword }} # password for postgres user
+
+primary:
+    persistence:
+        enable: {{ .Values.persistenceEnabled }}
+        size: {{ .Values.persistenceSize }}Gi
+        storageClass: {{ .Values.storageClass }}
+        accessModes:
+            - ReadWriteOnce
+
+    initdb:
+        scripts:
+            init.sql: |
+                -- Create a new database
+                CREATE DATABASE {{ .Values.database }};
+
+                -- Connect to the new database
+                \c {{ .Values.database }};
+
+                -- Create a new user
+                CREATE USER {{ .Values.username }} WITH ENCRYPTED PASSWORD '{{ .Values.password }}';
+
+                -- Grant privileges to the new user
+                GRANT ALL PRIVILEGES ON DATABASE {{ .Values.database }} TO {{ .Values.username }};
+
+                -- Create a new table
+                CREATE TABLE users (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(50) UNIQUE NOT NULL,
+                    email VARCHAR(100) UNIQUE NOT NULL,
+                    password_hash TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                
+                -- Create another table with a foreign key
+                CREATE TABLE posts (
+                    id SERIAL PRIMARY KEY,
+                    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+                    amount DECIMAL(10,2) NOT NULL,
+                    status VARCHAR(20) DEFAULT 'pending',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                    
+                -- Grant access to the tables
+                GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {{ .Values.username }};

@@ -1,0 +1,16 @@
+---
+customresources:
+  ingress-certificate-keycloak:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: keycloak-ingress
+      namespace: {{ .Release.Namespace }}
+    spec:
+      commonName: {{ .Values.hostname }}.{{ .Values.domain }}
+      dnsNames:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      issuerRef:
+        name: {{ .Values.clusterIssuer }}
+        kind: {{ .Values.issuerKind }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls

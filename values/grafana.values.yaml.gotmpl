@@ -1,0 +1,27 @@
+---
+ingress:
+  enabled: {{ .Values.ingressEnabled }}
+  ingressClassName: nginx
+  labels: {}
+  path: /
+  pathType: Prefix
+  hosts:
+    - {{ .Values.hostname }}.{{ .Values.domain }}
+  tls:
+    - secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+      hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+
+initChownData:
+  enabled: false
+
+persistence:
+  enabled: true
+  storageClassName: {{ .Values.storageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  size: {{ .Values.size }}Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+  extraPvcLabels: {}
+  disableWarning: false
