@@ -24,3 +24,17 @@ template:
           - storageClass: nfs4-csi
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
+  openldap: |
+    ---
+    helmfiles:
+      - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+        values:
+          - adminUser: admin
+          - adminPassword: whatever4711
+          - ldapDomain: dc=sthings,dc=de
+          - configUser: sthings
+          - configPassword: whatever0815
+          - enablePersistence: false
+          #- storageClass: longhorn # -> only needed if enablePersistence is true
+          - replicas: 1
+          - replication: false

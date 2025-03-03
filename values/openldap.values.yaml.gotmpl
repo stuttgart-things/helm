@@ -1,20 +1,22 @@
 ---
 global:
-    adminUser: {{ .Values.adminUser }}
-    ldapDomain: {{ .Values.domain }}
-    adminPassword: {{ .Values.adminPassword }}
-    configUser: {{ .Values.configUser }}
-    configPassword: {{ .Values.configPassword }}
-    ldapPort: 389
-    sslLdapPort: 636
+  adminUser: {{ .Values.adminUser }}
+  ldapDomain: {{ .Values.ldapDomain }}
+  adminPassword: {{ .Values.adminPassword }}
+  configUser: {{ .Values.configUser }}
+  configPassword: {{ .Values.configPassword }}
+  ldapPort: 389
+  sslLdapPort: 636
 
-replicaCount: 1
+replicaCount: {{ .Values.replicas }}
 replication:
-    enabled: false
+  enabled: {{ .Values.replication }}
 persistence:
-    enabled: true
-    storageClass: {{ .Values.storageClass }}
-ltb-passed:
-    enabled: false
+  enabled: {{ .Values.enablePersistence }}
+  {{- if .Values.enablePersistence }}
+  storageClass: {{ .Values.storageClass }}
+  {{- end }}
+ltb-passwd:
+  enabled: false
 phpldapadmin:
-    enabled: false
+  enabled: false

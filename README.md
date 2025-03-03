@@ -124,7 +124,7 @@ helmfiles:
       - ingressEnabled: true
       - hostname: grafana.k8scluster
       - domain: sthings-vsphere.example.com
-      - storageClassName: longhorn 
+      - storageClassName: longhorn
       - size: 1 # storage size in Gi
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
@@ -165,9 +165,9 @@ cat <<EOF > keycloak.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
     values:
-      - ingressEnabled: true
-      - hostname: keycloak.k8scluster
-      - domain: sthings-vsphere.example.com
+      - ingressClassName: nginx
+      - hostname: keycloak
+      - domain: k8scluster.sthings-vsphere.example.com
       - adminUser: admin
       - adminPassword: <your-password>
       - storageClass: nfs4-csi
@@ -175,7 +175,8 @@ helmfiles:
       - issuerKind: ClusterIssuer
 EOF
 
-helmfile pull/template/apply/sync -f keycloak.yaml
+helmfile template -f keycloak.yaml # RENDER ONLY
+helmfile apply -f keycloak.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -189,14 +190,18 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@openldap.yaml?ref=v1.0.0
     values:
       - adminUser: admin
-      - adminPassword: <your-password>
-      - domain: sthings-vsphere.example.com
-      - configUser: admin
-      - configPassword: <your-config-password>
-      - storageClass: longhorn
+      - adminPassword: whatever4711
+      - ldapDomain: dc=sthings,dc=de
+      - configUser: sthings
+      - configPassword: whatever0815
+      - enablePersistence: false
+      #- storageClass: longhorn # -> only needed if enablePersistence is true
+      - replicas: 1
+      - replication: false
 EOF
 
-helmfile pull/template/apply/sync -f openldap.yaml
+helmfile template -f openldap.yaml # RENDER ONLY
+helmfile apply -f openldap.yaml # APPLY HELMFILE
 ```
 
 </details>
