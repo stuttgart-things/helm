@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "registryAliases": {
+    "stable": "https://charts.helm.sh/stable"
+  },
+  "commitMessageTopic": "helm chart {{depName}}",
+  "fileMatch": [
+    "(^|/)helmfile\\.ya?ml(?:\\.gotmpl)?$"
+  ]
+}
