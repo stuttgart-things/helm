@@ -55,6 +55,9 @@ tasks:
         --values "source={{ .USER_WORKING_DIR }}/${app}.yaml"
 
         helmfile template -f {{ .TEST_DIR }}/${app}.yaml
+        echo "Change to: cd {{ .TEST_DIR }}"
+        echo "Apply: helmfile apply -f {{ .TEST_DIR }}/${app}.yaml"
+        code {{ .TEST_DIR }}/${app}.yaml
   tests-create-includes:
     desc: Create test files
     cmds:

@@ -1,24 +1,24 @@
 ---
 releases:
-  - name: zot-registry-configuration
+  - name: zot-configuration
     disableValidationOnInstall: true
     installed: true
     namespace: zot
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
-      - "values/zot-registry-configuration.values.yaml.gotmpl"
+      - "values/zot-configuration.values.yaml.gotmpl"
 
   - name: zot-registry-deployment
     disableValidationOnInstall: true
     installed: true
     namespace: zot
     chart: zot/zot
-    version: 0.1.66
+    version: {{ .Values.version }}
     needs:
-      - zot/zot-registry-configuration
+      - zot/zot-configuration
     values:
-      - "values/zot-registry.values.yaml.gotmpl"
+      - "values/zot.values.yaml.gotmpl"
 
 repositories:
   - name: stuttgart-things

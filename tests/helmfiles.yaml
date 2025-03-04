@@ -48,3 +48,32 @@ template:
       - path: {{ .source }}
         values:
           - config: selfsigned
+
+  openebs: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 4.2.0
+          - profile: localpv
+          - openebs_volumesnapshots_enabled: false
+          - openebs_csi_node_init_containers_enabled: false
+          - openebs_local_lvm_enabled: false
+          - openebs_local_zfs_enabled: false
+          - openebs_replicated_mayastor_enabled: false
+
+  zot: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 0.1.66
+          - ingressEnabled: true
+          - ingressClass: nginx
+          - enablePersistence: true
+          - hostname: zot
+          - domain: k8scluster.sthings-vsphere.example.com
+          - storageClassName: longhorn
+          - storageSize: 1Gi
+          - clusterIssuer: cluster-issuer-approle
+          - issuerKind: ClusterIssuer

@@ -4,9 +4,9 @@ releases:
     installed: true
     namespace: openebs-system
     chart: openebs/openebs
-    version: 4.2.0
+    version: {{ .Values.version }}
     values:
-      - "values/openebs.values.yaml.gotmpl"
+      - "values/openebs-{{ .Values.profile }}.values.yaml.gotmpl"
 
 repositories:
   - name: openebs
