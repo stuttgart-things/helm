@@ -10,7 +10,7 @@ declaratively deploy charts as helm releases
 cat <<EOF > metallb.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@metallb.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml
     values:
       - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
 EOF
@@ -26,7 +26,7 @@ helmfile pull/template/apply/sync -f metallb.yaml
 cat <<EOF > cert-manager.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@cert-manager.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
     values:
       - config: vault
       - pkiServer: https://vault-vsphere.labul.example.com:8200
@@ -54,7 +54,7 @@ helmfile pull/template/apply/sync -f cert-manager.yaml
 cat <<EOF > ingress-nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@ingress-nginx.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
 EOF
 
 helmfile pull/template/apply/sync -f ingress-nginx.yaml
@@ -68,7 +68,7 @@ helmfile pull/template/apply/sync -f ingress-nginx.yaml
 cat <<EOF > nfs-csi.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@nfs-csi.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml
     values:
       - nfsServerFQDN: 10.31.101.26
       - nfsSharePath: /data/col1/sthings
@@ -87,7 +87,7 @@ helmfile pull/template/apply/sync -f nfs-csi.yaml
 cat <<EOF > nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@nginx.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
       - profile: nginx
       - serviceType: ClusterIP
@@ -104,7 +104,7 @@ helmfile pull/template/apply/sync -f nginx.yaml
 cat <<EOF > longhorn.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@longhorn.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/longhorn.yaml
     values:
       - longhornDefaultClass: false
 EOF
@@ -120,7 +120,7 @@ helmfile pull/template/apply/sync -f longhorn.yaml
 cat <<EOF > grafana.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@grafana.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/grafana.yaml
     values:
       - ingressEnabled: true
       - hostname: grafana.k8scluster
@@ -142,7 +142,7 @@ helmfile pull/template/apply/sync -f grafana.yaml
 cat <<EOF > postgresql.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@postgresql.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@database/postgresql.yaml
     values:
       - persistenceEnabled: true
       - storageClass: longhorn
@@ -165,7 +165,7 @@ helmfile apply -f postgresql.yaml # APPLY HELMFILE
 cat <<EOF > keycloak.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@keycloak.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@database/keycloak.yaml
     values:
       - ingressClassName: nginx
       - hostname: keycloak
@@ -189,7 +189,7 @@ helmfile apply -f keycloak.yaml # APPLY HELMFILE
 cat <<EOF > openldap.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@openldap.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@datbase/openldap.yaml
     values:
       - adminUser: admin
       - adminPassword: whatever4711
@@ -214,7 +214,7 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 cat <<EOF > zot-registry.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@zot.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@database/zot.yaml
     values:
       - version: 0.1.66
       - ingressEnabled: true
@@ -240,7 +240,7 @@ helmfile apply -f zot-registry.yaml # APPLY HELMFILE
 cat <<EOF > openebs.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@openebs.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml
       - version: 4.2.0
       - profile: localpv
       - openebs_volumesnapshots_enabled: false
