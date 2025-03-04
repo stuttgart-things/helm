@@ -22,21 +22,21 @@ template:
           - hostname: keycloak.k8scluster
           - domain: sthings-vsphere.example.com
           - adminUser: admin
-          - adminPassword: <your-password>
+          - adminPassword: <your-password> pragma: allowlist secret
           - storageClass: nfs4-csi
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
 
-  openldap: |
+  openldap: | # pragma: allowlist secret
     ---
     helmfiles:
       - path: {{ .source }}
         values:
           - adminUser: admin
-          - adminPassword: whatever4711
+          - adminPassword: whatever4711 pragma: allowlist secret
           - ldapDomain: dc=sthings,dc=de
           - configUser: sthings
-          - configPassword: whatever0815
+          - configPassword: whatever0815 pragma: allowlist secret
           - enablePersistence: false
           #- storageClass: longhorn # -> only needed if enablePersistence is true
           - replicas: 1

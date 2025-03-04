@@ -38,7 +38,7 @@ primary:
                     password_hash TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
-                
+
                 -- Create another table with a foreign key
                 CREATE TABLE posts (
                     id SERIAL PRIMARY KEY,
@@ -47,6 +47,6 @@ primary:
                     status VARCHAR(20) DEFAULT 'pending',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
-                    
+
                 -- Grant access to the tables
                 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {{ .Values.username }};

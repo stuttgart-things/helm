@@ -137,26 +137,31 @@ tasks:
 
   commit:
     desc: Commit + push code into branch
+    deps:
+      - check
     cmds:
-      - rm -rf dist/
       - git branch --set-upstream-to=origin/{{ .BRANCH }}
       - git pull
+      - git status
       - |
         git add *
+        git status
         if [[ -n $(git status --porcelain) ]]; then
-          echo "committing changes"
+          echo "Review the changes above."
+          gum confirm "Do you want to commit these changes?" || exit 0
+
           echo "ENTER COMMIT MESSAGE"
-          COMMIT_MESSAGE=$(echo $(gum choose "feat: {{ .BRANCH }}" "fix: {{ .BRANCH }}" "BREAKING CHANGE: {{ .BRANCH }}" "ENTER CUSTOM COMMIT MESSAGE"))
+          COMMIT_MESSAGE=$(gum choose "feat: {{ .BRANCH }}" "fix: {{ .BRANCH }}" "BREAKING CHANGE: {{ .BRANCH }}" "ENTER CUSTOM COMMIT MESSAGE")
 
           if [ "$COMMIT_MESSAGE" == "ENTER CUSTOM COMMIT MESSAGE" ]; then
-            COMMIT_MESSAGE=$(echo $(gum input --placeholder "scope" --value "commit to {{ .BRANCH }}"))
+            COMMIT_MESSAGE=$(gum input --placeholder "scope" --value "commit to {{ .BRANCH }}")
           fi
 
-          git commit --allow-empty -a -m "$(echo ${COMMIT_MESSAGE})"
+          git commit --allow-empty -a -m "$COMMIT_MESSAGE"
         else
-          echo "no changes"
+          echo "No changes to commit."
         fi
-        git push origin -u {{ .BRANCH }}
+      - git push origin -u {{ .BRANCH }}
 
   pr:
     desc: Create pull request into main
