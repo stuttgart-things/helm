@@ -29,8 +29,8 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cert-manager.yaml?ref=v1.0.0
     values:
       - config: vault
-      - pkiServer: https://vault-vsphere.labul.sva.de:8200
-      - pkiPath: pki/sign/sthings-vsphere.labul.sva.de
+      - pkiServer: https://vault-vsphere.labul.example.com:8200
+      - pkiPath: pki/sign/sthings-vsphere.labul.example.com
       - issuer: cluster-issuer-approle
       - approleSecret: ref+vault://apps/vault/secretID
       - approleID: ref+vault://apps/vault/roleID
