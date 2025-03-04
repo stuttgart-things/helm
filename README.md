@@ -208,19 +208,22 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>ZOT-REGISTRY </summary>
+<details><summary>ZOT </summary>
 
 ```bash
 cat <<EOF > zot-registry.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@zot-registry.yaml?ref=v1.0.0
+  - path: git::https://github.com/stuttgart-things/helm.git@zot.yaml
     values:
+      - version: 0.1.66
       - ingressEnabled: true
+      - ingressClass: nginx
+      - enablePersistence: true
       - hostname: zot
       - domain: k8scluster.sthings-vsphere.example.com
       - storageClassName: longhorn
-      - storageSize: 1
+      - storageSize: 1Gi
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
 EOF
@@ -237,8 +240,9 @@ helmfile apply -f zot-registry.yaml # APPLY HELMFILE
 cat <<EOF > openebs.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@openebs.yaml?ref=v1.0.0
-    values:
+  - path: git::https://github.com/stuttgart-things/helm.git@openebs.yaml
+      - version: 4.2.0
+      - profile: localpv
       - openebs_volumesnapshots_enabled: false
       - openebs_csi_node_init_containers_enabled: false
       - openebs_local_lvm_enabled: false
