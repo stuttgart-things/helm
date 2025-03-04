@@ -22,7 +22,7 @@ template:
           - hostname: keycloak.k8scluster
           - domain: sthings-vsphere.example.com
           - adminUser: admin
-          - adminPassword: <your-password> pragma: allowlist secret
+          - adminPassword: <your-password> # pragma: allowlist secret
           - storageClass: nfs4-csi
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
