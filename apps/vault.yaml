@@ -15,7 +15,7 @@ releases:
     chart: hashicorp/vault
     needs:
       - vault/vault-configuration
-    version: 0.28
+    version: 0.29
     values:
       - "values/vault.values.yaml.gotmpl"
 
