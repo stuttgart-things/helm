@@ -73,7 +73,7 @@ template:
           - enablePersistence: true
           - hostname: zot
           - domain: k8scluster.sthings-vsphere.example.com
-          - storageClassName: longhorn
-          - storageSize: 1Gi
+          - storageClassName: {{ .zotStorageClass }}
+          - storageSize: {{ .zotStorageSize }}
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
