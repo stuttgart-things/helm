@@ -3,7 +3,7 @@ template:
   nginx: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/apps
         values:
           - profile: nginx
           - serviceType: ClusterIP
@@ -11,12 +11,12 @@ template:
   ingress-nginx: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/infra
 
   keycloak: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/database
         values:
           - ingressClassName: nginx
           - hostname: keycloak.k8scluster
@@ -30,7 +30,7 @@ template:
   openldap: | # pragma: allowlist secret
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/database
         values:
           - adminUser: admin
           - adminPassword: whatever4711 # pragma: allowlist secret
@@ -45,14 +45,14 @@ template:
   cert-manager: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/infra
         values:
           - config: selfsigned
 
   openebs: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/infra
         values:
           - version: 4.2.0
           - profile: localpv
@@ -65,7 +65,7 @@ template:
   zot: |
     ---
     helmfiles:
-      - path: {{ .source }}
+      - path: {{ .source }}/database
         values:
           - version: 0.1.66
           - ingressEnabled: true
