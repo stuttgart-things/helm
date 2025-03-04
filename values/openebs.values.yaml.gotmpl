@@ -1,0 +1,22 @@
+---
+openebs-crds:
+  csi:
+    volumeSnapshots:
+      enabled: {{ .Values.openebs_volumesnapshots_enabled }}
+
+mayastor:
+  csi:
+    node:
+      initContainers:
+        enabled: {{ .Values.openebs_csi_node_init_containers_enabled }}
+
+engines:
+  local:
+    lvm:
+      enabled: {{ .Values.openebs_local_lvm_enabled }}
+    zfs:
+      enabled: {{ .Values.openebs_local_zfs_enabled }}
+  replicated:
+    mayastor:
+      enabled: {{ .Values.openebs_replicated_mayastor_enabled }}
+  

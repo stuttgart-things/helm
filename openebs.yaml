@@ -1,0 +1,14 @@
+---
+releases:
+  - name: openebs
+    installed: true
+    namespace: openebs-system
+    chart: openebs/openebs
+    version: 4.2.0
+    values:
+      - "values/openebs.values.yaml.gotmpl"
+
+repositories:
+  - name: openebs
+    url: https://openebs.github.io/openebs
+    oci: false

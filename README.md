@@ -208,6 +208,50 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 
 </details>
 
+<details><summary>ZOT-REGISTRY </summary>
+
+```bash
+cat <<EOF > zot-registry.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@zot-registry.yaml?ref=v1.0.0
+    values:
+      - ingressEnabled: true
+      - hostname: zot
+      - domain: k8scluster.sthings-vsphere.example.com
+      - storageClassName: longhorn
+      - storageSize: 1
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+EOF
+
+helmfile template -f zot-registry.yaml # RENDER ONLY
+helmfile apply -f zot-registry.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>OPENEBS</summary>
+
+```bash
+cat <<EOF > openebs.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@openebs.yaml?ref=v1.0.0
+    values:
+      - openebs_volumesnapshots_enabled: false
+      - openebs_csi_node_init_containers_enabled: false
+      - openebs_local_lvm_enabled: false
+      - openebs_local_zfs_enabled: false
+      - openebs_replicated_mayastor_enabled: false
+EOF
+
+helmfile template -f openebs.yaml # RENDER ONLY
+helmfile apply -f openebs.yaml # APPLY HELMFILE
+```
+
+</details>
+
 ## USAGE/DEV
 
 <details><summary>TASKS</summary>
