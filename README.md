@@ -222,7 +222,7 @@ helmfiles:
       - enablePersistence: true
       - hostname: zot
       - domain: k8scluster.sthings-vsphere.example.com
-      - storageClassName: longhorn
+      - storageClassName: openebs-hostpath
       - storageSize: 1Gi
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer

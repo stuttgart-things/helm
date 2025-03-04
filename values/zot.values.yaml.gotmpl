@@ -12,12 +12,11 @@ ingress:
       hosts:
         - {{ .Values.hostname }}.{{ .Values.domain }}
 
-persistence: true
+persistence: {{ .Values.enablePersistence }}
 {{- if .Values.enablePersistence }}
 pvc:
   create: true
-  name: zot-registry-pvc
-  accessMode: "ReadWriteOnce"
+  accessMode: ReadWriteOnce
   storage: {{ .Values.storageSize }}
   storageClassName: {{ .Values.storageClassName }}
 {{- end }}
