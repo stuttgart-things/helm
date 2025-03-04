@@ -1,0 +1,21 @@
+---
+ingress:
+  enabled: {{ .Values.ingressEnabled }}
+  className: nginx
+  pathtype: ImplementationSpecific
+  hosts:
+    - host: {{ .Values.hostname }}.{{ .Values.domain }}
+      paths:
+        - path: /
+  tls:
+    - secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+      hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+
+persistence: true
+pvc:
+  create: true
+  name: zot-registry-pvc
+  accessMode: "ReadWriteOnce"
+  storage: {{ .Values.storageSize }}Gi
+  storageClassName: {{ .Values.storageClassName }}

@@ -1,0 +1,29 @@
+---
+releases:
+  - name: zot-registry-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: zot
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/zot-registry-configuration.values.yaml.gotmpl"
+
+  - name: zot-registry-deployment
+    disableValidationOnInstall: true
+    installed: true
+    namespace: zot
+    chart: zot/zot
+    version: 0.1.66
+    needs:
+      - zot/zot-registry-configuration
+    values:
+      - "values/zot-registry.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+  - name: zot
+    url: https://zotregistry.dev/helm-charts/
+    oci: false
