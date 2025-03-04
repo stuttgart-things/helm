@@ -14,7 +14,7 @@ releases:
     installed: true
     namespace: kube-system
     chart: headlamp/headlamp
-    version: 0.25.0
+    version: 0.29.1
     needs:
       - kube-system/headlamp-configuration
     values:
