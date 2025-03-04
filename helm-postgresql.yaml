@@ -1,0 +1,12 @@
+---
+helmfiles:
+    - path: /root/helm/postgresql.yaml
+      values:
+        - persistenceEnabled: true
+        - storageClass: longhorn
+        - persistenceSize: 1
+        - database: my_database
+        - username: admin
+        - password: Atlan7is2024
+        - postgresPassword: Atlan7is2024
+        
