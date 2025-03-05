@@ -4,7 +4,7 @@ releases:
     installed: true
     namespace: longhorn-system
     chart: longhorn/longhorn
-    version: 1.8.0
+    version: 1.8.1
     values:
       - "values/longhorn.values.yaml.gotmpl"
 
