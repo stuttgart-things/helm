@@ -4,7 +4,7 @@ releases:
     installed: true
     namespace: metallb-system
     chart: bitnami/metallb
-    version: 6.4.5
+    version: 6.4.8
 
   - name: metallb-configuration
     disableValidationOnInstall: true
