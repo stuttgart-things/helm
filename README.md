@@ -55,6 +55,8 @@ cat <<EOF > ingress-nginx.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
+    values:
+      - version: 4.12.0
 EOF
 
 helmfile pull/template/apply/sync -f ingress-nginx.yaml

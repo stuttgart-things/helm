@@ -1,17 +1,46 @@
 ---
 template:
+  cilium: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 1.17.1
+          - config: kind
+          - ipRangeStart: 172.18.250.0
+          - ipRangeEnd: 172.18.250.50
+
+  metallb: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 6.4.5
+          - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
+
   nginx: |
     ---
     helmfiles:
-      - path: {{ .source }}/apps
+      - path: {{ .source }}/apps/nginx.yaml
         values:
           - profile: nginx
           - serviceType: ClusterIP
 
+  cert-manager: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: v1.17.1
+          - config: selfsigned
+
+
   ingress-nginx: |
     ---
     helmfiles:
-      - path: {{ .source }}/infra
+      - path: {{ .source }}
+        values:
+        - version: 4.12.0
 
   keycloak: |
     ---
@@ -41,13 +70,6 @@ template:
           #- storageClass: longhorn # -> only needed if enablePersistence is true
           - replicas: 1
           - replication: false
-
-  cert-manager: |
-    ---
-    helmfiles:
-      - path: {{ .source }}/infra
-        values:
-          - config: selfsigned
 
   openebs: |
     ---
