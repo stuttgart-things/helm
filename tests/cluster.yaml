@@ -1,0 +1,123 @@
+---
+template:
+  kind: |
+    ---
+    kind: Cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    networking:
+      disableDefaultCNI: true
+      kubeProxyMode: none
+    nodes:
+      - role: control-plane
+      - role: worker
+
+  kind-infra: |
+    ---
+    helmDefaults:
+      verify: false
+      wait: true
+      timeout: 600
+      recreatePods: false
+      force: true
+
+    helmfiles:
+      - path: {{ .source }}/infra/cilium.yaml
+        values:
+          - version: 1.17.1
+          - config: kind
+          - ipRangeStart: 172.18.250.0
+          - ipRangeEnd: 172.18.250.50
+
+      - path: {{ .source }}/infra/ingress-nginx.yaml
+        values:
+          - version: 4.12.0
+
+      - path: {{ .source }}/infra/cert-manager.yaml
+        values:
+          - version: v1.17.1
+          - config: selfsigned
+
+  # ip_config: |
+  #   ---
+  #   apiVersion: metallb.io/v1beta1
+  #   kind: IPAddressPool
+  #   metadata:
+  #     name: ip-pool
+  #     namespace: metallb-system
+  #     labels:
+  #       app: metallb
+  #   spec:
+  #     addresses:
+  #       - {{ .Values.ipRange }}
+  #   ---
+  #   apiVersion: metallb.io/v1beta1
+  #   kind: L2Advertisement
+  #   metadata:
+  #     name: pool-advertisement
+  #     namespace: metallb-system
+  #     labels:
+  #       app: metallb
+  #   spec:
+  #     ipAddressPools:
+  #       - ip-pool
+
+  k3d: |
+    ---
+    apiVersion: k3d.io/v1alpha5
+    kind: Simple
+    metadata:
+      name: {{ .clusterName }}
+    servers: 1
+    agents: 2
+    ports:
+      - port: 80:80   # Expose HTTP
+        nodeFilters:
+          - loadbalancer
+      - port: 443:443 # Expose HTTPS
+        nodeFilters:
+          - loadbalancer
+    options:
+      k3d:
+        wait: true
+      k3s:
+        extraArgs:
+          - arg: "--disable=traefik"   # Disable default Traefik Ingress
+            nodeFilters:
+              - server:0
+    volumes:
+      - volume: /etc/rancher/k3s
+        nodeFilters:
+          - server:0
+
+  ip: |
+    ---
+    helmDefaults:
+      verify: false
+      wait: true
+      timeout: 600
+      recreatePods: false
+      force: true
+
+    helmfiles:
+      - path: {{ .source }}/infra/metallb.yaml
+        values:
+          - version: 6.4.5
+          - ipRange: {{ .ipRange }}
+
+  ingress: |
+    ---
+    helmDefaults:
+      verify: false
+      wait: true
+      timeout: 600
+      recreatePods: false
+      force: true
+
+    helmfiles:
+      - path: {{ .source }}/infra/ingress-nginx.yaml
+        values:
+          - version: 4.12.0
+      - path: {{ .source }}/infra/cert-manager.yaml
+        values:
+          - version: v1.17.1
+          - config: selfsigned

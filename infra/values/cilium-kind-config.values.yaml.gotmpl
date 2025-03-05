@@ -1,0 +1,26 @@
+---
+customresources:
+  loadBalancerIPPool:
+    apiVersion: "cilium.io/v2alpha1"
+    kind: CiliumLoadBalancerIPPool
+    metadata:
+      name: ip-pool
+    spec:
+      blocks:
+        - start: "{{ .Values.ipRangeStart }}"
+          stop: "{{ .Values.ipRangeEnd }}"
+  ciliumL2AnnouncementPolicy:
+    apiVersion: cilium.io/v2alpha1
+    kind: CiliumL2AnnouncementPolicy
+    metadata:
+      name: default-l2-announcement-policy
+      namespace: {{ .Release.Namespace }}
+    spec:
+      externalIPs: false
+      loadBalancerIPs: true
+      interfaces:
+        - ^eth[0-9]+
+      nodeSelector:
+        matchExpressions:
+        - key: node-role.kubernetes.io/control-plane
+          operator: DoesNotExist
