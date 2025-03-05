@@ -2,86 +2,7 @@
 
 declaratively deploy charts as helm releases
 
-## APPS
 
-<details><summary>METALLB</summary>
-
-```bash
-cat <<EOF > metallb.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml
-    values:
-      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
-EOF
-
-helmfile pull/template/apply/sync -f metallb.yaml
-```
-
-</details>
-
-<details><summary>CERT-MANAGER</summary>
-
-```bash
-cat <<EOF > cert-manager.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
-    values:
-      - config: vault
-      - pkiServer: https://vault-vsphere.labul.example.com:8200
-      - pkiPath: pki/sign/sthings-vsphere.labul.example.com
-      - issuer: cluster-issuer-approle
-      - approleSecret: ref+vault://apps/vault/secretID
-      - approleID: ref+vault://apps/vault/roleID
-      - pkiCA: ref+vault://apps/vault/vaultCA
-EOF
-
-export VAULT_AUTH_METHOD=approle
-export VAULT_ADDR=https://<VAULT-URL>:8200
-export VAULT_SECRET_ID=623c991f-d.. #example value
-export VAULT_ROLE_ID=1d42d7e7-8.. #example value
-export VAULT_NAMESPACE=root
-
-helmfile pull/template/apply/sync -f cert-manager.yaml
-```
-
-</details>
-
-<details><summary>INGRESS-NGINX</summary>
-
-```bash
-cat <<EOF > ingress-nginx.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
-    values:
-      - version: 4.12.0
-EOF
-
-helmfile pull/template/apply/sync -f ingress-nginx.yaml
-```
-
-</details>
-
-<details><summary>NFS-CSI</summary>
-
-```bash
-cat <<EOF > nfs-csi.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml
-    values:
-      - nfsServerFQDN: 10.31.101.26
-      - nfsSharePath: /data/col1/sthings
-      - clusterName: k3d-my-cluster
-      - nfsSharePath: /data/col1/sthings
-EOF
-
-helmfile pull/template/apply/sync -f nfs-csi.yaml
-```
-
-</details>
 
 <details><summary>NGINX</summary>
 
@@ -254,6 +175,106 @@ EOF
 
 helmfile template -f openebs.yaml # RENDER ONLY
 helmfile apply -f openebs.yaml # APPLY HELMFILE
+```
+
+</details>
+
+## INFRA
+
+<details><summary>METALLB</summary>
+
+```bash
+cat <<EOF > metallb.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml
+    values:
+      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
+EOF
+
+helmfile pull/template/apply/sync -f metallb.yaml
+```
+
+</details>
+
+<details><summary>CILIUM</summary>
+
+```bash
+cat <<EOF > metallb.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml
+    values:
+      - version: 1.17.1
+      - config: kind
+      - ipRangeStart: 172.18.250.0
+      - ipRangeEnd: 172.18.250.50
+EOF
+
+helmfile pull/template/apply/sync -f metallb.yaml
+```
+
+</details>
+
+<details><summary>CERT-MANAGER</summary>
+
+```bash
+cat <<EOF > cert-manager.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
+    values:
+      - config: vault
+      - pkiServer: https://vault-vsphere.labul.example.com:8200
+      - pkiPath: pki/sign/sthings-vsphere.labul.example.com
+      - issuer: cluster-issuer-approle
+      - approleSecret: ref+vault://apps/vault/secretID
+      - approleID: ref+vault://apps/vault/roleID
+      - pkiCA: ref+vault://apps/vault/vaultCA
+EOF
+
+export VAULT_AUTH_METHOD=approle
+export VAULT_ADDR=https://<VAULT-URL>:8200
+export VAULT_SECRET_ID=623c991f-d.. #example value
+export VAULT_ROLE_ID=1d42d7e7-8.. #example value
+export VAULT_NAMESPACE=root
+
+helmfile pull/template/apply/sync -f cert-manager.yaml
+```
+
+</details>
+
+<details><summary>INGRESS-NGINX</summary>
+
+```bash
+cat <<EOF > ingress-nginx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
+    values:
+      - version: 4.12.0
+EOF
+
+helmfile pull/template/apply/sync -f ingress-nginx.yaml
+```
+
+</details>
+
+<details><summary>NFS-CSI</summary>
+
+```bash
+cat <<EOF > nfs-csi.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml
+    values:
+      - nfsServerFQDN: 10.31.101.26
+      - nfsSharePath: /data/col1/sthings
+      - clusterName: k3d-my-cluster
+      - nfsSharePath: /data/col1/sthings
+EOF
+
+helmfile pull/template/apply/sync -f nfs-csi.yaml
 ```
 
 </details>
