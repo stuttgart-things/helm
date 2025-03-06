@@ -164,6 +164,7 @@ cat <<EOF > openebs.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml
+    values:
       - version: 4.2.0
       - profile: localpv
       - openebs_volumesnapshots_enabled: false
@@ -175,6 +176,31 @@ EOF
 
 helmfile template -f openebs.yaml # RENDER ONLY
 helmfile apply -f openebs.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>HEADLAMP</summary>
+
+```bash
+cat <<EOF > headlamp.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/headlamp.yaml
+    values:
+	  - ingressEnabled: true
+	  - storageEnabled: false
+	  - storageAccessModes: ReadWriteOnce
+	  - hostname: headlamp.k8scluster
+	  - domain: sthings-vsphere.example.com
+    - storageClassName: longhorn
+	  - clusterIssuer: cluster-issuer-approle
+	  - issuerKind: ClusterIssuer
+	  - storageSize: 1Gi
+EOF
+
+helmfile template -f headlamp.yaml # RENDER ONLY
+helmfile apply -f headlamp.yaml # APPLY HELMFILE
 ```
 
 </details>
