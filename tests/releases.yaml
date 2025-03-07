@@ -28,7 +28,7 @@ template:
   nginx: |
     ---
     helmfiles:
-      - path: {{ .source }}/apps/nginx.yaml
+      - path: {{ .source }}
         values:
           - version: 19.0.1
           - profile: nginx
@@ -53,7 +53,7 @@ template:
   keycloak: |
     ---
     helmfiles:
-      - path: {{ .source }}/database
+      - path: {{ .source }}
         values:
           - ingressClassName: nginx
           - hostname: keycloak.k8scluster
@@ -67,7 +67,7 @@ template:
   openldap: | # pragma: allowlist secret
     ---
     helmfiles:
-      - path: {{ .source }}/database
+      - path: {{ .source }}
         values:
           - adminUser: admin
           - adminPassword: whatever4711 # pragma: allowlist secret
@@ -82,7 +82,7 @@ template:
   openebs: |
     ---
     helmfiles:
-      - path: {{ .source }}/infra
+      - path: {{ .source }}
         values:
           - version: 4.2.0
           - profile: localpv
@@ -95,7 +95,7 @@ template:
   zot: |
     ---
     helmfiles:
-      - path: {{ .source }}/database
+      - path: {{ .source }}
         values:
           - version: 0.1.66
           - ingressEnabled: true
