@@ -2,7 +2,7 @@
 
 declaratively deploy charts as helm releases
 
-
+## APPS
 
 <details><summary>NGINX</summary>
 
@@ -16,7 +16,8 @@ helmfiles:
       - serviceType: ClusterIP
 EOF
 
-helmfile pull/template/apply/sync -f nginx.yaml
+helmfile template -f nginx.yaml # RENDER ONLY
+helmfile apply -f nginx.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
@@ -32,7 +33,8 @@ helmfiles:
       - longhornDefaultClass: false
 EOF
 
-helmfile pull/template/apply/sync -f longhorn.yaml
+helmfile template -f longhorn.yaml # RENDER ONLY
+helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
@@ -54,7 +56,8 @@ helmfiles:
       - issuerKind: ClusterIssuer
 EOF
 
-helmfile pull/template/apply/sync -f grafana.yaml
+helmfile template -f grafana.yaml # RENDER ONLY
+helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
@@ -218,7 +221,8 @@ helmfiles:
       - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
 EOF
 
-helmfile pull/template/apply/sync -f metallb.yaml
+helmfile template -f metallb.yaml # RENDER ONLY
+helmfile apply -f metallb.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -226,7 +230,7 @@ helmfile pull/template/apply/sync -f metallb.yaml
 <details><summary>CILIUM</summary>
 
 ```bash
-cat <<EOF > metallb.yaml
+cat <<EOF > cilium.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml
@@ -237,7 +241,8 @@ helmfiles:
       - ipRangeEnd: 172.18.250.50
 EOF
 
-helmfile pull/template/apply/sync -f metallb.yaml
+helmfile template -f cilium.yaml # RENDER ONLY
+helmfile apply -f cilium.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -265,7 +270,8 @@ export VAULT_SECRET_ID=623c991f-d.. #example value
 export VAULT_ROLE_ID=1d42d7e7-8.. #example value
 export VAULT_NAMESPACE=root
 
-helmfile pull/template/apply/sync -f cert-manager.yaml
+helmfile template -f cert-manager.yaml # RENDER ONLY
+helmfile apply -f ccert-manager.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -281,7 +287,8 @@ helmfiles:
       - version: 4.12.0
 EOF
 
-helmfile pull/template/apply/sync -f ingress-nginx.yaml
+helmfile template -f ingress-nginx.yaml # RENDER ONLY
+helmfile apply -f ingress-nginx.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -300,7 +307,25 @@ helmfiles:
       - nfsSharePath: /data/col1/sthings
 EOF
 
-helmfile pull/template/apply/sync -f nfs-csi.yaml
+helmfile template -f nfs-csi.yaml # RENDER ONLY
+helmfile apply -f nfs-csi.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>NFS-CSI</summary>
+
+```bash
+cat <<EOF > nfs-server-provisioner.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-server-provisioner.yaml
+    values:
+      - version: 1.8.0
+EOF
+
+helmfile template -f nfs-server-provisioner.yaml # RENDER ONLY
+helmfile apply -f nfs-server-provisioner.yaml # APPLY HELMFILE
 ```
 
 </details>
