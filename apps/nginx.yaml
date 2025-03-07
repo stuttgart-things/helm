@@ -7,6 +7,6 @@ releases:
   - name: nginx
     namespace: default
     chart: nginx-stable/nginx
-    version: 19.0.1
+    version: {{ .Values.version }}
     values:
       - values/{{ .Values.profile }}.yaml.gotmpl

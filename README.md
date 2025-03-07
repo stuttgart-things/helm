@@ -12,29 +12,13 @@ cat <<EOF > nginx.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
+      - version: 19.0.1
       - profile: nginx
       - serviceType: ClusterIP
 EOF
 
 helmfile template -f nginx.yaml # RENDER ONLY
 helmfile apply -f nginx.yaml# APPLY HELMFILE # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>LONGHORN</summary>
-
-```bash
-cat <<EOF > longhorn.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/longhorn.yaml
-    values:
-      - longhornDefaultClass: false
-EOF
-
-helmfile template -f longhorn.yaml # RENDER ONLY
-helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
@@ -61,6 +45,8 @@ helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
+
+## DATABASE
 
 <details><summary>POSTGRESQL</summary>
 
@@ -160,6 +146,8 @@ helmfile apply -f zot-registry.yaml # APPLY HELMFILE
 
 </details>
 
+## INFRA
+
 <details><summary>OPENEBS</summary>
 
 ```bash
@@ -207,8 +195,6 @@ helmfile apply -f headlamp.yaml # APPLY HELMFILE
 ```
 
 </details>
-
-## INFRA
 
 <details><summary>METALLB</summary>
 
@@ -289,6 +275,23 @@ EOF
 
 helmfile template -f ingress-nginx.yaml # RENDER ONLY
 helmfile apply -f ingress-nginx.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>LONGHORN</summary>
+
+```bash
+cat <<EOF > longhorn.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/longhorn.yaml
+    values:
+      - longhornDefaultClass: false
+EOF
+
+helmfile template -f longhorn.yaml # RENDER ONLY
+helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>

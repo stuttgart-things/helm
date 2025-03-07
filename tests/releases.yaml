@@ -30,6 +30,7 @@ template:
     helmfiles:
       - path: {{ .source }}/apps/nginx.yaml
         values:
+          - version: 19.0.1
           - profile: nginx
           - serviceType: ClusterIP
 
