@@ -1,5 +1,12 @@
 ---
 template:
+  nfs-server-provisioner: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 1.8.0
+
   cilium: |
     ---
     helmfiles:

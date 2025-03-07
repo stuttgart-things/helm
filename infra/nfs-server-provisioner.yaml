@@ -1,0 +1,12 @@
+---
+releases:
+  - name: nfs-server-provisioner
+    installed: true
+    namespace: kube-system
+    chart: kvaps/nfs-server-provisioner
+    version: {{ .Values.version | default "1.8.0" | quote }}
+
+repositories:
+  - name: kvaps
+    url: https://kvaps.github.io/charts
+    oci: false
