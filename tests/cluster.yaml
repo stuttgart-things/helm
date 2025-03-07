@@ -9,7 +9,22 @@ template:
       kubeProxyMode: none
     nodes:
       - role: control-plane
+        image: kindest/node:v1.32.2
       - role: worker
+        image: kindest/node:v1.32.2
+        extraMounts:
+          - hostPath: /mnt/data-node1  # Host directory to mount
+            containerPath: /data       # Mount path inside the KinD node
+      - role: worker
+        image: kindest/node:v1.32.2
+        extraMounts:
+          - hostPath: /mnt/data-node2  # Host directory to mount
+            containerPath: /data       # Mount path inside the KinD node
+      - role: worker
+        image: kindest/node:v1.32.2
+        extraMounts:
+          - hostPath: /mnt/data-node3  # Host directory to mount
+            containerPath: /data       # Mount path inside the KinD node
 
   kind-infra: |
     ---
