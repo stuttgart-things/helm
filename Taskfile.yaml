@@ -8,11 +8,13 @@ vars:
   CROSSPLANE_PACKAGE_REGISTRY: ghcr.io
   DAGGER_CROSSPLANE_MODULE: github.com/stuttgart-things/dagger/crossplane
   DAGGER_CROSSPLANE_MODULE_VERSION: v0.0.2
-  TEST_FILES: tests/helmfiles.yaml
-  TEST_DIR: /tmp/helmfiles
+  TEST_RELEASE_TEMPLATES: tests/releases.yaml
+  TEST_DIR: /tmp
   TEST_DEFAULTS: tests/defaults.yaml
   DEV_CLUSTER: tests/cluster.yaml
   DEV_CLUSTER_DIR: /tmp/helmfiles/cluster
+  KIND_CONFIG_PATH: /tmp/kind-config.yaml
+  KIND_INFRA_HELMFILE: /tmp/kind-infra.yaml
 
 tasks:
   tasks:
@@ -25,7 +27,7 @@ tasks:
   kind:
     desc: Create, Start & Configure kind cluster
     cmds:
-      - rm -rf {{ .DEV_CLUSTER_DIR }}/* && mkdir {{ .DEV_CLUSTER_DIR }} || true
+      #- rm -rf {{ .DEV_CLUSTER_DIR }}/* && mkdir {{ .DEV_CLUSTER_DIR }} || true
       - |
         machineshop render \
         --source local \
@@ -34,7 +36,7 @@ tasks:
         --values "clusterName={{ .CLUSTER_NAME }}" \
         --kind multikey \
         --key kind \
-        --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml
+        --destination {{ .KIND_CONFIG_PATH }}
 
       - |
         if kind get clusters | grep -wq "{{ .CLUSTER_NAME }}"; then
@@ -43,7 +45,7 @@ tasks:
         fi
 
       - |
-        kind create cluster --config {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml --name {{ .CLUSTER_NAME }} --kubeconfig ~/.kube/kind-{{ .CLUSTER_NAME }}
+        kind create cluster --config {{ .KIND_CONFIG_PATH }} --name {{ .CLUSTER_NAME }} --kubeconfig {{ .PATH_KUBECONFIG }}
         kubectl get nodes --kubeconfig ~/.kube/kind-{{ .CLUSTER_NAME }}
 
       - |
@@ -53,32 +55,41 @@ tasks:
         --output file \
         --kind multikey \
         --key kind-infra \
-        --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-kind-infra.yaml \
+        --destination {{ .KIND_INFRA_HELMFILE }} \
         --values "source={{ .USER_WORKING_DIR }}"
 
       - |
         #!/usr/bin/env bash
         start_time=$(date +%s)
-        timeout=60  # seconds
+        timeout=120  # seconds
+        export KUBECONFIG={{ .PATH_KUBECONFIG }}
 
         while true; do
-          echo "Running helmfile apply..."
-          helmfile apply -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-kind-infra.yaml && \
-          echo "Running helmfile sync..." && \
-          helmfile sync -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-kind-infra.yaml && \
+          echo "RUNNING HELMFILE APPLY..."
+          helmfile apply -f {{ .KIND_INFRA_HELMFILE }} && \
+          echo "RUNNING HELMFILE SYNC..." && \
+          helmfile sync -f {{ .KIND_INFRA_HELMFILE }} && \
           { echo "Commands succeeded. Exiting loop."; break; }
 
           current_time=$(date +%s)
           elapsed=$(( current_time - start_time ))
           if [ $elapsed -ge $timeout ]; then
-            echo "Commands are still failing after one minute. Exiting with error."
+            echo "COMMANDS ARE STILL FAILING AFTER ONE MINUTE. EXITING WITH ERROR."
             exit 1
           fi
-          echo "Retrying in 5 seconds..."
+          echo "RETRYING IN 5 SECONDS..."
           sleep 5
         done
+
+      - |
+        export KUBECONFIG={{ .PATH_KUBECONFIG }}
+        kubectl get nodes && kubectl get po -A
+
     vars:
       CLUSTER_NAME: helm-dev
+      PATH_KUBECONFIG: ~/.kube/kind-{{ .CLUSTER_NAME }}
+      INFRA_HELMFILES: "{{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-kind-infra.yaml"
+      KIND_CLUSTER_CONFIG: "{{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml"
 
   k3d:
     desc: Create, Start & Configure k3d cluster
@@ -166,29 +177,48 @@ tasks:
         branch=$(printf "%s\n" "${branches[@]}" | gum choose)
         git checkout ${branch} && git pull
 
-  create-test-app:
+  create-test-release:
     desc: Switch to local branch
     cmds:
       - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
       - |
-        app=$(yq '.template | keys | .[]' tests/helmfiles.yaml | gum choose)
-        folder=$(find {{ .SEARCH_FOLDERS }} -type f -name "${app}.yaml" -exec dirname {} \; | sort -u)
+        release=$(yq '.template | keys | .[]' {{ .TEST_RELEASE_TEMPLATES }} | gum choose)
+        folder=$(find {{ .SEARCH_FOLDERS }} -type f -name "${release}.yaml" -exec dirname {} \; | sort -u)
 
         machineshop render \
         --source local \
-        --template {{ .TEST_FILES }} \
+        --template {{ .TEST_RELEASE_TEMPLATES }} \
         --output file \
         --kind multikey \
-        --key ${app} \
-        --destination {{ .TEST_DIR }}/${app}.yaml \
-        --values "source={{ .USER_WORKING_DIR }}/${folder}/${app}.yaml"
+        --key ${release} \
+        --destination {{ .TEST_DIR }}/${release}.yaml \
+        --values "source={{ .USER_WORKING_DIR }}/${folder}/${release}.yaml"
 
-        helmfile template -f {{ .TEST_DIR }}/${app}.yaml
-        echo "Change to: cd {{ .TEST_DIR }}"
-        echo "Apply: helmfile apply -f {{ .TEST_DIR }}/${app}.yaml"
-        code {{ .TEST_DIR }}/${app}.yaml
+        helmfile template -f {{ .TEST_DIR }}/${release}.yaml
+
+        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+        echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
+        printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
+
+        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+        kubectl get nodes
+
+        gum confirm "Do you want to apply ${release}?" || exit 0
+
+        echo "Apply: helmfile apply -f {{ .TEST_DIR }}/${release}.yaml"
+        helmfile apply -f {{ .TEST_DIR }}/${release}.yaml
+        code {{ .TEST_DIR }}/${release}.yaml
+        sleep 10 && kubectl get po -A
+
+        gum confirm "Do you want to destroy ${release}?" || exit 0
+        helmfile destroy -f {{ .TEST_DIR }}/${release}.yaml
+        sleep 10 && kubectl get po -A
+
     vars:
+      KUBECONFIG_FOLDER: ~/.kube
       SEARCH_FOLDERS: "infra apps database"
+      ALL_KUBECONFIGS:
+        sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
 
   tests-create-includes:
     desc: Create test files
