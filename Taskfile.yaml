@@ -15,6 +15,9 @@ vars:
   DEV_CLUSTER_DIR: /tmp/helmfiles/cluster
   KIND_CONFIG_PATH: /tmp/kind-config.yaml
   KIND_INFRA_HELMFILE: /tmp/kind-infra.yaml
+  TEST_FILES: tests/releases.yaml
+  DATE:
+    sh: date +"%Y.%m%d.%H%M"
 
 tasks:
   tasks:
@@ -84,7 +87,6 @@ tasks:
       - |
         export KUBECONFIG={{ .PATH_KUBECONFIG }}
         kubectl get nodes && kubectl get po -A
-
     vars:
       CLUSTER_NAME: helm-dev
       PATH_KUBECONFIG: ~/.kube/kind-{{ .CLUSTER_NAME }}
@@ -213,7 +215,6 @@ tasks:
         gum confirm "Do you want to destroy ${release}?" || exit 0
         helmfile destroy -f {{ .TEST_DIR }}/${release}.yaml
         sleep 10 && kubectl get po -A
-
     vars:
       KUBECONFIG_FOLDER: ~/.kube
       SEARCH_FOLDERS: "infra apps database"
@@ -225,32 +226,41 @@ tasks:
     cmds:
       - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
       - |
-        for app in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
+        mkdir -p {{ .RENDER_DIR }}
 
-          echo "Creating: ${app} include"
+        for release in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
 
-          machineshop render \
-          --source local \
-          --template {{ .TEST_FILES }} \
-          --output file \
-          --kind multikey \
-          --key ${app} \
-          --destination {{ .TEST_DIR }}/${app}.yaml \
-          --defaults {{ .TEST_DEFAULTS }}
+          echo "Creating: ${release} include"
+
+            folder=$(find {{ .SEARCH_FOLDERS }} -type f -name "${release}.yaml" -exec dirname {} \; | sort -u)
+
+            machineshop render \
+            --source local \
+            --template {{ .TEST_RELEASE_TEMPLATES }} \
+            --output file \
+            --kind multikey \
+            --key ${release} \
+            --destination {{ .RENDER_DIR }}/${release}.yaml \
+            --defaults {{ .TEST_DEFAULTS }} \
+            --values "source={{ .USER_WORKING_DIR }}/${folder}/${release}.yaml"
+
+            helmfile template -f {{ .RENDER_DIR }}/${release}.yaml
 
         done
+    vars:
+      RENDER_DIR: "/tmp/{{ .DATE }}"
 
   tests-render-includes:
     desc: Test render includes
     cmds:
       - task: tests-create-includes
       - |
-        for app in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
+        for release in $(yq '.template | keys | .[]' {{ .TEST_FILES }}); do
 
-          echo "Rendering: ${app}"
+          echo "Rendering: ${release}"
           export HELMFILE_CACHE_HOME={{ .TEST_DIR }}/cache
-          helmfile deps -f {{ .TEST_DIR }}/${app}.yaml
-          helmfile template -f {{ .TEST_DIR }}/${app}.yaml
+          helmfile deps -f {{ .TEST_DIR }}/${release}.yaml
+          helmfile template -f {{ .TEST_DIR }}/${release}.yaml
 
         done
 
