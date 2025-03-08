@@ -186,6 +186,7 @@ tasks:
       - |
         release=$(yq '.template | keys | .[]' {{ .TEST_RELEASE_TEMPLATES }} | gum choose)
         folder=$(find {{ .SEARCH_FOLDERS }} -type f -name "${release}.yaml" -exec dirname {} \; | sort -u)
+        domain=$(hostname).$(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels."ingress-ready" == "true") | .status.addresses[] | select(.type == "InternalIP") | .address').nip.io
 
         machineshop render \
         --source local \
@@ -194,7 +195,7 @@ tasks:
         --kind multikey \
         --key ${release} \
         --destination {{ .TEST_DIR }}/${release}.yaml \
-        --values "source={{ .USER_WORKING_DIR }}/${folder}/${release}.yaml"
+        --values "source={{ .USER_WORKING_DIR }}/${folder}/${release}.yaml, domain=${domain}"
 
         helmfile template -f {{ .TEST_DIR }}/${release}.yaml
 
@@ -220,6 +221,25 @@ tasks:
       SEARCH_FOLDERS: "infra apps database"
       ALL_KUBECONFIGS:
         sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
+
+  uninstall-release:
+    desc: Uninstall release
+    cmds:
+      - |
+        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+        echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
+        printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
+
+        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+        kubectl get nodes
+
+
+
+    vars:
+      KUBECONFIG_FOLDER: ~/.kube
+      ALL_KUBECONFIGS:
+        sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
+
 
   tests-create-includes:
     desc: Create test files

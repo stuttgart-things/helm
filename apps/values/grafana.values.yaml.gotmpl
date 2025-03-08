@@ -15,6 +15,7 @@ ingress:
 initChownData:
   enabled: false
 
+{{- if .Values.enablePersistence }}
 persistence:
   enabled: true
   storageClassName: {{ .Values.storageClassName }}
@@ -25,3 +26,4 @@ persistence:
     - kubernetes.io/pvc-protection
   extraPvcLabels: {}
   disableWarning: false
+{{- end }}

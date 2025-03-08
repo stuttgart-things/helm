@@ -6,6 +6,26 @@ declaratively deploy charts as helm releases
 
 <details><summary>NGINX</summary>
 
+### w/ LOADBALANCER
+
+```bash
+cat <<EOF > nginx-lb.yaml
+---
+helmfiles:
+  - path: /home/sthings/projects/helm/apps/nginx.yaml
+    values:
+      - version: 19.0.1
+      - profile: nginx
+      - serviceType: LoadBalancer
+      - enableIngress: false
+EOF
+
+helmfile template -f nginx-lb.yaml # RENDER ONLY
+helmfile apply -f nginx-lb.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+### w/ INGRESS + CERT
+
 ```bash
 cat <<EOF > nginx.yaml
 ---
@@ -13,8 +33,15 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
       - version: 19.0.1
+      - namespace: nginx
       - profile: nginx
       - serviceType: ClusterIP
+      - enableIngress: true
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: webserver
+      - domain: dev3.172.18.0.3.nip.io
+      - ingressClassName: nginx
 EOF
 
 helmfile template -f nginx.yaml # RENDER ONLY
@@ -271,6 +298,7 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
     values:
       - version: 4.12.0
+      - enableHostPort: false # for kind enable
 EOF
 
 helmfile template -f ingress-nginx.yaml # RENDER ONLY

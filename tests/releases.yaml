@@ -1,5 +1,17 @@
 ---
 template:
+  grafana: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - ingressEnabled: true
+          - hostname: grafana
+          - domain: dev3.172.18.0.3.nip.io
+          - enablePersistence: false
+          - clusterIssuer: selfsigned
+          - issuerKind: ClusterIssuer
+
   nfs-server-provisioner: |
     ---
     helmfiles:

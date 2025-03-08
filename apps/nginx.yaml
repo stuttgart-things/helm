@@ -2,10 +2,13 @@
 repositories:
   - name: nginx-stable
     url: https://charts.bitnami.com/bitnami
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
 
 releases:
   - name: nginx
-    namespace: default
+    namespace: {{ .Values.namespace }}
     chart: nginx-stable/nginx
     version: {{ .Values.version }}
     values:
