@@ -6,6 +6,8 @@ releases:
     namespace: ingress-nginx
     chart: ingress-nginx/ingress-nginx
     version: {{ .Values.version }}
+    values:
+      - "values/ingress-nginx.values.yaml.gotmpl"
 
 repositories:
   - name: ingress-nginx

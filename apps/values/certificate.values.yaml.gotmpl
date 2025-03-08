@@ -13,4 +13,4 @@ customresources:
       issuerRef:
         name: {{ .Values.clusterIssuer }}
         kind: {{ .Values.issuerKind }}
-      secretName: {{ .Values.tlsSecretName }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls

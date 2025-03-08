@@ -1,0 +1,10 @@
+---
+{{- if .Values.enableHostPort }}
+controller:
+  service:
+    type: NodePort
+  admissionWebhooks:
+    enabled: false  # Avoids potential Kind issues
+  hostPort:
+    enabled: true
+{{- end }}
