@@ -40,7 +40,31 @@ template:
             containerPath: /data       # Mount path inside the KinD node
 
   kind-infra: |
-helmfile.
+    ---
+    helmDefaults:
+      verify: false
+      wait: true
+      timeout: 600
+      recreatePods: false
+      force: true
+
+    helmfiles:
+      - path: {{ .source }}/infra/cilium.yaml
+        values:
+          - version: 1.17.1
+          - config: kind
+          - ipRangeStart: 172.18.250.0
+          - ipRangeEnd: 172.18.250.50
+
+      - path: {{ .source }}/infra/ingress-nginx.yaml
+        values:
+          - enableHostPort: true
+          - version: 4.12.0
+
+      - path: {{ .source }}/infra/cert-manager.yaml
+        values:
+          - version: v1.17.1
+          - config: selfsigned
 
   nipio-demo-ingress: |
     apiVersion: apps/v1
