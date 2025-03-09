@@ -250,6 +250,7 @@ helmfiles:
     values:
       - version: 1.17.1
       - config: kind
+      - clusterName: helm-dev
       - ipRangeStart: 172.18.250.0
       - ipRangeEnd: 172.18.250.50
 EOF
@@ -303,6 +304,23 @@ EOF
 
 helmfile template -f ingress-nginx.yaml # RENDER ONLY
 helmfile apply -f ingress-nginx.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>METRICS-SERVER</summary>
+
+```bash
+cat <<EOF > metrics-server.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/metrics-server.yaml
+    values:
+      - version: 3.12.2
+EOF
+
+helmfile template -f metrics-server.yaml # RENDER ONLY
+helmfile apply -f metrics-server.yaml # APPLY HELMFILE
 ```
 
 </details>
