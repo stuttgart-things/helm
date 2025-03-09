@@ -2,7 +2,7 @@
 kubeProxyReplacement: true
 routingMode: "native"
 ipv4NativeRoutingCIDR: "10.244.0.0/16"
-k8sServiceHost: "helm-dev-control-plane"
+k8sServiceHost: "{{ .Values.clusterName }}-control-plane"
 k8sServicePort: 6443
 
 l2announcements:
