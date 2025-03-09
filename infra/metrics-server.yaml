@@ -1,0 +1,14 @@
+---
+releases:
+  - name: metrics-server
+    installed: true
+    namespace: kube-system
+    chart: metrics-server/metrics-server
+    version: {{ .Values.version }}
+    values:
+      - "values/metrics-server.values.yaml.gotmpl"
+
+repositories:
+  - name: metrics-server
+    url: https://kubernetes-sigs.github.io/metrics-server
+    oci: false

@@ -232,9 +232,6 @@ tasks:
 
         export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
         kubectl get nodes
-
-
-
     vars:
       KUBECONFIG_FOLDER: ~/.kube
       ALL_KUBECONFIGS:
