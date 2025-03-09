@@ -263,6 +263,24 @@ helmfile apply -f cilium.yaml # APPLY HELMFILE
 
 <details><summary>CERT-MANAGER</summary>
 
+### w/ SELF-SIGNED
+
+```bash
+cat <<EOF > cert-manager.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
+    values:
+      - version: v1.17.1
+      - config: selfsigned
+EOF
+
+helmfile template -f cert-manager.yaml # RENDER ONLY
+helmfile apply -f cert-manager.yaml # APPLY HELMFILE
+```
+
+### VAULT
+
 ```bash
 cat <<EOF > cert-manager.yaml
 ---
