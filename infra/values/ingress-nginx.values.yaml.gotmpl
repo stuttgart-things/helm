@@ -1,12 +1,18 @@
----
 {{- if .Values.enableHostPort }}
+---
 controller:
   nodeSelector:
     ingress-ready: "true"
+    node-role.kubernetes.io/control-plane: ""  # Ensures it runs on the control plane
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
   service:
-    type: NodePort
+    type: NodePort  # Required only if you want external access
   admissionWebhooks:
     enabled: false  # Avoids potential Kind issues
   hostPort:
-    enabled: true
+    enabled: true  # Enables direct binding to host ports
 {{- end }}
