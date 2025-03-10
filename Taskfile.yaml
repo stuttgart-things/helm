@@ -11,13 +11,10 @@ vars:
   TEST_RELEASE_TEMPLATES: tests/releases.yaml
   TEST_DIR: /tmp
   TEST_DEFAULTS: tests/defaults.yaml
-
   CLUSTER_NAME: helm-dev
   PATH_KUBE_CONFIG: /home/sthings/.kube/kind-{{ .CLUSTER_NAME }}
   PATH_CLUSTER_TEMPLATE: tests/cluster.yaml
   DEV_CLUSTER_DIR: /tmp/helmfiles/cluster
-
-
   KIND_CONFIG_PATH: /tmp/kind-config.yaml
   CLUSTER_INFRA_HELMFILE: /tmp/kind-infra.yaml
   TEST_FILES: tests/releases.yaml
@@ -138,7 +135,7 @@ tasks:
           kubectl get nodes -o wide --kubeconfig {{ .PATH_KUBE_CONFIG }}
 
           # DELETE EXISTING CLUSTER
-          gum confirm "Do you want to destroy existing cluster {{ .CLUSTER_NAME }} and rebuild it?" || exit 0
+          gum confirm "Do you want to destroy existing cluster {{ .CLUSTER_NAME }}?" || exit 0
           echo "Cluster '{{ .CLUSTER_NAME }}' exists (already). Deleting it..."
           kind delete clusters "{{ .CLUSTER_NAME }}"
 
@@ -150,17 +147,6 @@ tasks:
       KUBECONFIG: "{{ .PATH_KUBE_CONFIG }}"
     cmds:
       - task: destroy-kind-cluster
-      # - |
-      #   if kind get clusters | grep -wq "{{ .CLUSTER_NAME }}"; then
-
-      #     kubectl get nodes
-
-      #     # DELETE EXISTING CLUSTER
-      #     gum confirm "Do you want to destroy existing cluster {{ .CLUSTER_NAME }} and rebuild it?" || exit 0
-      #     echo "Cluster '{{ .CLUSTER_NAME }}' exists (already). Deleting it..."
-      #     kind delete clusters "{{ .CLUSTER_NAME }}"
-
-      #   fi
       - |
         cat {{ .KIND_CONFIG_PATH }}
         gum confirm "Do you want to create cluster {{ .CLUSTER_NAME }}?" || exit 0
@@ -177,7 +163,6 @@ tasks:
 
         kind create cluster --config {{ .KIND_CONFIG_PATH }} --name {{ .CLUSTER_NAME }} --kubeconfig {{ .PATH_KUBE_CONFIG }}
         kubectl get nodes
-
       - task: execute-base-cluster-setup
       - task: output-ingress-nipio
 
@@ -194,73 +179,73 @@ tasks:
     cmds:
       - pre-commit run -a
 
-  k3d:
-    desc: Create, Start & Configure k3d cluster
-    cmds:
-      - |
-        if k3d cluster list --no-headers | grep -wq "{{ .CLUSTER_NAME }}"; then
-          echo "Cluster '{{ .CLUSTER_NAME }}' exists (already). Deleting it..."
-          k3d cluster delete "{{ .CLUSTER_NAME }}"
-        else
-          echo "Cluster '{{ .CLUSTER_NAME }}' does not exist."
-        fi
-      - rm -rf {{ .DEV_CLUSTER_DIR }}/* && mkdir {{ .DEV_CLUSTER_DIR }} || true
-      - |
-        machineshop render \
-        --source local \
-        --template {{ .DEV_CLUSTER }} \
-        --output file \
-        --values "clusterName={{ .CLUSTER_NAME }}" \
-        --kind multikey \
-        --key cluster \
-        --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml
-      - k3d cluster create --config {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml
-      - k3d kubeconfig get {{ .CLUSTER_NAME }} > ~/.kube/{{ .CLUSTER_NAME }}
-      - |
-        SUBNET=$({{ .CONTAINER_RUNTIME }} network inspect k3d-{{ .CLUSTER_NAME }} | grep -oP '(?<="Subnet": ")[^"]+')
-        BASE_IP=$(echo $SUBNET | cut -d'.' -f1-2)
-        START_IP="${BASE_IP}.255.200"
-        END_IP="${BASE_IP}.255.250"
-        IP_RANGE="${START_IP}-${END_IP}"
-        echo "${IP_RANGE}"
+  # k3d:
+  #   desc: Create, Start & Configure k3d cluster
+  #   cmds:
+  #     - |
+  #       if k3d cluster list --no-headers | grep -wq "{{ .CLUSTER_NAME }}"; then
+  #         echo "Cluster '{{ .CLUSTER_NAME }}' exists (already). Deleting it..."
+  #         k3d cluster delete "{{ .CLUSTER_NAME }}"
+  #       else
+  #         echo "Cluster '{{ .CLUSTER_NAME }}' does not exist."
+  #       fi
+  #     - rm -rf {{ .DEV_CLUSTER_DIR }}/* && mkdir {{ .DEV_CLUSTER_DIR }} || true
+  #     - |
+  #       machineshop render \
+  #       --source local \
+  #       --template {{ .DEV_CLUSTER }} \
+  #       --output file \
+  #       --values "clusterName={{ .CLUSTER_NAME }}" \
+  #       --kind multikey \
+  #       --key cluster \
+  #       --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml
+  #     - k3d cluster create --config {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}.yaml
+  #     - k3d kubeconfig get {{ .CLUSTER_NAME }} > ~/.kube/{{ .CLUSTER_NAME }}
+  #     - |
+  #       SUBNET=$({{ .CONTAINER_RUNTIME }} network inspect k3d-{{ .CLUSTER_NAME }} | grep -oP '(?<="Subnet": ")[^"]+')
+  #       BASE_IP=$(echo $SUBNET | cut -d'.' -f1-2)
+  #       START_IP="${BASE_IP}.255.200"
+  #       END_IP="${BASE_IP}.255.250"
+  #       IP_RANGE="${START_IP}-${END_IP}"
+  #       echo "${IP_RANGE}"
 
-        machineshop render \
-        --source local \
-        --template {{ .DEV_CLUSTER }} \
-        --output file \
-        --kind multikey \
-        --key ip \
-        --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml \
-        --values "source={{ .USER_WORKING_DIR }},ipRange=${IP_RANGE}"
+  #       machineshop render \
+  #       --source local \
+  #       --template {{ .DEV_CLUSTER }} \
+  #       --output file \
+  #       --kind multikey \
+  #       --key ip \
+  #       --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml \
+  #       --values "source={{ .USER_WORKING_DIR }},ipRange=${IP_RANGE}"
 
-        machineshop render \
-        --source local \
-        --template {{ .DEV_CLUSTER }} \
-        --output file \
-        --kind multikey \
-        --key ingress \
-        --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml \
-        --values "source={{ .USER_WORKING_DIR }},ipRange=${IP_RANGE}"
+  #       machineshop render \
+  #       --source local \
+  #       --template {{ .DEV_CLUSTER }} \
+  #       --output file \
+  #       --kind multikey \
+  #       --key ingress \
+  #       --destination {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml \
+  #       --values "source={{ .USER_WORKING_DIR }},ipRange=${IP_RANGE}"
 
 
-      #- helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml
-      - helmfile apply -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml || true
-      - helmfile sync -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml || true
+  #     #- helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml
+  #     - helmfile apply -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml || true
+  #     - helmfile sync -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ip.yaml || true
 
-      #- helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml
-      - helmfile apply -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml
+  #     #- helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml
+  #     - helmfile apply -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-ingress.yaml
 
-      # - helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-infra.yaml > {{ .DEV_CLUSTER_DIR }}/rendered.yaml --include-crds
-      # - |
-      #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns metallb-system
-      #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns ingress-nginx
-      #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns cert-manager
-      # - kubectl apply --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} -f {{ .DEV_CLUSTER_DIR }}/rendered.yaml || true
-      # - sleep 15 && kubectl apply --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} -f {{ .DEV_CLUSTER_DIR }}/rendered.yaml || true
-    vars:
-      CONTAINER_RUNTIME: docker
-      CLUSTER_CONFIG_DIR: /tests
-      CLUSTER_NAME: k3d-dev
+  #     # - helmfile template -f {{ .DEV_CLUSTER_DIR }}/{{ .CLUSTER_NAME }}-infra.yaml > {{ .DEV_CLUSTER_DIR }}/rendered.yaml --include-crds
+  #     # - |
+  #     #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns metallb-system
+  #     #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns ingress-nginx
+  #     #   kubectl --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} create ns cert-manager
+  #     # - kubectl apply --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} -f {{ .DEV_CLUSTER_DIR }}/rendered.yaml || true
+  #     # - sleep 15 && kubectl apply --kubeconfig ~/.kube/{{ .CLUSTER_NAME }} -f {{ .DEV_CLUSTER_DIR }}/rendered.yaml || true
+  #   vars:
+  #     CONTAINER_RUNTIME: docker
+  #     CLUSTER_CONFIG_DIR: /tests
+  #     CLUSTER_NAME: k3d-dev
 
   switch-remote:
     desc: Switch to remote branch
@@ -280,22 +265,20 @@ tasks:
         branch=$(printf "%s\n" "${branches[@]}" | gum choose)
         git checkout ${branch} && git pull
 
+  # uninstall-release:
+  #   desc: Uninstall release
+  #   cmds:
+  #     - |
+  #       SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+  #       echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
+  #       printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
 
-
-  uninstall-release:
-    desc: Uninstall release
-    cmds:
-      - |
-        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
-        echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
-        printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
-
-        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
-        kubectl get nodes
-    vars:
-      KUBECONFIG_FOLDER: ~/.kube
-      ALL_KUBECONFIGS:
-        sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
+  #       export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+  #       kubectl get nodes
+  #   vars:
+  #     KUBECONFIG_FOLDER: ~/.kube
+  #     ALL_KUBECONFIGS:
+  #       sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
 
 
   tests-create-includes:
