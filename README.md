@@ -4,6 +4,73 @@ declaratively deploy charts as helm releases
 
 ## APPS
 
+<details><summary>AWX</summary>
+
+### AWX-OPERATOR
+
+```bash
+cat <<EOF > awx-operator.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx-operator.yaml
+    values:
+      - version: 2.19.1
+      - namespace: awx
+EOF
+
+helmfile template -f awx-operator.yaml # RENDER ONLY
+helmfile apply -f awx-operator.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+### AWX INSTANCE
+
+```bash
+cat <<EOF > awx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx.yaml
+    values:
+      - namespace: awx
+      - app: awx
+      - ingressType: ingress
+      - postgresStorageClass: standard
+      - projectStorageClass: standard
+      - clusterIssuer: selfsigned
+      - secrets:
+          sthings-admin-password:
+            namespace: awx
+            kvs:
+              password: ref+vault://apps/awx/password-dev
+          sthings-custom-certs:
+            namespace: awx
+            kvs:
+              bundle-ca.crt: ref+vault://apps/awx/cabundle
+
+      - instances:
+          dev:
+            name: awx-dev
+            namespace: awx
+            adminUser: sthings
+            adminPasswordSecret: sthings-admin-password
+            bundleCacertSecret: sthings-custom-certs
+            hostname: awx-dev
+            domain: 172.18.0.3.nip.io
+            ingressClassName: nginx
+            ingressSecret: awx-dev
+            postgresStorageLimits: 8Gi
+            postgresStorageRequest: 1Gi
+            projectPersistence: false
+            projectsStorageAccessMode: ReadWriteOnce
+            fsGroupChangePolicy: OnRootMismatch
+EOF
+
+helmfile template -f awx.yaml # RENDER ONLY
+helmfile apply -f awx.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+</details>
+
+
 <details><summary>NGINX</summary>
 
 ### w/ LOADBALANCER
@@ -12,7 +79,7 @@ declaratively deploy charts as helm releases
 cat <<EOF > nginx-lb.yaml
 ---
 helmfiles:
-  - path: /home/sthings/projects/helm/apps/nginx.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
       - version: 19.0.1
       - profile: nginx

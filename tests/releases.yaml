@@ -1,5 +1,51 @@
 ---
 template:
+  awx: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: awx
+          - app: awx
+          - ingressType: ingress
+          - postgresStorageClass: {{ .storageClass }}
+          - projectStorageClass: {{ .storageClass }}
+          - clusterIssuer: {{ .clusterIssuer }}
+          - secrets:
+              sthings-admin-password:
+                namespace: awx
+                kvs:
+                  password: ref+vault://apps/awx/password-dev
+              sthings-custom-certs:
+                namespace: awx
+                kvs:
+                  bundle-ca.crt: ref+vault://apps/awx/cabundle
+
+          - instances:
+              dev:
+                name: awx-dev
+                namespace: awx
+                adminUser: sthings
+                adminPasswordSecret: sthings-admin-password
+                bundleCacertSecret: sthings-custom-certs
+                hostname: awx-dev
+                domain: {{ .domain }}
+                ingressClassName: nginx
+                ingressSecret: awx-dev
+                postgresStorageLimits: 8Gi
+                postgresStorageRequest: 1Gi
+                projectPersistence: false
+                projectsStorageAccessMode: ReadWriteOnce
+                fsGroupChangePolicy: OnRootMismatch
+
+  awx-operator: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - version: 2.19.1
+          - namespace: awx
+
   grafana: |
     ---
     helmfiles:
@@ -51,8 +97,15 @@ template:
       - path: {{ .source }}
         values:
           - version: 19.0.1
+          - namespace: nginx
           - profile: nginx
           - serviceType: ClusterIP
+          - enableIngress: true
+          - clusterIssuer: selfsigned
+          - issuerKind: cluster-issuer
+          - hostname: web
+          - domain: {{ .domain }}
+          - ingressClassName: nginx
 
   cert-manager: |
     ---

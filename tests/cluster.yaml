@@ -55,6 +55,7 @@ template:
           - config: kind
           - ipRangeStart: 172.18.250.0
           - ipRangeEnd: 172.18.250.50
+          - clusterName: {{ .clusterName }}
 
       - path: {{ .source }}/infra/ingress-nginx.yaml
         values:
@@ -66,8 +67,6 @@ template:
           - version: v1.17.1
           - config: selfsigned
 
-  nipio-demo-ingress: |
-nip
   k3d: |
     ---
     apiVersion: k3d.io/v1alpha5
