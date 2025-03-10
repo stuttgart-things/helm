@@ -14,7 +14,7 @@ releases:
     installed: true
     namespace: grafana
     chart: grafana/grafana
-    version: 8.10.1
+    version: 8.10.3
     needs:
       - grafana/grafana-configuration
     values:
