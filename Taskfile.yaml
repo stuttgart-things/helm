@@ -148,6 +148,7 @@ tasks:
     cmds:
       - task: destroy-kind-cluster
       - |
+        touch {{ .KIND_CONFIG_PATH }}
         cat {{ .KIND_CONFIG_PATH }}
         gum confirm "Do you want to create cluster {{ .CLUSTER_NAME }}?" || exit 0
 
