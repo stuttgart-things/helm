@@ -14,7 +14,7 @@ releases:
     installed: true
     namespace: keycloak
     chart: bitnami/keycloak
-    version: 24.4.11
+    version: 24.4.12
     needs:
       - keycloak/keycloak-configuration
     values:
