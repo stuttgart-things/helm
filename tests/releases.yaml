@@ -11,7 +11,7 @@ template:
           - enablePersistence: false
           - clusterIssuer: selfsigned
           - issuerKind: ClusterIssuer
-          - tlsSecretName: grafana.172.18.0.2.nip.io-tls
+          - tls: grafana.172.18.0.2.nip.io-tls #tlsSecretName
 
   metrics-server: |
     ---
