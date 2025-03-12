@@ -4,7 +4,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: awx/awx-operator
-    version: {{ .Values.version }}
+    version: 2.19.1
     values:
       - "values/awx-operator.values.yaml.gotmpl"
 

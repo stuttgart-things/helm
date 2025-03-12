@@ -1,0 +1,35 @@
+---
+releases:
+  - name: crossplane-deployment
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: crossplane-stable/crossplane
+    version: 1.19.0
+    values:
+      - "values/crossplane.values.yaml.gotmpl"
+
+  - name: terraform-provider
+    installed: true
+    needs:
+      - "{{ .Values.namespace }}/crossplane-deployment"
+    disableValidationOnInstall: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/crossplane-terraform-provider.values.yaml.gotmpl"
+
+repositories:
+  - name: crossplane-stable
+    url: https://charts.crossplane.io/stable
+    oci: false
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+
+helmDefaults:
+  verify: false
+  wait: true
+  timeout: 600
+  recreatePods: false
+  force: true
