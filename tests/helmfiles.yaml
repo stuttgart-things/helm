@@ -77,3 +77,14 @@ template:
           - storageSize: {{ .zotStorageSize }}
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
+
+  headlamp: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - ingressEnabled: true
+          - hostname: headlamp
+          - domain: 172.18.0.2.nip.io
+          - clusterIssuer: cluster-issuer-approle
+          - issuerKind: ClusterIssuer

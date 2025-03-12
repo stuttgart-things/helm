@@ -44,6 +44,7 @@ tasks:
       - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
       - |
         app=$(yq '.template | keys | .[]' tests/helmfiles.yaml | gum choose)
+        folder=$(find {{ .SEARCH_FOLDERS }} -type f -name "${app}.yaml" -exec dirname {} \; | sort -u)
 
         machineshop render \
         --source local \
@@ -52,12 +53,33 @@ tasks:
         --kind multikey \
         --key ${app} \
         --destination {{ .TEST_DIR }}/${app}.yaml \
-        --values "source={{ .USER_WORKING_DIR }}/${app}.yaml"
+        --values "source={{ .USER_WORKING_DIR }}/${folder}/${app}.yaml"
 
         helmfile template -f {{ .TEST_DIR }}/${app}.yaml
-        echo "Change to: cd {{ .TEST_DIR }}"
+
+        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+        echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
+        printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
+
+        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+        kubectl get nodes
+
+        gum confirm "Do you want to apply ${app}?" || exit 0
+
         echo "Apply: helmfile apply -f {{ .TEST_DIR }}/${app}.yaml"
+        helmfile apply -f {{ .TEST_DIR }}/${app}.yaml
         code {{ .TEST_DIR }}/${app}.yaml
+        sleep 10 && kubectl get po -A
+
+        gum confirm "Do you want to destroy ${app}?" || exit 0
+        helmfile destroy -f {{ .TEST_DIR }}/${app}.yaml
+        sleep 10 && kubectl get po -A
+    vars:
+      KUBECONFIG_FOLDER: ~/.kube
+      SEARCH_FOLDERS: "infra apps database monitoring"
+      ALL_KUBECONFIGS:
+        sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
+
   tests-create-includes:
     desc: Create test files
     cmds:
