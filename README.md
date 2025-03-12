@@ -4,6 +4,21 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>TEKTON</summary>
+
+```bash
+cat <<EOF > tekton.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/tekton.yaml
+EOF
+
+helmfile template -f tekton.yaml # RENDER ONLY
+helmfile apply -f tekton.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>CROSSPLANE</summary>
 
 ```bash

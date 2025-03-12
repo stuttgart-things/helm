@@ -1,5 +1,12 @@
 ---
 template:
+  tekton: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: tekton-pipelines
+
   crossplane: | # pragma: allowlist secret
     ---
     helmfiles:
