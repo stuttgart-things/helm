@@ -1,8 +1,43 @@
 # stuttgart-things/helm
 
-declaratively deploy charts as helm releases
+deploy helm charts declaratively.
 
 ## APPS
+
+<details><summary>CROSSPLANE</summary>
+
+```bash
+cat <<EOF > crossplane.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/crossplane.yaml
+    values:
+      - namespace: crossplane-system
+      - providers:
+          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.19.0
+          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.15.0
+      - terraform:
+          configName: tf-provider
+          image: eu.gcr.io/stuttgart-things/sthings-cptf:1.9.5
+          package: xpkg.upbound.io/upbound/provider-terraform
+          version: v0.19.0
+          poll: 10m
+          reconcileRate: 10
+          s3SecretName: s3
+      - secrets:
+          s3:
+            namespace: crossplane-system
+            kvs:
+              AWS_ACCESS_KEY_ID: ref+vault://apps/artifacts/accessKey
+              AWS_SECRET_ACCESS_KEY: ref+vault://apps/artifacts/secretKey
+EOF
+
+helmfile template -f crossplane.yaml # RENDER ONLY
+helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+</details>
+
 
 <details><summary>AWX</summary>
 
@@ -14,7 +49,6 @@ cat <<EOF > awx-operator.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/awx-operator.yaml
     values:
-      - version: 2.19.1
       - namespace: awx
 EOF
 
@@ -70,7 +104,6 @@ helmfile apply -f awx.yaml # APPLY HELMFILE # APPLY HELMFILE
 
 </details>
 
-
 <details><summary>NGINX</summary>
 
 ### w/ LOADBALANCER
@@ -81,7 +114,6 @@ cat <<EOF > nginx-lb.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
-      - version: 19.0.1
       - profile: nginx
       - serviceType: LoadBalancer
       - enableIngress: false
@@ -400,8 +432,6 @@ cat <<EOF > metrics-server.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/metrics-server.yaml
-    values:
-      - version: 3.12.2
 EOF
 
 helmfile template -f metrics-server.yaml # RENDER ONLY
