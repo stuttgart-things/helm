@@ -4,7 +4,7 @@ releases:
     installed: true
     namespace: kube-system
     chart: metrics-server/metrics-server
-    version: {{ .Values.version }}
+    version: 3.12.2
     values:
       - "values/metrics-server.values.yaml.gotmpl"
 
