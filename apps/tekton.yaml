@@ -1,0 +1,13 @@
+---
+releases:
+  - name: tekton
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/tekton-base
+    version: v0.65.1
+
+repositories:
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
