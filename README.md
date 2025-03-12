@@ -4,6 +4,32 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>CLUSTERBOOK</summary>
+
+```bash
+cat <<EOF > clusterbook.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/clusterbook.yaml
+    values:
+      - namespace: clusterbook
+        enableIngress: true
+        enableCertificateRequest: true
+        ingressDomain: 172.18.0.5.nip.io
+        issuerKind: ClusterIssuer
+        issuerName: selfsigned
+        imageTag: v1.5.0 # pragma: allowlist secret
+        hostname: clusterbook
+        tlsSecretName: clusterbook-ingress-tls # pragma: allowlist secret
+        app: clusterbook
+EOF
+
+helmfile template -f clusterbook.yaml # RENDER ONLY
+helmfile apply -f clusterbook.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>TEKTON</summary>
 
 ```bash
