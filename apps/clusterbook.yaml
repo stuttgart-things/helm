@@ -1,0 +1,14 @@
+---
+releases:
+  - name: clusterbook
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: clusterbook/clusterbook
+    version: v1.5.0-chart
+    values:
+      - "values/clusterbook.values.yaml.gotmpl"
+
+repositories:
+  - name: clusterbook
+    url: ghcr.io/stuttgart-things/clusterbook
+    oci: true
