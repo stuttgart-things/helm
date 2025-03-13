@@ -1,0 +1,14 @@
+---
+releases:
+  - name: komoplane
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: komodorio/komoplane
+    version: 0.1.5
+    values:
+      - "values/komoplane.values.yaml.gotmpl"
+
+repositories:
+  - name: komodorio
+    url: https://helm-charts.komodor.io
+    oci: false
