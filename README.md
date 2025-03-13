@@ -4,6 +4,28 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>KOMOPLANE</summary>
+
+```bash
+cat <<EOF > komoplane.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/komoplane.yaml
+    values:
+      - namespace: crossplane-system
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: komoplane
+      - domain: 172.18.0.5.nip.io
+      - ingressClassName: nginx
+EOF
+
+helmfile template -f komoplane.yaml # RENDER ONLY
+helmfile apply -f komoplane.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>CLUSTERBOOK</summary>
 
 ```bash
@@ -13,15 +35,15 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/clusterbook.yaml
     values:
       - namespace: clusterbook
-        enableIngress: true
-        enableCertificateRequest: true
-        ingressDomain: 172.18.0.5.nip.io
-        issuerKind: ClusterIssuer
-        issuerName: selfsigned
-        imageTag: v1.5.0 # pragma: allowlist secret
-        hostname: clusterbook
-        tlsSecretName: clusterbook-ingress-tls # pragma: allowlist secret
-        app: clusterbook
+      - enableIngress: true
+      - enableCertificateRequest: true
+      - ingressDomain: 172.18.0.5.nip.io
+      - issuerKind: ClusterIssuer
+      - issuerName: selfsigned
+      - imageTag: v1.5.0 # pragma: allowlist secret
+      - hostname: clusterbook
+      - tlsSecretName: clusterbook-ingress-tls # pragma: allowlist secret
+      - app: clusterbook
 EOF
 
 helmfile template -f clusterbook.yaml # RENDER ONLY

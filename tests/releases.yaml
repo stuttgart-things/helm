@@ -1,5 +1,17 @@
 ---
 template:
+  komoplane: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: crossplane-system
+          - clusterIssuer: selfsigned
+          - issuerKind: cluster-issuer
+          - hostname: komoplane
+          - domain: {{ .domain }}
+          - ingressClassName: nginx
+
   clusterbook: | # pragma: allowlist secret
     ---
     helmfiles:
