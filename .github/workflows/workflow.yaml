@@ -1,0 +1,23 @@
+---
+name: Build Static Content
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feature/**'
+      - 'feat/**'
+      - 'fix/**'
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  yaml-lint:
+    name: Lint yaml files
+    uses: stuttgart-things/github-workflow-templates/.github/workflows/call-yaml-lint.yaml@main
+    with:
+      environment-name: k8s
+      runs-on: ghr-helm-skyami-cicd
+      continue-error: true
+      yamllint-version: 1
+      lintprofile-path: .yamllint
+      artifact-name: yaml-lint
