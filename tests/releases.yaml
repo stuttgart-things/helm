@@ -1,5 +1,16 @@
 ---
 template:
+  rancher: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: cattle-system
+          - hostname: rancher-things
+          - domain: {{ .domain }}
+          - bootstrapPassword: ref+vault://apps/rancher/password
+          - cacerts: ref+vault://apps/awx/cabundle
+
   komoplane: | # pragma: allowlist secret
     ---
     helmfiles:
