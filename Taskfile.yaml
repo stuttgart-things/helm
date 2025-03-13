@@ -248,7 +248,7 @@ tasks:
   #     CLUSTER_CONFIG_DIR: /tests
   #     CLUSTER_NAME: k3d-dev
 
-  switch-remote:
+  branch-switch-remote:
     desc: Switch to remote branch
     cmds:
       - |
@@ -258,7 +258,17 @@ tasks:
         git switch -c ${branch} --track origin/${branch}
         git branch && git status
 
-  switch-local:
+      - task: branch-rebase-main
+
+  branch-rebase-main:
+    desc: Rebase with main branch
+    cmds:
+      - |
+        gum confirm "Rebase with main?" || exit 0
+        git fetch origin main
+        git rebase main
+
+  branch-switch-local:
     desc: Switch to local branch
     cmds:
       - |
