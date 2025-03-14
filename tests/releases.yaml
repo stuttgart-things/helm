@@ -246,3 +246,16 @@ template:
           - storageSize: {{ .zotStorageSize }}
           - clusterIssuer: cluster-issuer-approle
           - issuerKind: ClusterIssuer
+
+  postgresql: |
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - username: admin
+          - password: <admin-user-pw> # pragma: allowlist secret
+          - database: myexample_db
+          - postgresPassword: <postgres-user-pw> # pragma: allowlist secret
+          - persistenceEnabled: true
+          - persistenceSize: 1
+          - storageClass: standard
