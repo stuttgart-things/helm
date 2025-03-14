@@ -122,10 +122,11 @@ template:
         values:
           - ingressEnabled: true
           - hostname: grafana
-          - domain: dev3.172.18.0.3.nip.io
+          - domain: 172.18.0.2.nip.io
           - enablePersistence: false
           - clusterIssuer: selfsigned
           - issuerKind: ClusterIssuer
+          - tls: grafana.172.10.10.12.nip.io-tls # tlsSecretName
 
   metrics-server: |
     ---
