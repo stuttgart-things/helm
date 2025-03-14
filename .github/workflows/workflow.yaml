@@ -1,5 +1,5 @@
 ---
-name: Build Static Content
+name: Lint yaml files
 on:
   workflow_dispatch:
   push:
@@ -12,6 +12,23 @@ on:
     types: [opened, reopened]
 
 jobs:
+  Analyze-Collection-Config:
+    container:
+      image: ghcr.io/stuttgart-things/machineshop/machineshop-9c3178088556daa12a17db5edcc6b5b7:latest
+    environment: k8s
+    #outputs:
+      #collection_folders: ${{ steps.changed-files.outputs.collection_folders }}
+    runs-on: ghr-helm-skyami-cicd
+    steps:
+      - name: Get Modified Files by PullRequest
+        id: changed-files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          FILES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "${{ github.event.pull_request.url }}/files" | \
+          jq -r '.[].filename')
+
   yaml-lint:
     name: Lint yaml files
     uses: stuttgart-things/github-workflow-templates/.github/workflows/call-yaml-lint.yaml@main
