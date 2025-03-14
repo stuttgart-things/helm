@@ -12,7 +12,7 @@ on:
     types: [opened, reopened]
 
 jobs:
-  Analyze-Collection-Config:
+  Analyze-Changed-Charts:
     container:
       image: ghcr.io/stuttgart-things/machineshop/machineshop-9c3178088556daa12a17db5edcc6b5b7:latest
     environment: k8s
