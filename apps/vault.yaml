@@ -1,28 +1,14 @@
 ---
 releases:
-  - name: vault-configuration
-    disableValidationOnInstall: true
-    installed: true
-    namespace: vault
-    chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
-    values:
-      - "values/vault-certs.values.yaml.gotmpl"
-
   - name: vault-deployment
     installed: true
     namespace: vault
-    chart: hashicorp/vault
-    needs:
-      - vault/vault-configuration
-    version: 0.28
+    chart: bitnami/vault
+    version: 1.7.0
     values:
       - "values/vault.values.yaml.gotmpl"
 
 repositories:
-  - name: hashicorp
-    url: https://helm.releases.hashicorp.com
-    oci: false
-  - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+  - name: bitnami
+    url: registry-1.docker.io/bitnamicharts
     oci: true
