@@ -4,6 +4,20 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>VAULT</summary>
+
+### UNSEAL
+
+```bash
+kubectl -n vault exec -it my-vault-server-0 -- vault operator init
+kubectl -n vault exec -it my-vault-server-0 -- vault operator unseal <UNSEALKEY-X>
+kubectl -n vault exec -it my-vault-server-0 -- vault operator unseal <UNSEALKEY-Y>
+# ...
+kubectl -n vault exec -it my-vault-server-0 -- vault status
+```
+
+</details>
+
 <details><summary>KOMOPLANE</summary>
 
 ```bash
@@ -77,13 +91,13 @@ helmfiles:
     values:
       - namespace: crossplane-system
       - providers:
-          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.19.0
-          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.15.0
+          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.20.4
+          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.17.1
       - terraform:
           configName: tf-provider
-          image: eu.gcr.io/stuttgart-things/sthings-cptf:1.9.5
+          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.11.2
           package: xpkg.upbound.io/upbound/provider-terraform
-          version: v0.19.0
+          version: v0.20.0
           poll: 10m
           reconcileRate: 10
           s3SecretName: s3
@@ -597,6 +611,69 @@ rm -rf ${HELMFILE_CACHE_HOME}
 helmfile template -f nginx.yaml
 helmfile apply -f nginx.yaml
 helmfile sync -f nginx.yaml
+```
+
+</details>
+
+<details><summary>SOPS w/ AGE</summary>
+
+### REQUIREMEMNTS
+
+```bash
+# REQUIREMEMNTS
+sops --version
+age --version
+
+# GENERATE AN AGE KEY
+age-keygen -o age-key.txt
+
+# CREATE SOPS CONFIG
+AGE_PUB_KEY=$(grep -oP '(?<=# public key: ).*' age-key.txt)
+cat <<EOF > .sops.yaml
+creation_rules:
+  - path_regex: .*\.yaml
+    age: "${AGE_PUB_KEY}$"
+EOF
+
+# SECRET EXAMPLE
+cat <<EOF > secrets.yaml
+webserver:
+  url: test.example.com
+EOF
+
+sops --encrypt secrets.yaml > secrets.enc.yaml
+
+export SOPS_AGE_KEY_FILE=age-key.txt
+sops --decrypt secrets.enc.yaml
+```
+
+### USE SECRETS IN HELMFILE
+
+```
+cat <<EOF > nginx.yaml
+---
+environments:
+  dev:
+    secrets:
+      - secrets.enc.yaml
+
+releases:
+  - name: nginx
+    namespace: default
+    chart: bitnami/nginx
+    version: "15.5.0"
+    values:
+      - values.yaml.gotmpl
+EOF
+
+cat <<EOF > values.yaml.gotmpl
+ingress:
+  enabled: true
+  hostname: {{ .Values.webserver.url }}
+EOF
+
+export SOPS_AGE_KEY_FILE=age-key.txt
+helmfile template -f nginx.yaml -e dev
 ```
 
 </details>
