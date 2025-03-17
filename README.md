@@ -30,11 +30,11 @@ helmfile apply -f vault.yaml # APPLY HELMFILE
 ### UNSEAL
 
 ```bash
-kubectl -n vault exec -it my-vault-server-0 -- vault operator init
-kubectl -n vault exec -it my-vault-server-0 -- vault operator unseal <UNSEALKEY-X>
-kubectl -n vault exec -it my-vault-server-0 -- vault operator unseal <UNSEALKEY-Y>
+kubectl -n vault exec -it vault-server-0 -- vault operator init
+kubectl -n vault exec -it vault-server-0 -- vault operator unseal <UNSEALKEY-X>
+kubectl -n vault exec -it vault-server-0 -- vault operator unseal <UNSEALKEY-Y>
 # ...
-kubectl -n vault exec -it my-vault-server-0 -- vault status
+kubectl -n vault exec -it vault-server-0 -- vault status
 ```
 
 </details>

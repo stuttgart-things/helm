@@ -1,6 +1,6 @@
 ---
 releases:
-  - name: vault-deployment
+  - name: vault
     installed: true
     namespace: vault
     chart: bitnami/vault

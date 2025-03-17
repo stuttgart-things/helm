@@ -1,12 +1,15 @@
 ---
+server:
+  ingress:
+    enabled: true
+    ingressClassName: {{ .Values.ingressClassName }}
+    annotations:
+      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+    hostname: {{ .Values.hostname }}.{{ .Values.domain }}
+    tls: true
+
+
 injector:
   enabled: {{ .Values.injectorEnabled }}
   serviceAccount:
     automountServiceAccountToken: true
-server:
-  ingress:
-    annotations:
-      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
-    enabled: true
-    hostname: {{ .Values.hostname }}.{{ .Values.domain }}
-    ingressClassName: {{ .Values.ingressClassName }}
