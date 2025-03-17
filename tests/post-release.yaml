@@ -40,3 +40,7 @@ template:
         echo "Error: Failed to apply Unseal Key $i."
       fi
     done
+
+    # RESTART INGRESS CONTROLLER
+
+    # CURL VAULT
