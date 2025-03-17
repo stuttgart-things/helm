@@ -6,6 +6,27 @@ deploy helm charts declaratively.
 
 <details><summary>VAULT</summary>
 
+### DEPLOY
+
+```bash
+cat <<EOF > vault.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml
+    values:
+      - namespace: vault
+      - injectorEnabled: true
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: vault
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+EOF
+
+helmfile template -f vault.yaml # RENDER ONLY
+helmfile apply -f vault.yaml # APPLY HELMFILE
+```
+
 ### UNSEAL
 
 ```bash
