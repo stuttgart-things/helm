@@ -90,7 +90,7 @@ tasks:
       KUBECONFIG_FOLDER: ~/.kube
       SEARCH_FOLDERS: "infra apps database"
       ALL_KUBECONFIGS:
-        sh: ls {{ .KUBECONFIG_FOLDER }} | xargs -n1 printf '"%s" '
+        sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
 
   execute-base-cluster-setup:
     desc: Execute base setup on kind cluster
