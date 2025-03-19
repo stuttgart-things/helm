@@ -101,6 +101,8 @@ tasks:
         START_TIME=$(date +%s)
         TIMEOUT=180 # seconds
 
+        helmfile init
+
         while true; do
 
           echo "RUNNING HELMFILE APPLY..."
@@ -152,12 +154,14 @@ tasks:
         cat {{ .KIND_CONFIG_PATH }}
         gum confirm "Do you want to create cluster {{ .CLUSTER_NAME }}?" || exit 0
 
+        K8S_VERSION=$(gum input --placeholder "Kubernetes version" --value "v1.32.2")
+
         # CREATE NEW CLUSTER
         machineshop render \
         --source local \
         --template {{ .PATH_CLUSTER_TEMPLATE }} \
         --output file \
-        --values "clusterName={{ .CLUSTER_NAME }}" \
+        --values "clusterName={{ .CLUSTER_NAME }}, k8sVersion=${K8S_VERSION}" \
         --kind multikey \
         --key kind \
         --destination {{ .KIND_CONFIG_PATH }}
