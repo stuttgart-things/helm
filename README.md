@@ -14,6 +14,35 @@ adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n')
 adminPasswordMTime=$(echo $(date +%FT%T%Z))
 ```
 
+### ARGOCD w/ VAULT PLUGIN
+
+```bash
+cat <<EOF > argocd.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/argocd.yaml
+    values:
+      - namespace: argocd
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: argocd
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+      - adminPassword: $2y$10$sX7RPXUpEQKjdi7hjyYI0e0r0dlfaM1JmmVmujd05Lx5CJpEqJomC
+      - adminPasswordMTime: 2025-03-19T07:39:33UTC
+      - enableAvp: true
+      - vaultAddr: https://vault.172.18.0.2.nip.io
+      - vaultNamespace: root
+      - vaultRoleID: 1fa31949-8d0e-c100-c8ae-6eb287f8ea08
+      - vaultSecretID: b76ddf4b-ba30-fc01-61fd-9d97588a6c09
+      - imageHelfile: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
+      - imageAvp: ghcr.io/helmfile/helmfile:v0.171.0
+EOF
+
+helmfile template -f argocd.yaml # RENDER ONLY
+helmfile apply -f argocd.yaml # APPLY HELMFILE
+```
+
 ### ARGOCD w/o VAULT PLUGIN
 
 ```bash
