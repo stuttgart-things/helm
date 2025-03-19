@@ -29,7 +29,7 @@ tasks:
         task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
         task ${task}
 
-  test-release:
+  install-release:
     desc: Test a release
     cmds:
       - rm -rf {{ .TEST_DIR }}/* && mkdir {{ .TEST_DIR }} || true
