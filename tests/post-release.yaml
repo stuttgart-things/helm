@@ -7,9 +7,10 @@ template:
     UNSEAL_KEYS_FILE="unseal.txt"
 
     ## GET PODS
+    VAULT_SERVER_POD=$(kubectl get pods -n vault | grep vault-server | awk '{print $1}')
 
     ## INIT VAULT + GET KEYS
-    kubectl -n vault exec -it vault-server-0 -- vault operator init
+    kubectl -n vault exec -it ${VAULT_SERVER_POD} -- vault operator init
 
     ## UNSEAL VAULT
     # Check if the file exists
