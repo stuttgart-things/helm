@@ -18,6 +18,8 @@ vars:
   KIND_CONFIG_PATH: /tmp/kind-config.yaml
   CLUSTER_INFRA_HELMFILE: /tmp/kind-infra.yaml
   TEST_FILES: tests/releases.yaml
+  POST_CONFIG_FILES: tests/post-release.yaml
+
   DATE:
     sh: date +"%Y.%m%d.%H%M"
 
@@ -65,11 +67,25 @@ tasks:
         echo "Apply: helmfile apply -f {{ .TEST_DIR }}/${release}.yaml"
         helmfile apply -f {{ .TEST_DIR }}/${release}.yaml
 
-        sleep 10 && kubectl get po -A
+        for i in {1..20}; do
+          gum spin --spinner dot --title "Waiting for all pods to be running..." -- sleep 5
+          kubectl get po -A | grep -v "kube-system" | grep -v "Completed"
+          kubectl get ingress -A
+
+          choice=$(gum choose "SKIP WAITING" "CONTINUE WAITING")
+          if [[ "$choice" == "SKIP WAITING" ]]; then
+            echo "Skipping loop."
+            break
+          fi
+        done
+
+        # POST CONFIG
+        #if $(yq e ".template.${release}" {{ .POST_CONFIG_FILES }}) != "null"; then
+        #  echo Key ${release} found
+        #fi
 
         gum confirm "Do you want to destroy ${release}?" || exit 0
         helmfile destroy -f {{ .TEST_DIR }}/${release}.yaml
-        sleep 10 && kubectl get po -A
     vars:
       KUBECONFIG_FOLDER: ~/.kube
       SEARCH_FOLDERS: "infra apps database"

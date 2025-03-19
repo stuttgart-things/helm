@@ -3,6 +3,9 @@ template:
   vault: | # pragma: allowlist secret
     #!/bin/bash
 
+    # Set the namespace
+
+
     # Path to the file containing unseal keys
     UNSEAL_KEYS_FILE="unseal.txt"
 
