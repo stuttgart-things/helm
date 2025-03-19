@@ -4,6 +4,41 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>ARGOCD</summary>
+
+### GENERATE PASSWORD
+
+```bash
+sudo apt -y install apache2-utils
+adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n')
+adminPasswordMTime=$(echo $(date +%FT%T%Z))
+```
+
+### ARGOCD w/o VAULT PLUGIN
+
+```bash
+cat <<EOF > argocd.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/argocd.yaml
+    values:
+      - namespace: argocd
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: argocd
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+      - adminPassword: ""
+      - adminPasswordMTime: ""
+      - enableAvp: false
+EOF
+
+helmfile template -f argocd.yaml # RENDER ONLY
+helmfile apply -f argocd.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>VAULT</summary>
 
 ### DEPLOY
