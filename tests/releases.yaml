@@ -1,5 +1,21 @@
 ---
 template:
+  minio: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: minio
+          - clusterIssuer: selfsigned
+          - issuerKind: cluster-issuer
+          - domain: {{ .domain }}
+          - ingressClassName: nginx
+          - rootUser: adminadmin
+          - rootPassword: adminadmin
+          - hostnameConsole: artifacts-console
+          - hostnameApi: artifacts
+          - storageClass: standard
+
   argocd: | # pragma: allowlist secret
     ---
     helmfiles:
