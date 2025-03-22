@@ -1,0 +1,15 @@
+---
+releases:
+  - name: minio
+    disableValidationOnInstall: true
+    installed: true
+    namespace: minio
+    chart: bitnami/minio
+    version: 15.0.7
+    values:
+      - "values/minio.values.yaml.gotmpl"
+
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    oci: false

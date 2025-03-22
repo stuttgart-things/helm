@@ -1,0 +1,61 @@
+networkPolicy:
+  enabled: true
+  allowExternal: true
+auth:
+  rootUser: {{ .Values.rootUser }}
+  rootPassword: {{ .Values.rootPassword }}
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  tls: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+  extraTls:
+    - hosts:
+        - {{ .Values.hostnameConsole }}.{{ .Values.domain }}
+      secretName: {{ .Values.hostnameConsole }}-ingress-tls
+  hostname: {{ .Values.hostnameConsole }}.{{ .Values.domain }}
+apiIngress:
+  enabled: true
+  ingressClassName: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+  tls: true
+  extraTls:
+    - hosts:
+        - {{ .Values.hostnameApi }}.{{ .Values.domain }}
+      secretName: {{ .Values.hostnameApi }}-ingress-tls
+  hostname: {{ .Values.hostnameApi }}.{{ .Values.domain }}
+persistence:
+  enabled: true
+  storageClass: {{ .Values.storageClass }}
+extraEnvVars:
+  - name: MINIO_SERVER_URL
+    value: https://{{ .Values.hostnameApi }}.{{ .Values.domain }}
+  - name: MINIO_BROWSER_REDIRECT_URL
+    value: https://{{ .Values.hostnameConsole }}.{{ .Values.domain }}:9001
+  - name: MINIO_SERVER_TLS_KEY_FILE
+    value: /etc/minio/certs/private.key
+  - name: MINIO_SERVER_TLS_CERT_FILE
+    value: /etc/minio/certs/public.crt
+  - name: MINIO_SERVER_TLS_CA_FILE
+    value: /etc/minio/certs/ca.crt
+
+extraVolumes:
+  - name: {{ .Values.hostnameConsole }}
+    secret:
+      secretName: {{ .Values.hostnameConsole }}.{{ .Values.domain }}-tls
+      defaultMode: 0440
+      items:
+        - key: tls.key
+          path: private.key
+        - key: tls.crt
+          path: public.crt
+        - key: ca.crt
+          path: ca.crt
+
+extraVolumeMounts:
+  - name: {{ .Values.hostnameConsole }}
+    mountPath: /etc/minio/certs

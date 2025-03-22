@@ -92,6 +92,39 @@ tasks:
       ALL_KUBECONFIGS:
         sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
 
+  uninstall-release:
+    desc: Uninstall a release
+    cmds:
+      - |
+        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+        echo SWITCHING TO ${SELECTED_KUBECONFIG//\"/}
+        printf "\n\nexport KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}\n\n"
+
+        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+        kubectl get nodes
+
+        ALL_HELM_RELEASES=$(helm ls -A | awk 'NR>1 {print $1 ":" $2}')
+        echo ${ALL_HELM_RELEASES}
+
+        SELECTED_RELEASE=$(echo "$ALL_HELM_RELEASES" | gum choose)
+
+        # Extract release name and namespace
+        RELEASE_NAME=$(echo "$SELECTED_RELEASE" | cut -d':' -f1)
+        NAMESPACE=$(echo "$SELECTED_RELEASE" | cut -d':' -f2)
+
+        # Uninstall the Helm release
+        helm uninstall "$RELEASE_NAME" -n "$NAMESPACE"
+
+
+    vars:
+      KUBECONFIG_FOLDER: ~/.kube
+      ALL_KUBECONFIGS:
+        sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
+
+
+
+
+
   execute-base-cluster-setup:
     desc: Execute base setup on kind cluster
     vars:
