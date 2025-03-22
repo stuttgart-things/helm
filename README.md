@@ -4,6 +4,32 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>MINIO</summary>
+
+```bash
+cat <<EOF > minio.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/minio.yaml
+    values:
+      - namespace: minio
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+      - rootUser: adminadmin
+      - rootPassword: adminadmin
+      - hostnameConsole: artifacts-console
+      - hostnameApi: artifacts
+      - storageClass: standard
+EOF
+
+helmfile template -f minio.yaml # RENDER ONLY
+helmfile apply -f minio.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>ARGOCD</summary>
 
 ### GENERATE PASSWORD
