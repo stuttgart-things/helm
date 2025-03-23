@@ -573,6 +573,8 @@ helmfile template -f velero.yaml # RENDER ONLY
 helmfile sync -f velero.yaml # APPLY HELMFILE
 ```
 
+</details>
+
 <details><summary>CERT-MANAGER</summary>
 
 ### w/ SELF-SIGNED
