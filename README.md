@@ -548,6 +548,31 @@ helmfile apply -f cilium.yaml # APPLY HELMFILE
 
 </details>
 
+<details><summary>VELERO</summary>
+
+```bash
+cat <<EOF > velero.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/velero.yaml
+    values:
+      - namespace: velero
+      - backupsEnabled: true
+      - snapshotsEnabled: true
+      - deployNodeAgent: true
+      - s3StorageLocation: default
+      - awsAccessKeyID: adminadmin
+      - awsSecretAccessKey: adminadmin
+      - s3Bucket: velero
+      - s3CaCert: LS0tLS1TVIzQ1...S0tCg==
+      - s3Location: artifacts.172.18.0.2.nip.io
+      - imageAwsVeleroPlugin: velero/velero-plugin-for-aws:v1.11.1
+EOF
+
+helmfile template -f velero.yaml # RENDER ONLY
+helmfile sync -f velero.yaml # APPLY HELMFILE
+```
+
 <details><summary>CERT-MANAGER</summary>
 
 ### w/ SELF-SIGNED
