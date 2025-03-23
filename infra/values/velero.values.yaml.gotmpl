@@ -1,46 +1,46 @@
 ---
-backupsEnabled: true
-snapshotsEnabled: true
-deployNodeAgent: true
+backupsEnabled: {{ .Values.backupsEnabled }}
+snapshotsEnabled: {{ .Values.snapshotsEnabled }}
+deployNodeAgent: {{ .Values.deployNodeAgent }}
 
 credentials:
   useSecret: true
   name: minio
   secretContents:
     cloud: |
-      [default]
-      aws_access_key_id=${MINIO_ADMIN_USER}
-      aws_secret_access_key=${MINIO_ADMIN_PASSWORD}
+      [{{ .Values.s3StorageLocation }}]
+      aws_access_key_id={{ .Values.awsAccessKeyID }}
+      aws_secret_access_key={{ .Values.awsSecretAccessKey }}
 
 configuration:
   features: EnableCSI
   backupStorageLocation:
-    - name: default
+    - name: {{ .Values.s3StorageLocation }}
       provider: aws
-      bucket: velero
+      bucket: {{ .Values.s3Bucket }}
       default: true
-      caCert: ${VAULT_CA_BUNDLE}
+      caCert: {{ .Values.s3CaCert }}
       config:
         region: minio
         s3ForcePathStyle: true
-        s3Url: https://${INGRESS_HOSTNAME_MINIO}.${INGRESS_DOMAIN_MINIO}
-        publicUrl: https://${INGRESS_HOSTNAME_MINIO}.${INGRESS_DOMAIN_MINIO}
+        s3Url: https://{{ .Values.s3Location }}
+        publicUrl: https://{{ .Values.s3Location }}
 
   volumeSnapshotLocation:
     - name: artifacts
       provider: aws
       bucket: velero
       default: true
-      caCert: ${VAULT_CA_BUNDLE}
+      caCert: {{ .Values.s3CaCert }}
       config:
         region: minio
         s3ForcePathStyle: true
-        s3Url: https://${INGRESS_HOSTNAME_MINIO}.${INGRESS_DOMAIN_MINIO}
-        publicUrl: https://${INGRESS_HOSTNAME_MINIO}.${INGRESS_DOMAIN_MINIO}
+        s3Url: {{ .Values.s3Location }}
+        publicUrl: {{ .Values.s3Location }}
 
 initContainers:
   - name: velero-plugin-for-aws
-    image: velero/velero-plugin-for-aws:v1.11.1
+    image: {{ .Values.imageAwsVeleroPlugin }}
     volumeMounts:
       - mountPath: /target
         name: plugins

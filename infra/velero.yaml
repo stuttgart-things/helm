@@ -2,11 +2,11 @@
 releases:
   - name: velero
     installed: true
-    namespace: velero
+    namespace: {{ .Values.namespace }}
     chart: velero/velero
     version: 8.6.0
     values:
-      - "values/velero-{{ .Values.profile }}.values.yaml.gotmpl"
+      - "values/velero.values.yaml.gotmpl"
 
 repositories:
   - name: velero

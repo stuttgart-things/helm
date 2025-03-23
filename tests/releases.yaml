@@ -1,5 +1,22 @@
 ---
 template:
+  velero: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: velero
+          - backupsEnabled: true
+          - snapshotsEnabled: true
+          - deployNodeAgent: true
+          - s3StorageLocation: default
+          - awsAccessKeyID: adminadmin
+          - awsSecretAccessKey: adminadmin
+          - s3Bucket: velero
+          - s3CaCert: ""
+          - s3Location: artifacts.172.18.0.2.nip.io
+          - imageAwsVeleroPlugin: velero/velero-plugin-for-aws:v1.11.1
+
   minio: | # pragma: allowlist secret
     ---
     helmfiles:
