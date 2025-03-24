@@ -1,5 +1,14 @@
 ---
 template:
+  postgres: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: backstage
+
+
+
   velero: | # pragma: allowlist secret
     ---
     helmfiles:
