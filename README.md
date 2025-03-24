@@ -535,7 +535,6 @@ cat <<EOF > cilium.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml
     values:
-      - version: 1.17.1
       - config: kind
       - clusterName: helm-dev
       - ipRangeStart: 172.18.250.0

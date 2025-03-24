@@ -1,17 +1,17 @@
 ---
 releases:
-  - name: cilium-deployment
+  - name: cilium
     installed: true
     namespace: kube-system
     chart: cilium/cilium
-    version: {{ .Values.version }}
+    version: 1.17.2
     values:
       - "values/cilium-{{ .Values.config }}.values.yaml.gotmpl"
 
   - name: cilium-configuration
     disableValidationOnInstall: true
     needs:
-      - kube-system/cilium-deployment
+      - kube-system/cilium
     installed: true
     namespace: kube-system
     chart: stuttgart-things/sthings-cluster
