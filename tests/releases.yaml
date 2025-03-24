@@ -206,7 +206,6 @@ template:
     helmfiles:
       - path: {{ .source }}
         values:
-          - version: 1.17.1
           - config: kind
           - clusterName: helm-dev
           - ipRangeStart: 172.18.250.0
