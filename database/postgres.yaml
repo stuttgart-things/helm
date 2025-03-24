@@ -1,0 +1,12 @@
+---
+repositories:
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+    oci: false
+
+releases:
+  - name: cloudnative-pg
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: cnpg/cloudnative-pg
+    version: 0.23.2

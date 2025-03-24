@@ -362,26 +362,62 @@ helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
 
 ## DATABASE
 
-<details><summary>POSTGRESQL</summary>
+<details><summary>POSTGRES</summary>
+
+### DEPLOY OPERATOR
 
 ```bash
-cat <<EOF > postgresql.yaml
+cat <<EOF > postgres.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@database/postgresql.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@database/postgres.yaml
     values:
-      - persistenceEnabled: true
-      - storageClass: longhorn
-      - persistenceSize: 1 # size in Gi
-      - database: my_database # example database
-      - username: admin
-      - password: <your-password>
-      - postgresPassword: <postgres-password> # password for postgres user
+      - namespace: postgres
 EOF
 
-helmfile template -f postgresql.yaml # RENDER ONLY
-helmfile apply -f postgresql.yaml # APPLY HELMFILE
+helmfile template -f postgres.yaml # RENDER ONLY
+helmfile apply -f postgres.yaml # APPLY HELMFILE
 ```
+
+### CONFIGURE INSTANCE (EXAMPLE)
+
+```bash
+kubectl apply -f - << EOF
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backstage
+---
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/basic-auth
+metadata:
+  name: app-secret
+  namespace: backstage
+stringData:
+  username: "" # pragma: allowlist secret
+  password: "" # pragma: allowlist secret
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: backstage
+  namespace: backstage
+spec:
+  instances: 1
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 1Gi
+  bootstrap:
+    initdb:
+      secret:
+        name: app-secret
+      postInitSQL:
+        - ALTER ROLE app CREATEDB
+EOF
+```
+
 
 </details>
 
