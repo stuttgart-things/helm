@@ -1,13 +1,30 @@
 ---
 template:
+  harbor: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: harbor
+          - enablePersistence: true
+          - storageClass: {{ .storageClass }}
+          - issuerName: selfsigned
+          - issuerKindCert: ClusterIssuer
+          - issuerKind: cluster-issuer
+          - hostname: harbor
+          - domain: {{ .domain }}
+          - ingressClassName: nginx
+          - adminPassword: halloHarborTest123
+          - pvSizeRegistry: 12Gi
+          - pvSizeTrivy: 5Gi
+          - pvSizeJobService: 1Gi
+
   postgres: | # pragma: allowlist secret
     ---
     helmfiles:
       - path: {{ .source }}
         values:
           - namespace: backstage
-
-
 
   velero: | # pragma: allowlist secret
     ---

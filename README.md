@@ -4,6 +4,34 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>HARBOR</summary>
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: /home/sthings/projects/helm/apps/harbor.yaml
+    values:
+      - namespace: harbor
+      - enablePersistence: true
+      - storageClass: standard
+      - issuerName: selfsigned
+      - issuerKindCert: ClusterIssuer
+      - issuerKind: cluster-issuer
+      - hostname: harbor
+      - domain: 172.18.0.5.nip.io
+      - ingressClassName: nginx
+      - adminPassword: halloHarborTest123
+      - pvSizeRegistry: 12Gi
+      - pvSizeTrivy: 5Gi
+      - pvSizeJobService: 1Gi
+
+helmfile template -f harbor.yaml # RENDER ONLY
+helmfile apply -f harbor.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>MINIO</summary>
 
 ```bash

@@ -1,0 +1,47 @@
+---
+externalURL: {{ .Values.hostname }}.{{ .Values.domain }}
+clusterDomain: {{ .Values.domain }}
+adminPassword: {{ .Values.adminPassword }}
+
+exposureType: ingress
+service:
+  type: ClusterIP
+
+ipFamily:
+  ipv6:
+    enabled: false
+  ipv4:
+    enabled: true
+
+ingress:
+  core:
+    ingressClassName: {{ .Values.ingressClassName }}
+    hostname: {{ .Values.hostname }}.{{ .Values.domain }}
+    tls: true
+    extraTls:
+      - hosts:
+          - {{ .Values.hostname }}.{{ .Values.domain }}
+        secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+    annotations:
+      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.issuerName }}"
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+{{- if .Values.enablePersistence }}
+global:
+  defaultStorageClass: {{ .Values.storageClass }}
+  storageClass: {{ .Values.storageClass }}
+
+persistence:
+  enabled: true
+  resourcePolicy: ''
+  persistentVolumeClaim:
+    registry:
+      size: {{ .Values.pvSizeRegistry }}
+    trivy:
+      size: {{ .Values.pvSizeTrivy }}
+    jobservice:
+      size: {{ .Values.pvSizeJobService }}
+{{- end }}

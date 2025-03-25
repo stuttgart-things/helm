@@ -1,0 +1,27 @@
+---
+releases:
+  - name: certificate-configuration
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/certificate.values.yaml.gotmpl"
+
+  - name: harbor
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/harbor
+    version: 24.4.1
+    needs:
+      - {{ .Values.namespace }}/certificate-configuration
+    values:
+      - "values/harbor.values.yaml.gotmpl"
+
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    oci: false
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
