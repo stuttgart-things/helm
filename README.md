@@ -10,7 +10,7 @@ deploy helm charts declaratively.
 cat <<EOF > harbor.yaml
 ---
 helmfiles:
-  - path: /home/sthings/projects/helm/apps/harbor.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml
     values:
       - namespace: harbor
       - enablePersistence: true
