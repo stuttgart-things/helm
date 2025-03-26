@@ -6,12 +6,14 @@ template:
       - path: {{ .source }}
         values:
           - namespace: arc-runner
-          - githubRepoUrl: https://github.com/stuttgart-things/helm
+          - githubRepoUrl: https://github.com/stuttgart-things/ansible
           - githubToken: ""
           - storageAccessMode: ReadWriteOnce
           - storageClassName: openebs
           - storageRequest: 50Mi
           - runnerVersion: 2.323.0
+          - ghaControllerNamespace: arc-systems
+          - ghaControllerServiceAccount: gha-runner-scale-set-controller-gha-rs-controller
 
   gha-runner-controller: | # pragma: allowlist secret
     ---

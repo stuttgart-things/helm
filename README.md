@@ -340,13 +340,55 @@ helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
 
 ## CICD
 
+<details><summary>GHA-RUNNER-CONTROLLER</summary>
+
+```bash
+cat <<EOF > gha-runner-controller.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/gha-runner-controller.yaml
+    values:
+      - namespace: arc-systems
+
+helmfile template -f gha-runner-controller.yaml# RENDER ONLY
+helmfile apply -f gha-runner-controller.yaml # APPLY HELMFILE
+EOF
+```
+
+</details>
+
+<details><summary>GHA-RUNNER-SCALE-SET</summary>
+
+```bash
+cat <<EOF > gha-runner-scale-set.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/gha-runner-scale-set.yaml
+    values:
+      - namespace: arc-runner
+      - githubRepoUrl: https://github.com/stuttgart-things/ansible
+      - githubToken: <REPLACE-ME>
+      - storageAccessMode: ReadWriteOnce
+      - storageClassName: openebs
+      - storageRequest: 50Mi
+      - runnerVersion: 2.323.0
+      - ghaControllerNamespace: arc-systems
+      - ghaControllerServiceAccount: gha-runner-scale-set-controller-gha-rs-controller
+EOF
+
+helmfile template -f gha-runner-scale-set.yaml # RENDER ONLY
+helmfile apply -f gha-runner-scale-set.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>TEKTON</summary>
 
 ```bash
 cat <<EOF > tekton.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/tekton.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml
 EOF
 
 helmfile template -f tekton.yaml # RENDER ONLY
@@ -361,7 +403,7 @@ helmfile apply -f tekton.yaml # APPLY HELMFILE
 cat <<EOF > crossplane.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/crossplane.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml
     values:
       - namespace: crossplane-system
       - providers:
