@@ -88,7 +88,7 @@ tasks:
         helmfile destroy -f {{ .TEST_DIR }}/${release}.yaml
     vars:
       KUBECONFIG_FOLDER: ~/.kube
-      SEARCH_FOLDERS: "infra apps database"
+      SEARCH_FOLDERS: "infra apps database cicd"
       ALL_KUBECONFIGS:
         sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
 
