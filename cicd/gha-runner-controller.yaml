@@ -1,1 +1,12 @@
 ---
+releases:
+  - name: tekton
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: actions-runner-controller-charts/actions-runner-controller
+    version: 0.11.0
+
+repositories:
+  - name: actions-runner-controller-charts
+    url: oci://ghcr.io/actions/actions-runner-controller-charts
+    oci: true
