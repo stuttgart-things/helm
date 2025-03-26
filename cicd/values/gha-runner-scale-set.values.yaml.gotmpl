@@ -1,0 +1,35 @@
+---
+githubConfigUrl: {{ .Values.githubRepoUrl }}
+githubConfigSecret:
+  github_token: {{ .Values.githubToken }}
+containerMode:
+  type: kubernetes
+  kubernetesModeWorkVolumeClaim:
+    accessModes: ["{{ .Values.storageAccessMode }}"]
+    storageClassName: {{ .Values.storageClassName }}
+    resources:
+      requests:
+        storage: {{ .Values.storageRequest }}
+template:
+  spec:
+    containers:
+    - name: runner
+      image: ghcr.io/actions/actions-runner:{{ .Values.runnerVersion }}
+      command: ["/home/runner/run.sh"]
+      env:
+        - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+          value: "false"
+        - name: ACTIONS_RUNNER_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+    initContainers:
+      - name: kube-init
+        image: ghcr.io/actions/actions-runner:{{ .Values.runnerVersion }}
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            whoami
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work

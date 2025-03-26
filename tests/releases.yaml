@@ -1,5 +1,25 @@
 ---
 template:
+  gha-runner-scale-set: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: arc-runner
+          - githubRepoUrl: https://github.com/stuttgart-things/helm
+          - githubToken: ""
+          - storageAccessMode: ReadWriteOnce
+          - storageClassName: openebs
+          - storageRequest: 50Mi
+          - runnerVersion: 2.323.0
+
+  gha-runner-controller: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: arc-systems
+
   harbor: | # pragma: allowlist secret
     ---
     helmfiles:
