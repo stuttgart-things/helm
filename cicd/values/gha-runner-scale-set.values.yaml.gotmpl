@@ -1,4 +1,8 @@
 ---
+controllerServiceAccount:
+  namespace: {{ .Values.ghaControllerNamespace }}
+  name: {{ .Values.ghaControllerServiceAccount }}
+
 githubConfigUrl: {{ .Values.githubRepoUrl }}
 githubConfigSecret:
   github_token: {{ .Values.githubToken }}

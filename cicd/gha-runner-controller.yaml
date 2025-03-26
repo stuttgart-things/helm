@@ -1,12 +1,7 @@
 ---
 releases:
-  - name: tekton
+  - name: gha-runner-scale-set-controller
     installed: true
     namespace: {{ .Values.namespace }}
-    chart: actions-runner-controller-charts/actions-runner-controller
+    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
     version: 0.11.0
-
-repositories:
-  - name: actions-runner-controller-charts
-    url: oci://ghcr.io/actions/actions-runner-controller-charts
-    oci: true
