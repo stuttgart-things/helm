@@ -370,7 +370,7 @@ helmfiles:
       - githubRepoUrl: https://github.com/stuttgart-things/ansible
       - githubToken: <REPLACE-ME>
       - storageAccessMode: ReadWriteOnce
-      - storageClassName: openebs
+      - storageClassName: openebs-hostpath
       - storageRequest: 50Mi
       - runnerVersion: 2.323.0
       - ghaControllerNamespace: arc-systems
