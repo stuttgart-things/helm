@@ -801,7 +801,7 @@ helmfile apply -f nfs-csi.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>NFS-CSI</summary>
+<details><summary>NFS--SERVER_PROVISIONER</summary>
 
 ```bash
 cat <<EOF > nfs-server-provisioner.yaml
