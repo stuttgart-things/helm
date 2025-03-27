@@ -740,7 +740,6 @@ cat <<EOF > ingress-nginx.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
     values:
-      - version: 4.12.0
       - enableHostPort: false # for kind enable
 EOF
 
