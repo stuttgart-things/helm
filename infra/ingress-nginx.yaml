@@ -5,7 +5,7 @@ releases:
     installed: true
     namespace: ingress-nginx
     chart: ingress-nginx/ingress-nginx
-    version: {{ .Values.version }}
+    version: 4.12.0
     values:
       - "values/ingress-nginx.values.yaml.gotmpl"
 
