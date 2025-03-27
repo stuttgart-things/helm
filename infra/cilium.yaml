@@ -12,7 +12,7 @@ releases:
     disableValidationOnInstall: true
     needs:
       - kube-system/cilium
-    installed: true
+    installed: {{ .Values.configureLB }}
     namespace: kube-system
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
