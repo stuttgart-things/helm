@@ -365,6 +365,7 @@ cat <<EOF > gha-runner-scale-set.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/gha-runner-scale-set.yaml
     values:
+      - repoName: ansible
       - namespace: arc-runner
       - githubRepoUrl: https://github.com/stuttgart-things/ansible
       - githubToken: <REPLACE-ME>

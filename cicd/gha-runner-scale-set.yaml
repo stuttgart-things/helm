@@ -1,6 +1,6 @@
 ---
 releases:
-  - name: gha-runner-scale-set
+  - name: gha-runner-{{ .Values.repoName }}
     installed: true
     namespace: {{ .Values.namespace }}
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set

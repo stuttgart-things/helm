@@ -5,9 +5,10 @@ template:
     helmfiles:
       - path: {{ .source }}
         values:
+          - repoName: ansible
           - namespace: arc-runner
           - githubRepoUrl: https://github.com/stuttgart-things/ansible
-          - githubToken: ""
+          - githubToken: ${GITHUB_TOKEN}
           - storageAccessMode: ReadWriteOnce
           - storageClassName: openebs
           - storageRequest: 50Mi
