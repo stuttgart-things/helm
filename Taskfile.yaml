@@ -28,7 +28,7 @@ tasks:
     desc: Select a task to run
     cmds:
       - |
-        task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
+        task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | grep -v '^do$' | gum choose)
         task ${task}
 
   install-release:

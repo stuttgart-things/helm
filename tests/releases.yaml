@@ -331,7 +331,7 @@ template:
     helmfiles:
       - path: {{ .source }}
         values:
-          - version: 4.2.0
+          - namespace: openebs-system
           - profile: localpv
           - openebs_volumesnapshots_enabled: false
           - openebs_csi_node_init_containers_enabled: false

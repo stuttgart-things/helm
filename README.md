@@ -389,6 +389,8 @@ cat <<EOF > tekton.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml
+    values:
+      - namespace: tekton-pipelines
 EOF
 
 helmfile template -f tekton.yaml # RENDER ONLY
@@ -577,7 +579,7 @@ cat <<EOF > openebs.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml
     values:
-      - version: 4.2.0
+      - namespace: openebs-system
       - profile: localpv
       - openebs_volumesnapshots_enabled: false
       - openebs_csi_node_init_containers_enabled: false
@@ -644,6 +646,7 @@ helmfiles:
     values:
       - config: kind
       - clusterName: helm-dev
+      - configureLB: true
       - ipRangeStart: 172.18.250.0
       - ipRangeEnd: 172.18.250.50
 EOF
