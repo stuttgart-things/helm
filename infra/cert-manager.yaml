@@ -14,7 +14,8 @@ releases:
     chart: cert-manager/cert-manager
     version: v1.17.1
     values:
-      - installCRDs: true
+      - crds:
+          enabled: true
 
   - name: cert-manager-configration
     disableValidationOnInstall: true
