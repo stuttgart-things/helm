@@ -1,0 +1,12 @@
+---
+releases:
+  - name: kyverno
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: kyverno/kyverno
+    version: 3.3.7
+
+repositories:
+  - name: kyverno
+    url: https://kyverno.github.io/kyverno/
+    oci: false
