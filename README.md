@@ -4,10 +4,27 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>KYVERNO</summary>
+
+```bash
+cat <<EOF > kyverno.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/kyverno.yaml
+    values:
+      - namespace: kyverno
+EOF
+
+helmfile template -f kyverno.yaml # RENDER ONLY
+helmfile apply -f kyverno.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>FLUX-OPERATOR</summary>
 
 ```bash
-cat <<EOF > harbor.yaml
+cat <<EOF > flux-operator.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/flux-operator.yaml

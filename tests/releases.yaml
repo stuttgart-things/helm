@@ -1,5 +1,12 @@
 ---
 template:
+  kyverno: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: kyverno
+
   flux-operator: | # pragma: allowlist secret
     ---
     helmfiles:
