@@ -1,5 +1,12 @@
 ---
 template:
+  flux-operator: | # pragma: allowlist secret
+    ---
+    helmfiles:
+      - path: {{ .source }}
+        values:
+          - namespace: flux-system
+
   gha-runner-scale-set: | # pragma: allowlist secret
     ---
     helmfiles:
