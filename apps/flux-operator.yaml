@@ -1,0 +1,7 @@
+---
+releases:
+  - name: flux-operator
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+    version: 0.18.0

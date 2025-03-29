@@ -4,6 +4,23 @@ deploy helm charts declaratively.
 
 ## APPS
 
+<details><summary>FLUX-OPERATOR</summary>
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/flux-operator.yaml
+    values:
+      - namespace: flux-system
+EOF
+
+helmfile template -f flux-operator.yaml # RENDER ONLY
+helmfile apply -f flux-operator.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>HARBOR</summary>
 
 ```bash
@@ -25,6 +42,7 @@ helmfiles:
       - pvSizeRegistry: 12Gi
       - pvSizeTrivy: 5Gi
       - pvSizeJobService: 1Gi
+EOF
 
 helmfile template -f harbor.yaml # RENDER ONLY
 helmfile apply -f harbor.yaml # APPLY HELMFILE
