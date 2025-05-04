@@ -4,7 +4,7 @@ releases:
     installed: true
     namespace: kube-system
     chart: cilium/cilium
-    version: 1.17.2
+    version: 1.17.3
     values:
       - "values/cilium-{{ .Values.config }}.values.yaml.gotmpl"
 
