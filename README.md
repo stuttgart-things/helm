@@ -445,13 +445,13 @@ helmfiles:
     values:
       - namespace: crossplane-system
       - providers:
-          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.20.4
-          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.17.1
+          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.21.0
+          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.18.0
       - terraform:
           configName: tf-provider
-          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.11.2
+          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.12.0
           package: xpkg.upbound.io/upbound/provider-terraform
-          version: v0.20.0
+          version: v0.21.0
           poll: 10m
           reconcileRate: 10
           s3SecretName: s3
