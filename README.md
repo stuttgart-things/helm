@@ -124,8 +124,8 @@ helmfiles:
       - vaultNamespace: root
       - vaultRoleID: 1fa31949-8d0e-c100-c8ae-6eb287f8ea08
       - vaultSecretID: b76ddf4b-ba30-fc01-61fd-9d97588a6c09
-      - imageHelfile: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
-      - imageAvp: ghcr.io/helmfile/helmfile:v0.171.0
+      - imageHelfile: ghcr.io/helmfile/helmfile:v0.171.0
+      - imageAvp: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2 
 EOF
 
 helmfile template -f argocd.yaml # RENDER ONLY
