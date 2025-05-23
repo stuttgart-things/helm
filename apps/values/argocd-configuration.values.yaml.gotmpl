@@ -13,5 +13,5 @@ secrets:
       VAULT_NAMESPACE: {{ .Values.vaultNamespace }}
       AVP_ROLE_ID: {{ .Values.vaultRoleID }}
       AVP_SECRET_ID: {{ .Values.vaultSecretID }}
-      VAULT_SKIP_VERIFY="true"
+      VAULT_SKIP_VERIFY: "true"
 {{- end }}
