@@ -1,6 +1,6 @@
 ---
-server:
 {{- if .Values.ingressEnabled }}
+server:
   ingress:
     enabled: {{ .Values.ingressEnabled }}
     ingressClassName: {{ .Values.ingressClassName }}
