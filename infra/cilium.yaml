@@ -17,7 +17,7 @@ releases:
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
-      - "values/cilium-{{ .Values.config }}-config.values.yaml.gotmpl"
+      - "values/cilium-lb-config.values.yaml.gotmpl"
 
 repositories:
   - name: cilium

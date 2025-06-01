@@ -1,0 +1,23 @@
+---
+kubeProxyReplacement: {{ .Values.kubeProxyReplacement }} 
+k8sServiceHost: {{ .Values.k8sServiceHost }}
+k8sServicePort: {{ .Values.k8sServicePort }}
+
+l2announcements:
+  enabled: true
+
+externalIPs:
+  enabled: {{ .Values.enableExternalIPs }}
+
+k8sClientRateLimit:
+  qps: 50
+  burst: 200
+
+operator:
+  replicas: {{ .Values.replicas }}
+  rollOutPods: true
+
+rollOutCiliumPods: true
+
+ingressController:
+  enabled: {{ .Values.enableIngress }}
