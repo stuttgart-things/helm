@@ -1,5 +1,6 @@
 ---
 server:
+{{- if .Values.ingressEnabled }}
   ingress:
     enabled: true
     ingressClassName: {{ .Values.ingressClassName }}
@@ -7,7 +8,7 @@ server:
       cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
     hostname: {{ .Values.hostname }}.{{ .Values.domain }}
     tls: true
-
+{{- end }}
 
 injector:
   enabled: {{ .Values.injectorEnabled }}
