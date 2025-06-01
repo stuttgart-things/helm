@@ -2,7 +2,7 @@
 server:
 {{- if .Values.ingressEnabled }}
   ingress:
-    enabled: true
+    enabled: {{ .Values.ingressEnabled }}
     ingressClassName: {{ .Values.ingressClassName }}
     annotations:
       cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
