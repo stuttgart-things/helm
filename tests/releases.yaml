@@ -289,6 +289,7 @@ template:
         values:
           - namespace: nginx
           - profile: nginx
+          - replicas: 1
           - serviceType: ClusterIP
           - enableIngress: true
           - clusterIssuer: selfsigned

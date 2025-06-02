@@ -1,6 +1,6 @@
 ---
 repositories:
-  - name: nginx-stable
+  - name: bitnami
     url: https://charts.bitnami.com/bitnami
   - name: stuttgart-things
     url: eu.gcr.io/stuttgart-things
@@ -9,7 +9,7 @@ repositories:
 releases:
   - name: nginx
     namespace: {{ .Values.namespace }}
-    chart: nginx-stable/nginx
-    version: 19.0.2
+    chart: bitnami/nginx
+    version: 20.0.5
     values:
       - values/{{ .Values.profile }}.yaml.gotmpl
