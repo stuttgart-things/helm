@@ -1,5 +1,6 @@
 ---
-{{- if .Values.enableIngress}}
+replicaCount: {{ .Values.replicas }}
+{{- if .Values.enableIngress }}
 ingress:
   enabled: true
   ingressClassName: {{ .Values.ingressClassName }}
