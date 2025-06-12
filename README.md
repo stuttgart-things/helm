@@ -664,6 +664,7 @@ cat <<EOF > metallb.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml
     values:
+      - version: 6.4.5
       - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
 EOF
 
