@@ -10,6 +10,9 @@ server:
     tls: true
 {{- end }}
 
+global:
+  storageClass: {{ .Values.storageClass }}
+
 injector:
   enabled: {{ .Values.injectorEnabled }}
   serviceAccount:
