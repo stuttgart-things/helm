@@ -23,5 +23,5 @@ repositories:
     url: https://charts.bitnami.com/bitnami
     oci: false
   - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true
