@@ -22,7 +22,7 @@ releases:
 
 repositories:
   - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true
   - name: argo
     url: https://argoproj.github.io/argo-helm
