@@ -1,5 +1,15 @@
----
+repositories:
+{{- if .Values.createCertificateResource }}
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+{{- end }}
+  - name: grafana
+    url: https://grafana.github.io/helm-charts/
+    oci: false
+
 releases:
+{{- if .Values.createCertificateResource }}
   - name: grafana-configuration
     disableValidationOnInstall: true
     installed: true
@@ -7,7 +17,8 @@ releases:
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
-      - "values/grafana-configuration.values.yaml.gotmpl"
+      - values/grafana-configuration.values.yaml.gotmpl
+{{- end }}
 
   - name: grafana-deployment
     disableValidationOnInstall: true
@@ -15,15 +26,9 @@ releases:
     namespace: grafana
     chart: grafana/grafana
     version: 8.10.3
+{{- if .Values.createCertificateResource }}
     needs:
       - grafana/grafana-configuration
+{{- end }}
     values:
-      - "values/grafana.values.yaml.gotmpl"
-
-repositories:
-  - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
-    oci: true
-  - name: grafana
-    url: https://grafana.github.io/helm-charts/
-    oci: false
+      - values/grafana.values.yaml.gotmpl
