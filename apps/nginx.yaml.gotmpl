@@ -1,0 +1,29 @@
+---
+environments:
+  default:
+    values:
+      - replicas: 1
+      - serviceType: ClusterIP
+      - enableIngress: true
+      - clusterIssuer: selfsigned
+      - issuerKind: ClusterIssuer
+      - hostname: app
+      - domain: example.com
+      - ingressClassName: nginx
+      - namespace: nginx
+      - profile: nginx
+---
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: stuttgart-things
+    url: eu.gcr.io/stuttgart-things
+    oci: true
+
+releases:
+  - name: nginx
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/nginx
+    version: 21.0.6
+    values:
+      - values/{{ .Values.profile }}.yaml.gotmpl

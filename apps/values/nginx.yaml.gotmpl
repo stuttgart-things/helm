@@ -1,12 +1,12 @@
----
 replicaCount: {{ .Values.replicas }}
+
 {{- if .Values.enableIngress }}
 ingress:
   enabled: true
   ingressClassName: {{ .Values.ingressClassName }}
   annotations:
     cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
-  hostname: {{ .Values.hostname }}.{{ .Values.domain }}  # Replace with your domain
+  hostname: {{ .Values.hostname }}.{{ .Values.domain }}
   paths:
     - /
   tls:

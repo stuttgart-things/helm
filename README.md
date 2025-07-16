@@ -333,7 +333,6 @@ cat <<EOF > nginx.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
     values:
-      - version: 19.0.1
       - namespace: nginx
       - profile: nginx
       - serviceType: ClusterIP
@@ -963,6 +962,12 @@ helmfile template -f nginx.yaml -e dev
 </details>
 
 <details><summary>TEMPLATE TEST</summary>
+
+```bash
+# LOCAL - NO INCLUDE
+helmfile -f apps/grafana.yaml template \
+--state-values-set createCertificateResource=false,ingressEnabled=false,hostname=test,domain=test.com,enablePersistence=false
+```
 
 ```bash
 TEST_DIR=/tmp/helmfiles
