@@ -7,6 +7,7 @@ environments:
       - enableIngress: true
       - clusterIssuer: selfsigned
       - issuerKind: ClusterIssuer
+      - issuerKindAnnotation: "cluster-issuer"
       - hostname: app
       - domain: example.com
       - ingressClassName: nginx

@@ -313,7 +313,7 @@ helmfile apply -f awx.yaml # APPLY HELMFILE # APPLY HELMFILE
 cat <<EOF > nginx-lb.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
     values:
       - profile: nginx
       - replicas: 1
@@ -331,7 +331,7 @@ helmfile apply -f nginx-lb.yaml # APPLY HELMFILE # APPLY HELMFILE
 cat <<EOF > nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
     values:
       - namespace: nginx
       - profile: nginx
@@ -536,7 +536,7 @@ EOF
 cat <<EOF > keycloak.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@database/keycloak.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@database/keycloak.yaml.gotmpl
     values:
       - ingressClassName: nginx
       - hostname: keycloak
@@ -551,6 +551,21 @@ EOF
 helmfile template -f keycloak.yaml # RENDER ONLY
 helmfile apply -f keycloak.yaml # APPLY HELMFILE
 ```
+
+```bash
+cat <<EOF > keycloak-minimal.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/keycloak.yaml.gotmpl
+    values:
+      - clusterIssuer: selfsigned
+      - domain: 172.18.0.4.nip.io
+EOF
+
+helmfile template -f keycloak-minimal.yaml # RENDER ONLY
+helmfile apply -f keycloak-minimal.yaml # APPLY HELMFILE
+```
+
 
 </details>
 
@@ -960,6 +975,17 @@ helmfile template -f nginx.yaml -e dev
 ```
 
 </details>
+
+<details><summary>LOAD IMAGES INTO KIND CLUSTER</summary>
+
+```bash
+docker pull docker.io/bitnami/keycloak:26.3.1-debian-12-r1
+kind load docker-image docker.io/bitnami/
+keycloak:26.3.1-debian-12-r1 -n dev
+```
+
+</details>
+
 
 <details><summary>TEMPLATE TEST</summary>
 

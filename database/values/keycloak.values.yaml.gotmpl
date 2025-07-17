@@ -2,7 +2,10 @@
 ingress:
   enabled: true
   ingressClassName: {{ .Values.ingressClassName }}
-  labels: {}
+{{- if not .Values.createCertificateResource }}
+  annotations:
+    cert-manager.io/{{ .Values.issuerKindAnnotation }}: "{{ .Values.clusterIssuer }}"
+{{- end }}
   path: /
   pathType: Prefix
   hostname: {{ .Values.hostname }}.{{ .Values.domain }}
