@@ -1,6 +1,6 @@
 # stuttgart-things/helm
 
-deploy helm charts declaratively.
+deploy helm charts declaratively
 
 ## APPS
 
