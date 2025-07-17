@@ -1,0 +1,4 @@
+clusterIssuer: selfsigned
+domain: 172.18.0.4.nip.io
+ingressController: nginx
+storageClass: standard
