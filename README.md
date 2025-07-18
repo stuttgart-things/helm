@@ -424,7 +424,7 @@ helmfile apply -f gha-runner-scale-set.yaml # APPLY HELMFILE
 cat <<EOF > tekton.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml.gotmpl
     values:
       - namespace: tekton-pipelines
 EOF
