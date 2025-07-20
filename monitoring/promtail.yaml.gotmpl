@@ -1,0 +1,22 @@
+---
+environments:
+  default:
+    values:
+      - namespace: observability
+      - version: 6.17.0
+      - lokiServiceName: openldap-loki
+      - lokiNamespace: observability
+---
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+
+releases:
+  - name: promtail
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: grafana/promtail
+    version: {{ .Values.version }}
+    values:
+      - "values/promtail.values.yaml.gotmpl"

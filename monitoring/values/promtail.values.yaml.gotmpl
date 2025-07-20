@@ -1,0 +1,22 @@
+---
+config:
+  clients:
+    - url: http://{{ .Values.lokiServiceName }}.{{ .Values.lokiNamespace }}.svc.cluster.local:3100/loki/api/v1/push
+      tenant_id: "default"
+  positions:
+    filename: /var/log/positions.yaml
+
+podLabels:
+  app: promtail
+
+tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: promtail
