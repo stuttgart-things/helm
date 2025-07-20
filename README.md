@@ -471,6 +471,26 @@ helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
 
 ## DATABASE
 
+<details><summary>LOKI</summary>
+
+```bash
+cat <<EOF > loki.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/loki.yaml.gotmpl
+    values:
+      - namespace: observability
+      - version: 6.31.0
+      - profile: fs
+EOF
+
+helmfile template -f loki.yaml # RENDER ONLY
+helmfile apply -f loki.yaml # APPLY HELMFILE
+```
+
+</details>
+
+
 <details><summary>POSTGRES</summary>
 
 ### DEPLOY OPERATOR
@@ -479,9 +499,10 @@ helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
 cat <<EOF > postgres.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@database/postgres.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@database/postgres.yaml.gotmpl
     values:
       - namespace: postgres
+      - version: 0.24.0
 EOF
 
 helmfile template -f postgres.yaml # RENDER ONLY
@@ -641,6 +662,35 @@ EOF
 
 helmfile template -f openebs.yaml # RENDER ONLY
 helmfile apply -f openebs.yaml # APPLY HELMFILE
+```
+
+</details>
+
+## MONITORING
+
+<details><summary>PROMTAIL</summary>
+
+```bash
+# MAKE SURE TO SET THIS ON THE CLUSTER NODES
+echo "fs.inotify.max_user_instances = 1024" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+sysctl fs.inotify
+```
+
+```bash
+cat <<EOF > promtail.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/promtail.yaml.gotmpl
+    values:
+      - namespace: observability
+      - version: 6.17.0
+      - lokiServiceName: loki-loki
+      - lokiNamespace: observability
+EOF
+
+helmfile template -f promtail.yaml # RENDER ONLY
+helmfile apply -f promtail.yaml # APPLY HELMFILE
 ```
 
 </details>
