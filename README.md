@@ -506,6 +506,20 @@ curl -u ${USER}:${PASSWORD} -X GET https://${HOSTNAME}.${DOMAIN}/v2/_catalog | j
 # list tags
 REPO="python-app/my-python-app"
 curl -u ${USER}:${PASSWORD} -X GET https://${HOSTNAME}.${DOMAIN}/v2/${REPO}$/tags/list
+
+# DELETE IMAGE FROM REGISTRY
+registry='https://${HOSTNAME}.${DOMAIN}'
+repo_name='exampleimagename'
+auth='--user ${USER}:${PASSWORD}'
+curl $auth -v sSL -X DELETE "https://${registry}/v2/${repo_name}/manifests/$(
+    curl $auth -sSL -I \
+        -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+        "https://${registry}/v2/${repo_name}/manifests/$(
+            curl $auth -sSL "https://${registry}/v2/${repo_name}/tags/list" | jq -r '.tags[0]'
+        )" \
+    | awk '$1 == "Docker-Content-Digest:" { print $2 }' \
+    | tr -d $'\r' \
+)"
 ```
 
 </details>
