@@ -471,6 +471,45 @@ helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
 
 ## DATABASE
 
+<details><summary>REGISTRY</summary>
+
+```bash
+cat <<EOF > registry.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/registry.yaml.gotmpl
+    values:
+      # see @database/registry.yaml.gotmpl for more default values to overwrite
+      - clusterIssuer: letsencrypt-prod
+      - hostname: registry
+      - projectStorageClass: vsphere-csi
+      - domain: example.com
+      - size: 10Gi
+      # generate htpassd pw
+      # sudo apt-get install apache2-utils   # Debian/Ubuntu
+      # htpasswd -nbB admin admin
+      - htpasswd: admin:$2y$05$lzjRgAlLIavPLxXi9Q7lnOcjW2rIIQXkeXU0Pj2kA7K9bMAYKianC
+EOF
+
+helmfile template -f registry.yaml # RENDER ONLY
+helmfile apply -f registry.yaml # APPLY HELMFILE
+```
+
+```bash
+# login w/ container runtime
+docker login ${HOSTNAME}.${DOMAIN}
+
+# list repos
+curl -u ${USER}:${PASSWORD} -X GET https://${HOSTNAME}.${DOMAIN}/v2/_catalog | jq .repositories[]
+# e.g. "python-app/my-python-app"
+
+# list tags
+REPO="python-app/my-python-app"
+curl -u ${USER}:${PASSWORD} -X GET https://${HOSTNAME}.${DOMAIN}/v2/${REPO}$/tags/list
+```
+
+</details>
+
 <details><summary>LOKI</summary>
 
 ```bash
@@ -489,7 +528,6 @@ helmfile apply -f loki.yaml # APPLY HELMFILE
 ```
 
 </details>
-
 
 <details><summary>POSTGRES</summary>
 
