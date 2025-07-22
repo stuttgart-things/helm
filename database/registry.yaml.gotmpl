@@ -1,0 +1,55 @@
+---
+environments:
+  default:
+    values:
+      - htpasswd: admin:$2y$05$lzjRgAlLIavPLxXi9Q7lnOcjW2rIIQXkeXU0Pj2kA7K9bMAYKianC
+      - accessMode: ReadWriteOnce
+      - persistenceEnabled: false
+      - size: 10Gi
+      - ingressEnabled: true
+      - ingressClassName: nginx
+      - ingressSecret: registry
+      - secureBackends: 500m
+      - deleteEnabled: true
+      - blobdescriptor: disabled #filesystem
+      - enableGarbageCollect: true
+      - hostname: registry
+      - domain: example.com
+      - projectStorageClass: standard
+      - clusterIssuer: letsencrypt-prod
+      - persistenceEnabled: true
+      - createCertificateResource: false
+      - issuerKindAnnotation: "cluster-issuer"
+---
+repositories:
+{{- if .Values.createCertificateResource }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}
+  - name: twuni
+    url: https://helm.twun.io
+---
+releases:
+{{- if .Values.createCertificateResource }}
+  - name: registry-cert-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: registry
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/registry-cert-configuration.values.yaml.gotmpl"
+{{- end }}
+  - name: registry
+    disableValidationOnInstall: true
+    installed: true
+    namespace: registry
+    chart: twuni/docker-registry
+    version: 2.3.0
+    values:
+      - "values/registry.values.yaml.gotmpl"
+{{- if .Values.createCertificateResource }}
+    needs:
+      - registry/registry-cert-configuration
+{{- end }}

@@ -1,0 +1,41 @@
+---
+persistence:
+  accessMode: {{ .Values.accessMode }}
+  enabled: {{ .Values.persistenceEnabled }}
+  size: {{ .Values.size }}
+  storageClass: {{ .Values.projectStorageClass }}
+  deleteEnabled: {{ .Values.deleteEnabled }}
+
+ingress:
+  enabled: {{ .Values.ingressEnabled }}
+  className: {{ .Values.ingressClassName }}
+  path: /
+  hosts:
+    - {{ .Values.hostname }}.{{ .Values.domain }}
+  annotations:
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: {{ .Values.secureBackends }}
+{{- if not .Values.createCertificateResource }}
+    cert-manager.io/{{ .Values.issuerKindAnnotation }}: "{{ .Values.clusterIssuer }}"
+{{- end }}
+  tls:
+    - secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+      hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+
+secrets:
+  haSharedSecret: ""
+  htpasswd: |-
+    {{ .Values.htpasswd }}
+
+configData:
+  storage:
+    cache:
+      blobdescriptor: {{ .Values.blobdescriptor }}
+
+garbageCollect:
+  enabled: {{ .Values.enableGarbageCollect }}
+  deleteUntagged: true
+  schedule: "0 1 * * *"
+  resources: {}
