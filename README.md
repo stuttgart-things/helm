@@ -2,6 +2,8 @@
 
 deploy helm charts declaratively
 
+[💾 DATABASES](./database/README.md)
+
 ## APPS
 
 <details><summary>KYVERNO</summary>
