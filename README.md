@@ -639,7 +639,6 @@ helmfile template -f keycloak-minimal.yaml # RENDER ONLY
 helmfile apply -f keycloak-minimal.yaml # APPLY HELMFILE
 ```
 
-
 </details>
 
 <details><summary>OPENLDAP</summary>
@@ -648,17 +647,10 @@ helmfile apply -f keycloak-minimal.yaml # APPLY HELMFILE
 cat <<EOF > openldap.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@datbase/openldap.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@datbase/openldap.yaml.gotmpl
     values:
       - adminUser: admin
-      - adminPassword: whatever4711
       - ldapDomain: dc=sthings,dc=de
-      - configUser: sthings
-      - configPassword: whatever0815
-      - enablePersistence: false
-      #- storageClass: longhorn # -> only needed if enablePersistence is true
-      - replicas: 1
-      - replication: false
 EOF
 
 helmfile template -f openldap.yaml # RENDER ONLY
@@ -673,14 +665,10 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 cat <<EOF > zot-registry.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@database/zot.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@database/zot.yaml.gotmpl
     values:
-      - version: 0.1.66
-      - ingressEnabled: true
-      - ingressClass: nginx
-      - enablePersistence: true
-      - hostname: zot
-      - domain: k8scluster.sthings-vsphere.example.com
+      - version: 0.1.75
+      - domain: example.com
       - storageClassName: openebs-hostpath
       - storageSize: 1Gi
       - clusterIssuer: cluster-issuer-approle

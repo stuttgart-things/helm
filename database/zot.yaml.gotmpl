@@ -1,0 +1,51 @@
+---
+environments:
+  default:
+    values:
+      - version: 0.1.75
+      - ingressEnabled: true
+      - ingressClass: nginx
+      - enablePersistence: true
+      - hostname: zot
+      - domain: example.com
+      - storageClassName: standard
+      - storageSize: 1Gi
+      - clusterIssuer: selfsigned
+      - issuerKind: ClusterIssuer
+      - issuerKindAnnotation: "cluster-issuer"
+      - createCertificateResource: false
+---
+releases:
+{{- if .Values.createCertificateResource }}
+  - name: zot-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: zot
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/zot-cert-configuration.values.yaml.gotmpl"
+{{- end }}
+
+  - name: zot-registry-deployment
+    disableValidationOnInstall: true
+    installed: true
+    namespace: zot
+    chart: zot/zot
+    version: {{ .Values.version }}
+{{- if .Values.createCertificateResource }}
+    needs:
+      - zot/zot-configuration
+{{- end }}
+    values:
+      - "values/zot.values.yaml.gotmpl"
+
+repositories:
+{{- if .Values.createCertificateResource }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}
+  - name: zot
+    url: https://zotregistry.dev/helm-charts/
+    oci: false
