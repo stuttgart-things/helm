@@ -23,6 +23,36 @@ vars:
     sh: date +"%Y.%m%d.%H%M"
 
 tasks:
+  gen-helmfile-dev:
+    desc: Generate Helmfile include config for dev cluster
+    cmds:
+      - |
+        k2n gen \
+        --examples-dirs "{{ .EXAMPLE_DIRS }},./{{ .KIND }}" \
+        --ruleset-env-dir {{ .RULESET_ENV_DIR }} \
+        --usecase {{ .USECASE }} \
+        --example-file-ext ".yaml,.tf,.gotmpl,.md" \
+        --verbose=true \
+        --prompt-to-ai={{ .PROMPT }} \
+        --instruction "give me a {{ .USECASE }}-config for {{ .APP }} w/ {{ .INCLUDE }} include for cluster {{ .CLUSTER_NAME }}. no description. see examples for schema" \
+        --destination "" # stdout
+    vars:
+      USECASE: helmfile
+      DATABSE_DIRS: databases
+      EXAMPLE_DIRS: .k2n/examples
+      RULESET_ENV_DIR: .k2n/env-ruleset
+      RULESET_USECASE_DIR: .k2n/rulesets/terraformvm
+      PROMPT:
+        sh: gum choose "true" "false" --header="Prompt to ai?"
+      APP:
+        sh: gum input --placeholder "Enter app name"
+      KIND:
+        sh: gum choose "database"
+      INCLUDE:
+        sh: gum choose "local" "git" --header="Local or git include?"
+      CLUSTER_NAME:
+        sh: gum choose "dev"
+
   branch:
     desc: Create branch from main
     cmds:
