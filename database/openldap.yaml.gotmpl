@@ -1,4 +1,17 @@
 ---
+environments:
+  default:
+    values:
+      - adminUser: admin
+      - adminPassword: whatever4711
+      - ldapDomain: dc=sthings,dc=de
+      - configUser: sthings
+      - configPassword: whatever0815
+      - enablePersistence: false
+      - storageClass: standard
+      - replicas: 1
+      - replication: false
+---
 repositories:
   - name: helm-openldap
     url: https://jp-gouin.github.io/helm-openldap/
