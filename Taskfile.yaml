@@ -34,7 +34,7 @@ tasks:
         --example-file-ext ".yaml,.tf,.gotmpl,.md" \
         --verbose=true \
         --prompt-to-ai={{ .PROMPT }} \
-        --instruction "give me a {{ .USECASE }}-config for {{ .APP }} w/ {{ .INCLUDE }} include for cluster {{ .CLUSTER_NAME }}. no description. see examples for schema" \
+        --instruction "give me a {{ .USECASE }}-config for {{ .APP }} w/ {{ .INCLUDE }} include for cluster {{ .CLUSTER_NAME }}. {{ .USER_WORKING_DIR }}/{{ .KIND }}/{{ .APP }}.yaml.gotmpl is local path no description. see examples for schema" \
         --destination "" # stdout
     vars:
       USECASE: helmfile
@@ -47,7 +47,7 @@ tasks:
       APP:
         sh: gum input --placeholder "Enter app name"
       KIND:
-        sh: gum choose "database"
+        sh: gum choose "database" "monitoring"
       INCLUDE:
         sh: gum choose "local" "git" --header="Local or git include?"
       CLUSTER_NAME:
