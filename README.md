@@ -1,8 +1,11 @@
 # stuttgart-things/helm
 
-deploy helm charts declaratively
+Deploy Helm charts declaratively
 
-[💾 DATABASES](./database/README.md)
+| Category    | Description           | Link                              |
+|-------------|-----------------------|-----------------------------------|
+| 💾 DATABASES | Database deployments   | [README](./database/README.md)     |
+| 📊 MONITORING | Monitoring stack setup | [README](./monitoring/README.md)  |
 
 ## APPS
 
@@ -467,60 +470,6 @@ EOF
 
 helmfile template -f crossplane.yaml # RENDER ONLY
 helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
-```
-
-</details>
-
-## MONITORING
-
-<details><summary>PROMTAIL</summary>
-
-```bash
-# MAKE SURE TO SET THIS ON THE CLUSTER NODES
-echo "fs.inotify.max_user_instances = 1024" | sudo tee -a /etc/sysctl.conf
-sudo sysctl -p
-sysctl fs.inotify
-```
-
-```bash
-cat <<EOF > promtail.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/promtail.yaml.gotmpl
-    values:
-      - namespace: observability
-      - version: 6.17.0
-      - lokiServiceName: loki-loki
-      - lokiNamespace: observability
-EOF
-
-helmfile template -f promtail.yaml # RENDER ONLY
-helmfile apply -f promtail.yaml # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>HEADLAMP</summary>
-
-```bash
-cat <<EOF > headlamp.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/headlamp.yaml
-    values:
-	  - ingressEnabled: true
-	  - storageEnabled: false
-	  - storageAccessModes: ReadWriteOnce
-	  - hostname: headlamp.k8scluster
-	  - domain: sthings-vsphere.example.com
-    - storageClassName: longhorn
-	  - clusterIssuer: cluster-issuer-approle
-	  - issuerKind: ClusterIssuer
-	  - storageSize: 1Gi
-EOF
-
-helmfile template -f headlamp.yaml # RENDER ONLY
-helmfile apply -f headlamp.yaml # APPLY HELMFILE
 ```
 
 </details>

@@ -2,6 +2,10 @@
 ingress:
   enabled: {{ .Values.ingressEnabled }}
   ingressClassName: nginx
+{{- if not .Values.createCertificateResource }}
+  annotations:
+    cert-manager.io/{{ .Values.issuerKindAnnotation }}: "{{ .Values.clusterIssuer }}"
+{{- end }}
   hosts:
     - host: {{ .Values.hostname }}.{{ .Values.domain }}
       paths:

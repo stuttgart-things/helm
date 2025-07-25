@@ -1,0 +1,50 @@
+---
+environments:
+  default:
+    values:
+      - ingressEnabled: true
+      - storageEnabled: false
+      - storageAccessModes: ReadWriteOnce
+      - hostname: headlamp.k8scluster
+      - domain: example.com
+      - storageClassName: longhorn
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+      - storageSize: 1Gi
+      - version: 0.33.0
+      - issuerKindAnnotation: "cluster-issuer"
+      - createCertificateResource: false
+---
+releases:
+{{- if .Values.createCertificateResource }}
+  - name: headlamp-cert-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: kube-system
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/headlamp-cert-configuration.values.yaml.gotmpl"
+{{- end }}
+  - name: headlamp-deployment
+    disableValidationOnInstall: true
+    installed: true
+    namespace: kube-system
+    chart: headlamp/headlamp
+    version: {{ .Values.version }}
+{{- if .Values.createCertificateResource }}
+    needs:
+      - kube-system/headlamp-configuration
+{{- end }}
+    values:
+      - "values/headlamp.values.yaml.gotmpl"
+
+repositories:
+{{- if .Values.createCertificateResource }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}
+  - name: headlamp
+    url: https://kubernetes-sigs.github.io/headlamp/
+    oci: false
