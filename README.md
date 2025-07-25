@@ -2,10 +2,10 @@
 
 Deploy Helm charts declaratively
 
-| Category    | Description           | Link                              |
-|-------------|-----------------------|-----------------------------------|
-| 💾 DATABASES | Database deployments   | [README](./database/README.md)     |
-| 📊 MONITORING | Monitoring stack setup | [README](./monitoring/README.md)  |
+| Category    | Description           |
+|-------------|-----------------------|
+| 💾 [DATABASES](./database/README.md)  | Database deployments |
+| 📊 [MONITORING](./monitoring/README.md) | Monitoring stack setup |
 
 ## APPS
 
