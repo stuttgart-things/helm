@@ -1,7 +1,13 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: arc-systems
+      - version: 0.12.1
+---
 releases:
   - name: gha-runner-scale-set-controller
     installed: true
     namespace: {{ .Values.namespace }}
     chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
-    version: 0.11.0
+    version: {{ .Values.version }}
