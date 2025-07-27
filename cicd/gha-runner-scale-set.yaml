@@ -1,9 +1,0 @@
----
-releases:
-  - name: gha-runner-{{ .Values.repoName }}
-    installed: true
-    namespace: {{ .Values.namespace }}
-    chart: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-    version: 0.11.0
-    values:
-      - "values/gha-runner-scale-set.values.yaml.gotmpl"
