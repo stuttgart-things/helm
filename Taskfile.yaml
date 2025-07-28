@@ -23,7 +23,7 @@ vars:
     sh: date +"%Y.%m%d.%H%M"
 
 tasks:
-  do-app-operation:
+  helmfile-operation:
     desc: Get app name
     cmds:
       - task: "{{ .OPERATION }}"
@@ -31,13 +31,13 @@ tasks:
           HELMFILE_PATH: $(dirname "{{ .APP }}")
           HELMFILE: $(basename "{{ .APP }}")
     vars:
+      OPERATION:
+        sh: gum choose "render" "deploy"
       FOLDER:
         sh: gum choose "database" "monitoring" "cicd"
       APP:
         sh: |
           find "{{ .FOLDER }}" -maxdepth 1 -type f -name "*.yaml.gotmpl" | gum choose
-      OPERATION:
-        sh: gum choose "render" "deploy"
 
   render:
     desc: Render helmfile

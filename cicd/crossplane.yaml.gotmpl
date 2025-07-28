@@ -1,10 +1,33 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: crossplane-system
+      - version: 1.20.0
+      - providers:
+          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.21.0
+          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.18.0
+      - terraform:
+          configName: tf-provider
+          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.12.0
+          package: xpkg.upbound.io/upbound/provider-terraform
+          version: v0.21.0
+          poll: 10m
+          reconcileRate: 10
+          s3SecretName: s3
+      - secrets:
+          s3:
+            namespace: crossplane-system
+            kvs:
+              AWS_ACCESS_KEY_ID: unset
+              AWS_SECRET_ACCESS_KEY: unset
+---
 releases:
   - name: crossplane-deployment
     installed: true
     namespace: {{ .Values.namespace }}
     chart: crossplane-stable/crossplane
-    version: 1.20.0
+    version: {{ .Values.version }}
     values:
       - "values/crossplane.values.yaml.gotmpl"
 
