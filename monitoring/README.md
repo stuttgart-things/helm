@@ -1,5 +1,28 @@
 # stuttgart-things/helm/monitoring
 
+<details><summary>GRAFANA</summary>
+
+```bash
+cat <<EOF > grafana.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/grafana.yaml
+    values:
+      - ingressEnabled: true
+      - hostname: grafana.k8scluster
+      - domain: sthings-vsphere.example.com
+      - storageClassName: longhorn
+      - size: 1 # storage size in Gi
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+EOF
+
+helmfile template -f grafana.yaml # RENDER ONLY
+helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>HEADLAMP</summary>
 
 ```bash
