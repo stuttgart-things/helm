@@ -1,4 +1,9 @@
 ---
+{{- if hasKey .Values "grafanaConfig" }}
+grafana.ini:
+{{ .Values.grafanaConfig | nindent 2 }}
+{{- end }}
+
 ingress:
   enabled: {{ .Values.ingressEnabled }}
   ingressClassName: nginx
