@@ -15,6 +15,11 @@ helmfiles:
       - size: 1 # storage size in Gi
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
+      # - grafanaConfig: |
+      #     server:
+      #       protocol: http
+      #       root_url: https://grafana.example.com
+      #       serve_from_sub_path: false
 EOF
 
 helmfile template -f grafana.yaml # RENDER ONLY

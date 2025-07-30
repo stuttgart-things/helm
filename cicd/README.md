@@ -1,12 +1,28 @@
 # stuttgart-things/helm/cicd
 
+<details><summary>FLUX-OPERATOR</summary>
+
+```bash
+cat <<EOF > flux-operator.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/flux-operator.yaml.gotmpl
+EOF
+
+helmfile template -f flux-operator.yaml # RENDER ONLY
+helmfile apply -f flux-operator.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+</details>
+
+
 <details><summary>CROSSPLANE</summary>
 
 ```bash
 cat <<EOF > crossplane.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml.gotmpl
     values:
       - namespace: crossplane-system
       - providers:

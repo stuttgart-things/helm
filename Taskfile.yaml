@@ -23,7 +23,7 @@ vars:
     sh: date +"%Y.%m%d.%H%M"
 
 tasks:
-  helmfile-operation:
+  helmfile-action:
     desc: Get app name
     cmds:
       - task: "{{ .OPERATION }}"
@@ -39,22 +39,6 @@ tasks:
         sh: |
           find "{{ .FOLDER }}" -maxdepth 1 -type f -name "*.yaml.gotmpl" | gum choose
 
-  render:
-    desc: Render helmfile
-    vars:
-      DAGGER_MODULE: github.com/stuttgart-things/dagger/helm
-      DAGGER_MODULE_VERSION: v0.25.0
-    cmds:
-      - |
-        echo HELMFILE_PATH: {{ .HELMFILE_PATH }}
-        echo HELMFILE: {{ .HELMFILE }}
-      - |
-        dagger call -m {{ .DAGGER_MODULE }}@{{ .DAGGER_MODULE_VERSION }} \
-        render-helmfile \
-        --src {{ .HELMFILE_PATH }} \
-        --helmfileName {{ .HELMFILE }} \
-        --registry-secret file://~/.docker/config.json \
-        -vv --progress plain
 
   gen-helmfile-dev:
     desc: Generate Helmfile include config for dev cluster
@@ -209,6 +193,23 @@ tasks:
       KUBECONFIG_FOLDER: ~/.kube
       ALL_KUBECONFIGS:
         sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
+
+  render:
+    desc: Render helmfile
+    vars:
+      DAGGER_MODULE: github.com/stuttgart-things/dagger/helm
+      DAGGER_MODULE_VERSION: v0.25.0
+    cmds:
+      - |
+        echo HELMFILE_PATH: {{ .HELMFILE_PATH }}
+        echo HELMFILE: {{ .HELMFILE }}
+      - |
+        dagger call -m {{ .DAGGER_MODULE }}@{{ .DAGGER_MODULE_VERSION }} \
+        render-helmfile \
+        --src {{ .HELMFILE_PATH }} \
+        --helmfileName {{ .HELMFILE }} \
+        --registry-secret file://~/.docker/config.json \
+        -vv --progress plain
 
   execute-base-cluster-setup:
     desc: Execute base setup on kind cluster
