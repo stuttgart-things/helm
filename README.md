@@ -406,7 +406,7 @@ helmfile apply -f metallb.yaml # APPLY HELMFILE
 cat <<EOF > cilium.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl
     values:
       - config: kind
       - clusterName: helm-dev
@@ -456,7 +456,7 @@ helmfile sync -f velero.yaml # APPLY HELMFILE
 cat <<EOF > cert-manager.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
     values:
       - version: v1.17.1
       - config: selfsigned
@@ -472,7 +472,7 @@ helmfile apply -f cert-manager.yaml # APPLY HELMFILE
 cat <<EOF > cert-manager.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
     values:
       - config: vault
       - pkiServer: https://vault-vsphere.labul.example.com:8200
@@ -501,7 +501,7 @@ helmfile apply -f ccert-manager.yaml # APPLY HELMFILE
 cat <<EOF > ingress-nginx.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml.gotmpl
     values:
       - enableHostPort: false # for kind enable
 EOF
