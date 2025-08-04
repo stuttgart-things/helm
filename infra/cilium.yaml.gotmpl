@@ -1,10 +1,19 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: kube-system
+      - version: 1.18.0
+      - configureLB: false
+      - config: kind
+      - clusterName: kind
+---
 releases:
   - name: cilium
     installed: true
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
     chart: cilium/cilium
-    version: 1.17.4
+    version: {{ .Values.version }}
     values:
       - "values/cilium-{{ .Values.config }}.values.yaml.gotmpl"
 
@@ -24,5 +33,5 @@ repositories:
     url: https://helm.cilium.io
     oci: false
   - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true
