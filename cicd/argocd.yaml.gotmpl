@@ -24,7 +24,7 @@ releases:
   - name: argocd
     disableValidationOnInstall: true
     installed: true
-    namespace: {{ .Values.version }}
+    namespace: {{ .Values.namespace }}
     chart: argo/argo-cd
     version: {{ .Values.version }}
 {{- if .Values.enableAvp }}
