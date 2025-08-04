@@ -4,10 +4,10 @@ Deploy Helm charts declaratively
 
 | Category    | Description           |
 |-------------|-----------------------|
+| 🛠️ [INFRA](./infra/README.md) | Infra apps |
 | 💾 [DATABASES](./database/README.md)  | Database deployments |
 | 📊 [MONITORING](./monitoring/README.md) | Monitoring stack setup |
-| 🔁 [CICD](./cicd/README.md) | CICD apps |
-
+| 🔁 [CICD](./cicd/README.md) | CI/CD apps |
 
 ## APPS
 
@@ -100,69 +100,6 @@ helmfile apply -f minio.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>ARGOCD</summary>
-
-### GENERATE PASSWORD
-
-```bash
-sudo apt -y install apache2-utils
-adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n')
-adminPasswordMTime=$(echo $(date +%FT%T%Z))
-```
-
-### ARGOCD w/ VAULT PLUGIN
-
-```bash
-cat <<EOF > argocd.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/argocd.yaml
-    values:
-      - namespace: argocd
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
-      - hostname: argocd
-      - domain: 172.18.0.2.nip.io
-      - ingressClassName: nginx
-      - adminPassword: $2y$10$sX7RPXUpEQKjdi7hjyYI0e0r0dlfaM1JmmVmujd05Lx5CJpEqJomC
-      - adminPasswordMTime: 2025-03-19T07:39:33UTC
-      - enableAvp: true
-      - vaultAddr: https://vault.172.18.0.2.nip.io
-      - vaultNamespace: root
-      - vaultRoleID: 1fa31949-8d0e-c100-c8ae-6eb287f8ea08
-      - vaultSecretID: b76ddf4b-ba30-fc01-61fd-9d97588a6c09
-      - imageHelfile: ghcr.io/helmfile/helmfile:v0.171.0
-      - imageAvp: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
-EOF
-
-helmfile template -f argocd.yaml # RENDER ONLY
-helmfile apply -f argocd.yaml # APPLY HELMFILE
-```
-
-### ARGOCD w/o VAULT PLUGIN
-
-```bash
-cat <<EOF > argocd.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/argocd.yaml
-    values:
-      - namespace: argocd
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
-      - hostname: argocd
-      - domain: 172.18.0.2.nip.io
-      - ingressClassName: nginx
-      - adminPassword: ""
-      - adminPasswordMTime: ""
-      - enableAvp: false
-EOF
-
-helmfile template -f argocd.yaml # RENDER ONLY
-helmfile apply -f argocd.yaml # APPLY HELMFILE
-```
-
-</details>
 
 <details><summary>VAULT</summary>
 
@@ -400,27 +337,6 @@ helmfile apply -f metallb.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>CILIUM</summary>
-
-```bash
-cat <<EOF > cilium.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl
-    values:
-      - config: kind
-      - clusterName: helm-dev
-      - configureLB: true
-      - ipRangeStart: 172.18.250.0
-      - ipRangeEnd: 172.18.250.50
-EOF
-
-helmfile template -f cilium.yaml # RENDER ONLY
-helmfile apply -f cilium.yaml # APPLY HELMFILE
-```
-
-</details>
-
 <details><summary>VELERO</summary>
 
 ```bash
@@ -447,24 +363,6 @@ helmfile sync -f velero.yaml # APPLY HELMFILE
 ```
 
 </details>
-
-<details><summary>CERT-MANAGER</summary>
-
-### w/ SELF-SIGNED
-
-```bash
-cat <<EOF > cert-manager.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
-    values:
-      - version: v1.17.1
-      - config: selfsigned
-EOF
-
-helmfile template -f cert-manager.yaml # RENDER ONLY
-helmfile apply -f cert-manager.yaml # APPLY HELMFILE
-```
 
 ### VAULT
 
@@ -495,22 +393,7 @@ helmfile apply -f ccert-manager.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>INGRESS-NGINX</summary>
 
-```bash
-cat <<EOF > ingress-nginx.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/ingress-nginx.yaml.gotmpl
-    values:
-      - enableHostPort: false # for kind enable
-EOF
-
-helmfile template -f ingress-nginx.yaml # RENDER ONLY
-helmfile apply -f ingress-nginx.yaml # APPLY HELMFILE
-```
-
-</details>
 
 <details><summary>METRICS-SERVER</summary>
 
@@ -936,7 +819,6 @@ helmfile template ${TEST_DIR}/${app}.yaml
 ```
 
 </details>
-
 ## AUTHORS
 
 ```yaml

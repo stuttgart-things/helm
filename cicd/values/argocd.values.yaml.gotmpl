@@ -1,5 +1,12 @@
 ---
 server:
+  server:
+    service:
+      type: {{ .Values.serviceType }}
+      {{- if hasKey .Values "nodePortHttp" }}
+      nodePortHttp: {{ .Values.nodePortHttp }}
+      {{- end }}
+{{- if .Values.enableIngress }}
   ingress:
     enabled: true
     annotations:
@@ -9,6 +16,8 @@ server:
     ingressClassName: {{ .Values.ingressClassName }}
     hostname: {{ .Values.hostname }}.{{ .Values.domain }}
     tls: true
+{{- end }}
+
 configs:
   secret:
     argocdServerAdminPassword: {{ .Values.adminPassword }}

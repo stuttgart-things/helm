@@ -1,0 +1,45 @@
+---
+environments:
+  default:
+    values:
+      - enableIngress: false
+      - enableAvp: false
+      - serviceType: ClusterIP
+      - adminPassword: ""
+      - adminPasswordMTime: ""
+      - version: 8.2.5
+      - namespace: argocd
+---
+releases:
+{{- if .Values.enableAvp }}
+  - name: argocd-avp-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: argocd
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/argocd-avp-configuration.values.yaml.gotmpl"
+{{- end }}
+  - name: argocd
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.version }}
+    chart: argo/argo-cd
+    version: {{ .Values.version }}
+{{- if .Values.enableAvp }}
+    needs:
+      - argocd/argocd-avp-configuration
+{{- end }}
+    values:
+      - "values/argocd.values.yaml.gotmpl"
+
+repositories:
+{{- if .Values.enableAvp }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+    oci: false
