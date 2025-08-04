@@ -7,20 +7,7 @@ environments:
       - providers:
           - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.21.0
           - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.18.0
-      - terraform:
-          configName: tf-provider
-          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.12.0
-          package: xpkg.upbound.io/upbound/provider-terraform
-          version: v0.21.0
-          poll: 10m
-          reconcileRate: 10
-          s3SecretName: s3
-      - secrets:
-          s3:
-            namespace: crossplane-system
-            kvs:
-              AWS_ACCESS_KEY_ID: unset
-              AWS_SECRET_ACCESS_KEY: unset
+      - deployTeraformProvider: false
 ---
 releases:
   - name: crossplane-deployment
@@ -31,6 +18,7 @@ releases:
     values:
       - "values/crossplane.values.yaml.gotmpl"
 
+{{- if .Values.deployTeraformProvider }}
   - name: terraform-provider
     installed: true
     needs:
@@ -41,11 +29,14 @@ releases:
     version: 0.3.15
     values:
       - "values/crossplane-terraform-provider.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
   - name: crossplane-stable
     url: https://charts.crossplane.io/stable
     oci: false
+{{- if .Values.deployTeraformProvider }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
+{{- end }}
