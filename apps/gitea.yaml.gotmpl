@@ -1,0 +1,35 @@
+---
+environments:
+  default:
+    values:
+      - version: 12.1.3
+      - namespace: gitea
+      - enableIngress: false
+      - clusterIssuer: selfsigned
+      - issuerKind: ClusterIssuer
+      - issuerKindAnnotation: "cluster-issuer"
+      - hostname: gitea
+      - domain: example.com
+      - ingressClassName: nginx
+      - storageClass: standard
+      - persistenceEnabled: true
+      - persistenceSize: 10Gi
+      - persistenceAccessModes:
+        - ReadWriteOnce
+      - httpServiceType: ClusterIP # NodePort
+      #- nodePortHttp: "30083"
+      - persistenceSize: 10Gi
+      - webhookAllowList: *
+---
+repositories:
+  - name: gitea
+    url: https://dl.gitea.com/charts
+    oci: false
+
+releases:
+  - name: gitea
+    namespace: {{ .Values.namespace }}
+    chart: gitea/gitea
+    version: {{ .Values.version }}
+    values:
+      - values/gitea.yaml.gotmpl
