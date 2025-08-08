@@ -8,6 +8,7 @@ Deploy Helm charts declaratively
 | 💾 [DATABASES](./database/README.md)  | Database deployments |
 | 📊 [MONITORING](./monitoring/README.md) | Monitoring stack setup |
 | 🔁 [CICD](./cicd/README.md) | CI/CD apps |
+| 📱 [APPS](./apps/README.md)  | App deployments |
 
 ## APPS
 
