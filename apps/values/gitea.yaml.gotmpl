@@ -3,6 +3,11 @@ gitea:
   config:
     webhook:
       ALLOWED_HOST_LIST: "{{ .Values.webhookAllowList }}"
+  admin:
+    username: {{ .Values.adminUser }}
+    password: {{ .Values.adminPassword }}
+    email: "{{ .Values.adminUser }}@local.domain"
+    passwordMode: {{ .Values.adminPasswordMode }}
 
 postgresql-ha:
   enabled: false
