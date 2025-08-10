@@ -20,6 +20,9 @@ environments:
       #- nodePortHttp: "30083"
       - persistenceSize: 10Gi
       - webhookAllowList: *
+      - adminUser: gitea_admin
+      - adminPassword: gitea
+      - adminPasswordMode: initialOnlyRequireReset
 ---
 repositories:
   - name: gitea
