@@ -19,7 +19,7 @@ environments:
       - httpServiceType: ClusterIP # NodePort
       #- nodePortHttp: "30083"
       - persistenceSize: 10Gi
-      - webhookAllowList: *
+      - webhookAllowList: "*"
       - adminUser: gitea_admin
       - adminPassword: gitea
       - adminPasswordMode: initialOnlyRequireReset

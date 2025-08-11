@@ -6,7 +6,7 @@
 cat <<EOF > grafana.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/grafana.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/grafana.yaml.gotmpl
     values:
       - ingressEnabled: true
       - hostname: grafana.k8scluster
