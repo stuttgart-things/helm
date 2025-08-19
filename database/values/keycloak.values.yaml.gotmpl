@@ -1,6 +1,7 @@
 ---
+{{- if .Values.enableIngress }}
 ingress:
-  enabled: true
+  enabled: {{ .Values.enableIngress }}
   ingressClassName: {{ .Values.ingressClassName }}
 {{- if not .Values.createCertificateResource }}
   annotations:
@@ -14,13 +15,18 @@ ingress:
     - hosts:
         - {{ .Values.hostname }}.{{ .Values.domain }}
       secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+{{- end }}
 
 auth:
   adminUser: {{ .Values.adminUser }}
   adminPassword: {{ .Values.adminPassword }}
 proxy: edge
 service:
-  type: ClusterIP
+  type: {{ .Values.serviceType }}
+  {{- if hasKey .Values "nodePortHttp" }}
+  nodePorts:
+    http: {{ .Values.nodePortHttp }}
+  {{- end }}
 
 extraEnvVars:
   - name: KEYCLOAK_LOG_LEVEL

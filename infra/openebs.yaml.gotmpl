@@ -1,0 +1,26 @@
+---
+environments:
+  default:
+    values:
+      - namespace: openebs-system
+      - profile: localpv
+      - openebs_volumesnapshots_enabled: false
+      - openebs_csi_node_init_containers_enabled: false
+      - openebs_local_lvm_enabled: false
+      - openebs_local_zfs_enabled: false
+      - openebs_replicated_mayastor_enabled: false
+      - version: 4.2.0
+---
+releases:
+  - name: openebs
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: openebs/openebs
+    version: {{ .Values.version }}
+    values:
+      - "values/openebs-{{ .Values.profile }}.values.yaml.gotmpl"
+
+repositories:
+  - name: openebs
+    url: https://openebs.github.io/openebs
+    oci: false

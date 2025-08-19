@@ -11,9 +11,11 @@ environments:
       - issuerKind: ClusterIssuer
       - enablePersistence: true
       - namespace: observability
-      - version: 9.3.0
+      - version: 9.3.2
       - issuerKindAnnotation: "cluster-issuer"
       - createCertificateResource: false
+      - serviceType: ClusterIP
+      #- nodePortHttp: "30084"
 ---
 repositories:
 {{- if .Values.createCertificateResource }}

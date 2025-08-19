@@ -10,12 +10,15 @@ environments:
       - hostname: keycloak
       - domain: example.com
       - ingressClassName: nginx
+      - serviceType: ClusterIP
+      #- nodePortHttp: "30084"
       - namespace: keycloak
       - adminUser: admin
       - adminPassword: Hallo123
       - storageClass: standard
       - issuerKindAnnotation: "cluster-issuer"
       - createCertificateResource: false
+      - version: 25.1.0
 ---
 releases:
 {{- if .Values.createCertificateResource }}
@@ -33,7 +36,7 @@ releases:
     installed: true
     namespace: keycloak
     chart: bitnami/keycloak
-    version: 25.0.0
+    version: {{ .Values.version }}
 {{- if .Values.createCertificateResource }}
     needs:
       - keycloak/keycloak-cert-configuration

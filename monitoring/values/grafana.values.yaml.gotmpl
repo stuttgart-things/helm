@@ -4,6 +4,7 @@ grafana.ini:
 {{ .Values.grafanaConfig | nindent 2 }}
 {{- end }}
 
+{{- if .Values.ingressEnabled }}
 ingress:
   enabled: {{ .Values.ingressEnabled }}
   ingressClassName: nginx
@@ -20,6 +21,7 @@ ingress:
     - secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
       hosts:
         - {{ .Values.hostname }}.{{ .Values.domain }}
+{{- end }}
 
 initChownData:
   enabled: false
@@ -36,3 +38,9 @@ persistence:
   extraPvcLabels: {}
   disableWarning: false
 {{- end }}
+
+service:
+  type: {{ .Values.serviceType }}
+  {{- if hasKey .Values "nodePortHttp" }}
+  nodePort: {{ .Values.nodePortHttp }}
+  {{- end }}
