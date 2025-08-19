@@ -1,8 +1,34 @@
 ---
 gitea:
+{{- if .Values.enableOauth }}
+  oauth:
+    - name: "{{ .Values.oauthName }}"
+      provider: "{{ .Values.oauthProvider }}"
+      key: "{{ .Values.oauthKey }}"
+      secret: "{{ .Values.oauthSecret }}"
+      autoDiscoverUrl: "{{ .Values.oauthAutoDiscoverUrl }}"
+      scopes: "{{ .Values.oauthScopes }}"
+      groupClaimName: "{{ .Values.oauthGroupClaimName }}"
+      adminGroup: "{{ .Values.oauthAdminGroup }}"
+{{- end }}
+
   config:
+{{- if .Values.enableOauth }}
+    oauth2_client:
+      ENABLE_AUTO_REGISTRATION: {{ .Values.oauthEnableAutoRegistration }}
+      ACCOUNT_LINKING: {{ .Values.oauthAccountLinking }}
+{{- end }}
+
+    server:
+      DOMAIN: {{ .Values.serverDomain }}
+      {{- if hasKey .Values "nodePortHttp" }}
+      HTTP_PORT: "{{ .Values.nodePortHttp }}"
+      {{- end }}
+      ROOT_URL: {{ .Values.rootUrl }}
+
     webhook:
       ALLOWED_HOST_LIST: "{{ .Values.webhookAllowList }}"
+
   admin:
     username: {{ .Values.adminUser }}
     password: {{ .Values.adminPassword }}

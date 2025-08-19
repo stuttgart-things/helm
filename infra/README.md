@@ -1,5 +1,28 @@
 # stuttgart-things/helm/infra
 
+<details><summary>OPENEBS</summary>
+
+```bash
+cat <<EOF > openebs.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml.gotmpl
+    values:
+      - namespace: openebs-system
+      - profile: localpv
+      - openebs_volumesnapshots_enabled: false
+      - openebs_csi_node_init_containers_enabled: false
+      - openebs_local_lvm_enabled: false
+      - openebs_local_zfs_enabled: false
+      - openebs_replicated_mayastor_enabled: false
+EOF
+
+helmfile template -f openebs.yaml # RENDER ONLY
+helmfile apply -f openebs.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>CILIUM</summary>
 
 ```bash

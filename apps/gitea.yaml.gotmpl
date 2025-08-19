@@ -23,6 +23,9 @@ environments:
       - adminUser: gitea_admin
       - adminPassword: gitea
       - adminPasswordMode: initialOnlyRequireReset
+      - enableOauth: false
+      - rootUrl: "http://example.com:31635/"
+      - serverDomain: example.com
 ---
 repositories:
   - name: gitea
