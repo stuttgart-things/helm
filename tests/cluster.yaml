@@ -1,129 +1,52 @@
 ---
-template:
-  kind: |
-    ---
-    kind: Cluster
-    apiVersion: kind.x-k8s.io/v1alpha4
-    networking:
-      disableDefaultCNI: true
-      kubeProxyMode: none
-    nodes:
-      - role: control-plane
-        image: kindest/node:{{ .k8sVersion}}
-        kubeadmConfigPatches:
-          - |
-            kind: InitConfiguration
-            nodeRegistration:
-              kubeletExtraArgs:
-                node-labels: "ingress-ready=true"
-        extraPortMappings:
-          - containerPort: 80
-            hostPort: 80
-            protocol: TCP
-          - containerPort: 443
-            hostPort: 443
-            protocol: TCP
-      - role: worker
-        image: kindest/node:{{ .k8sVersion}}
-        extraMounts:
-          - hostPath: /mnt/data-node1  # Host directory to mount
-            containerPath: /data       # Mount path inside the KinD node
-      - role: worker
-        image: kindest/node:{{ .k8sVersion}}
-        extraMounts:
-          - hostPath: /mnt/data-node2  # Host directory to mount
-            containerPath: /data       # Mount path inside the KinD node
-      - role: worker
-        image: kindest/node:{{ .k8sVersion}}
-        extraMounts:
-          - hostPath: /mnt/data-node3  # Host directory to mount
-            containerPath: /data       # Mount path inside the KinD node
-
-  kind-infra: |
-    ---
-    helmDefaults:
-      verify: false
-      wait: true
-      timeout: 600
-      recreatePods: false
-      force: true
-
-    helmfiles:
-      - path: {{ .source }}/infra/cilium.yaml
-        values:
-          - version: 1.17.1
-          - config: kind
-          - ipRangeStart: 172.18.250.0
-          - ipRangeEnd: 172.18.250.50
-          - clusterName: {{ .clusterName }}
-
-      - path: {{ .source }}/infra/ingress-nginx.yaml
-        values:
-          - enableHostPort: true
-          - version: 4.12.0
-
-      - path: {{ .source }}/infra/cert-manager.yaml
-        values:
-          - version: v1.17.1
-          - config: selfsigned
-
-  k3d: |
-    ---
-    apiVersion: k3d.io/v1alpha5
-    kind: Simple
-    metadata:
-      name: {{ .clusterName }}
-    servers: 1
-    agents: 2
-    ports:
-      - port: 80:80   # Expose HTTP
-        nodeFilters:
-          - loadbalancer
-      - port: 443:443 # Expose HTTPS
-        nodeFilters:
-          - loadbalancer
-    options:
-      k3d:
-        wait: true
-      k3s:
-        extraArgs:
-          - arg: "--disable=traefik"   # Disable default Traefik Ingress
-            nodeFilters:
-              - server:0
-    volumes:
-      - volume: /etc/rancher/k3s
-        nodeFilters:
-          - server:0
-
-  ip: |
-    ---
-    helmDefaults:
-      verify: false
-      wait: true
-      timeout: 600
-      recreatePods: false
-      force: true
-
-    helmfiles:
-      - path: {{ .source }}/infra/metallb.yaml
-        values:
-          - version: 6.4.5
-          - ipRange: {{ .ipRange }}
-
-  ingress: |
-    ---
-    helmDefaults:
-      verify: false
-      wait: true
-      timeout: 600
-      recreatePods: false
-      force: true
-
-    helmfiles:
-      - path: {{ .source }}/infra/ingress-nginx.yaml
-        values:
-          - version: 4.12.0
-      - path: {{ .source }}/infra/cert-manager.yaml
-        values:
-          - version: v1.17.1
-          - config: selfsigned
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  disableDefaultCNI: false
+  kubeProxyMode: iptables
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.32.3
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: ingress-ready=true
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+      - containerPort: 31641
+        hostPort: 31641
+      - containerPort: 31642
+        hostPort: 31642
+      - containerPort: 31643
+        hostPort: 31643
+      - containerPort: 31644
+        hostPort: 31644
+      - containerPort: 31645
+        hostPort: 31645
+      - containerPort: 31646
+        hostPort: 31646
+      - containerPort: 31647
+        hostPort: 31647
+      - containerPort: 31648
+        hostPort: 31648
+  - role: worker
+    image: kindest/node:v1.33.2
+    extraMounts:
+      - hostPath: /mnt/helm-test-node1 # Host directory to mount
+        containerPath: /data                # Mount path inside the KinD node
+  - role: worker
+    image: kindest/node:v1.33.2
+    extraMounts:
+      - hostPath: /mnt/helm-test-node2 # Host directory to mount
+        containerPath: /data                # Mount path inside the KinD node
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+      endpoint = ["https://docker.harbor.idp.kubermatic.sva.dev", "https://registry-1.docker.io"]

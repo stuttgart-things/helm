@@ -1,0 +1,22 @@
+---
+global:
+  imageRegistry: {{ .Values.imageRegistry }}
+  postgresql:
+    auth:
+      postgresPassword: {{ .Values.postgresPassword }}
+      username: {{ .Values.username }}
+      password: {{ .Values.password }}
+      database: {{ .Values.database }}
+
+image:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ .Values.imageRepository }}
+  tag: {{ .Values.imageTag }}
+
+primary:
+  service:
+    type: {{ .Values.serviceType }}
+    ports:
+      postgresql: {{ .Values.postgresqlPort }}
+    nodePorts:
+      postgresql: "{{ .Values.nodePort }}"

@@ -1,8 +1,15 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: metallb-system
+      - version: 6.4.22
+      - ipRange: 0.0.0.0-0.0.0.10 # DUMMY RANGE
+---
 releases:
   - name: metallb-deployment
     installed: true
-    namespace: metallb-system
+    namespace: {{ .Values.namespace }}
     chart: bitnami/metallb
     version: {{ .Values.version }}
 
@@ -11,7 +18,7 @@ releases:
     needs:
       - metallb-system/metallb-deployment
     installed: true
-    namespace: metallb-system
+    namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
@@ -22,5 +29,5 @@ repositories:
     url: https://charts.bitnami.com/bitnami
     oci: false
   - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true

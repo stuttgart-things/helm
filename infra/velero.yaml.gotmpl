@@ -1,0 +1,30 @@
+---
+environments:
+  default:
+    values:
+      - namespace: velero
+      - version: 10.1.0
+      - backupsEnabled: true
+      - snapshotsEnabled: true
+      - deployNodeAgent: true
+      - s3StorageLocation: default
+      - awsAccessKeyID: adminadmin
+      - awsSecretAccessKey: adminadmin
+      - s3Bucket: velero
+      - s3CaCert: LS0tLS1TVIzQ1...S0tCg==
+      - s3Location: artifacts.172.18.0.2.nip.io
+      - imageAwsVeleroPlugin: velero/velero-plugin-for-aws:v1.12.2
+---
+releases:
+  - name: velero
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: velero/velero
+    version: {{ .Values.version }}
+    values:
+      - "values/velero.values.yaml.gotmpl"
+
+repositories:
+  - name: velero
+    url: https://vmware-tanzu.github.io/helm-charts/
+    oci: false

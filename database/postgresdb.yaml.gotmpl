@@ -1,0 +1,30 @@
+---
+environments:
+  default:
+    values:
+      - namespace: postgres
+      - version: 16.7.26
+      - postgresPassword: "platformEngineer"
+      - username: "dev"
+      - password: "platformEngineer"
+      - database: "dev"
+      - serviceType: "ClusterIP"
+      - postgresqlPort: 5432
+      - nodePort: ""
+      - imageRegistry: "docker.io"
+      - imageRepository: "bitnami/postgresql"
+      - imageTag: "17.6.0-debian-12-r0"
+---
+repositories:
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+    oci: false
+
+releases:
+  - name: postgresql
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: bitnami/postgresql
+    version: {{ .Values.version }}
+    values:
+      - "values/postgresdb.values.yaml.gotmpl"

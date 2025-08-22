@@ -1,0 +1,56 @@
+---
+environments:
+  default:
+    values:
+      - namespace: kube-system
+      - version: v4.6.0
+      - nfsProvisioner: true
+      - storageClass: nfs-client
+      - reclaimPolicy: Delete
+      - volumeBindingMode: Immediate
+      - nfsServiceAccountCreate: true
+      - nfsRbacCreate: true
+      - nfsRbacName: nfs
+      - nfsDriverName: nfs.csi.k8s.io
+      - nfsFeatureEnableFSGroupPolicy: true
+      - nfsFeatureEnableInlineVolume: false
+      - nfsKubeletDir: /var/lib/kubelet
+      - nfsDriverMountPermissions: 0
+      - nfsExternalSnapshotterEnabled: false
+      - nfsServiceAccountController: csi-nfs-controller-sa
+      - mountOptionsNFS3:
+          - nfsvers=3
+          - rsize=1048576
+          - wsize=1048576
+          - tcp
+          - hard
+          - nolock
+      - mountOptionsNFS4:
+          - vers=4.1
+---
+releases:
+  - name: nfs-csi
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/csi-driver-nfs
+    version: {{ .Values.version }}
+    values:
+      - "values/nfs-csi.values.yaml.gotmpl"
+
+  - name: nfs-storageclass-configuration
+    needs:
+      - kube-system/nfs-csi
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/nfs-csi-configuration.yaml.gotmpl"
+
+repositories:
+  - name: nfs-csi
+    url: oci://eu.gcr.io/stuttgart-things
+    oci: true
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true

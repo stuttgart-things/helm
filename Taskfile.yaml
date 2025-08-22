@@ -11,11 +11,11 @@ vars:
   TEST_RELEASE_TEMPLATES: tests/releases.yaml
   TEST_DIR: /tmp
   TEST_DEFAULTS: tests/defaults.yaml
-  CLUSTER_NAME: helm-dev
+  CLUSTER_NAME: helm-test
   PATH_KUBE_CONFIG: /home/sthings/.kube/kind-{{ .CLUSTER_NAME }}
   PATH_CLUSTER_TEMPLATE: tests/cluster.yaml
   DEV_CLUSTER_DIR: /tmp/helmfiles/cluster
-  KIND_CONFIG_PATH: /tmp/kind-config.yaml
+  KIND_CONFIG_PATH: tests/cluster.yaml
   CLUSTER_INFRA_HELMFILE: /tmp/kind-infra.yaml
   TEST_FILES: tests/releases.yaml
   POST_CONFIG_FILES: tests/post-release.yaml
@@ -34,11 +34,26 @@ tasks:
       OPERATION:
         sh: gum choose "render" "deploy"
       FOLDER:
-        sh: gum choose "database" "monitoring" "cicd"
+        sh: gum choose "database" "monitoring" "cicd" "infra"
       APP:
         sh: |
           find "{{ .FOLDER }}" -maxdepth 1 -type f -name "*.yaml.gotmpl" | gum choose
 
+  create-kind-cluster:
+    desc: Create, Start & Configure kind cluster
+    env:
+      KUBECONFIG: "{{ .PATH_KUBE_CONFIG }}"
+    cmds:
+      - task: destroy-kind-cluster
+      - |
+        kind create cluster \
+        --config {{ .KIND_CONFIG_PATH }} \
+        --name {{ .CLUSTER_NAME }} \
+        --kubeconfig {{ .PATH_KUBE_CONFIG }}
+
+        kubectl get nodes --kubeconfig {{ .PATH_KUBE_CONFIG }}
+      # - task: execute-base-cluster-setup
+      # - task: output-ingress-nipio
 
   gen-helmfile-dev:
     desc: Generate Helmfile include config for dev cluster
@@ -83,8 +98,6 @@ tasks:
       - git branch
       - git branch --set-upstream-to=origin/main ${BRANCH_NAME}
 
-
-
   pr:
     desc: Create pull request into main
     cmds:
@@ -104,7 +117,6 @@ tasks:
       - npx semantic-release --dry-run
       - npx semantic-release --debug --no-ci
       - echo released version $(git describe --tags --abbrev=0)
-
 
   install-release:
     desc: Test a release
@@ -278,33 +290,7 @@ tasks:
 
         fi
 
-  create-kind-cluster:
-    desc: Create, Start & Configure kind cluster
-    env:
-      KUBECONFIG: "{{ .PATH_KUBE_CONFIG }}"
-    cmds:
-      - task: destroy-kind-cluster
-      - |
-        touch {{ .KIND_CONFIG_PATH }}
-        cat {{ .KIND_CONFIG_PATH }}
-        gum confirm "Do you want to create cluster {{ .CLUSTER_NAME }}?" || exit 0
 
-        K8S_VERSION=$(gum input --placeholder "Kubernetes version" --value "v1.32.2")
-
-        # CREATE NEW CLUSTER
-        machineshop render \
-        --source local \
-        --template {{ .PATH_CLUSTER_TEMPLATE }} \
-        --output file \
-        --values "clusterName={{ .CLUSTER_NAME }}, k8sVersion=${K8S_VERSION}" \
-        --kind multikey \
-        --key kind \
-        --destination {{ .KIND_CONFIG_PATH }}
-
-        kind create cluster --config {{ .KIND_CONFIG_PATH }} --name {{ .CLUSTER_NAME }} --kubeconfig {{ .PATH_KUBE_CONFIG }}
-        kubectl get nodes
-      - task: execute-base-cluster-setup
-      - task: output-ingress-nipio
 
   output-ingress-nipio:
     desc: Output ingress domain
