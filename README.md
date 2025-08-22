@@ -297,51 +297,6 @@ helmfile apply -f nginx.yaml# APPLY HELMFILE # APPLY HELMFILE
 
 ## INFRA
 
-<details><summary>METALLB</summary>
-
-```bash
-cat <<EOF > metallb.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml
-    values:
-      - version: 6.4.5
-      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
-EOF
-
-helmfile template -f metallb.yaml # RENDER ONLY
-helmfile apply -f metallb.yaml # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>VELERO</summary>
-
-```bash
-cat <<EOF > velero.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/velero.yaml
-    values:
-      - namespace: velero
-      - backupsEnabled: true
-      - snapshotsEnabled: true
-      - deployNodeAgent: true
-      - s3StorageLocation: default
-      - awsAccessKeyID: adminadmin
-      - awsSecretAccessKey: adminadmin
-      - s3Bucket: velero
-      - s3CaCert: LS0tLS1TVIzQ1...S0tCg==
-      - s3Location: artifacts.172.18.0.2.nip.io
-      - imageAwsVeleroPlugin: velero/velero-plugin-for-aws:v1.11.1
-EOF
-
-helmfile template -f velero.yaml # RENDER ONLY
-helmfile sync -f velero.yaml # APPLY HELMFILE
-```
-
-</details>
-
 ### VAULT
 
 ```bash
@@ -373,74 +328,6 @@ helmfile apply -f ccert-manager.yaml # APPLY HELMFILE
 
 
 
-<details><summary>METRICS-SERVER</summary>
-
-```bash
-cat <<EOF > metrics-server.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/metrics-server.yaml
-EOF
-
-helmfile template -f metrics-server.yaml # RENDER ONLY
-helmfile apply -f metrics-server.yaml # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>LONGHORN</summary>
-
-```bash
-cat <<EOF > longhorn.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/longhorn.yaml
-    values:
-      - longhornDefaultClass: false
-EOF
-
-helmfile template -f longhorn.yaml # RENDER ONLY
-helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>NFS-CSI</summary>
-
-```bash
-cat <<EOF > nfs-csi.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml
-    values:
-      - nfsServerFQDN: 10.31.101.26
-      - nfsSharePath: /data/col1/sthings
-      - clusterName: k3d-my-cluster
-      - nfsSharePath: /data/col1/sthings
-EOF
-
-helmfile template -f nfs-csi.yaml # RENDER ONLY
-helmfile apply -f nfs-csi.yaml # APPLY HELMFILE
-```
-
-</details>
-
-<details><summary>NFS-SERVER-PROVISIONER</summary>
-
-```bash
-cat <<EOF > nfs-server-provisioner.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-server-provisioner.yaml
-    values:
-      - version: 1.8.0
-EOF
-
-helmfile template -f nfs-server-provisioner.yaml # RENDER ONLY
-helmfile apply -f nfs-server-provisioner.yaml # APPLY HELMFILE
-```
-
-</details>
 
 ## USAGE/DEV
 

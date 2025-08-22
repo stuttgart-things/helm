@@ -1,10 +1,16 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: kube-system
+      - version: 3.13.0
+---
 releases:
   - name: metrics-server
     installed: true
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
     chart: metrics-server/metrics-server
-    version: 3.12.2
+    version: {{ .Values.version }}
     values:
       - "values/metrics-server.values.yaml.gotmpl"
 

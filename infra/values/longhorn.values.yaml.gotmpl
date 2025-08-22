@@ -1,8 +1,8 @@
 ---
-installCRDs: true
+installCRDs: {{ .Values.longhornInstallCRDs }}
 persistence:
   defaultClass: {{ .Values.longhornDefaultClass }}
-  defaultFsType: ext4
-  defaultMkfsParams: ""
-  defaultDataLocality: disabled
-  reclaimPolicy: Delete
+  defaultFsType: {{ .Values.longhornDefaultFsType }}
+  defaultMkfsParams: "{{ .Values.longhornDefaultMkfsParams }}"
+  defaultDataLocality: {{ .Values.longhornDefaultDataLocality }}
+  reclaimPolicy: {{ .Values.longhornReclaimPolicy }}

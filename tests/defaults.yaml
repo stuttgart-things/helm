@@ -1,7 +1,0 @@
----
-source: "git::https://github.com/stuttgart-things/helm.git@nginx.yaml"
-
-zotStorageClass: openebs-hostpath
-zotStorageSize: 4Gi
-
-metallbIpRange: ""

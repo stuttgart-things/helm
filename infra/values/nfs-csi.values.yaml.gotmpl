@@ -1,15 +1,16 @@
+---
 serviceAccount:
-  create: true
-  controller: csi-nfs-controller-sa
+  create: {{ .Values.nfsServiceAccountCreate }}
+  controller: {{ .Values.nfsServiceAccountController }}
 rbac:
-  create: true
-  name: nfs
+  create: {{ .Values.nfsRbacCreate }}
+  name: {{ .Values.nfsRbacName }}
 driver:
-  name: nfs.csi.k8s.io
-  mountPermissions: 0
+  name: {{ .Values.nfsDriverName }}
+  mountPermissions: {{ .Values.nfsDriverMountPermissions }}
 feature:
-  enableFSGroupPolicy: true
-  enableInlineVolume: false
-kubeletDir: /var/lib/kubelet
+  enableFSGroupPolicy: {{ .Values.nfsFeatureEnableFSGroupPolicy }}
+  enableInlineVolume: {{ .Values.nfsFeatureEnableInlineVolume }}
+kubeletDir: {{ .Values.nfsKubeletDir }}
 externalSnapshotter:
-  enabled: false
+  enabled: {{ .Values.nfsExternalSnapshotterEnabled }}
