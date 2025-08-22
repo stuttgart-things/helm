@@ -55,7 +55,7 @@ tasks:
       # - task: execute-base-cluster-setup
       # - task: output-ingress-nipio
 
-  gen-helmfile-dev:
+  generate-helmfile-include:
     desc: Generate Helmfile include config for dev cluster
     cmds:
       - |
@@ -78,7 +78,7 @@ tasks:
       APP:
         sh: gum input --placeholder "Enter app name"
       KIND:
-        sh: gum choose "database" "monitoring" "apps"
+        sh: gum choose "infra" "database" "monitoring" "apps"
       INCLUDE:
         sh: gum choose "local" "git" --header="Local or git include?"
       CLUSTER_NAME:

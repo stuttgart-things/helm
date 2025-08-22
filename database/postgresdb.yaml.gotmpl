@@ -4,9 +4,9 @@ environments:
     values:
       - namespace: postgres
       - version: 16.7.26
-      - postgresPassword: "platformEngineer"
+      - postgresPassword: "platformEngineer" # pragma: allowlist secret
       - username: "dev"
-      - password: "platformEngineer"
+      - password: "platformEngineer" # pragma: allowlist secret
       - database: "dev"
       - serviceType: "ClusterIP"
       - postgresqlPort: 5432

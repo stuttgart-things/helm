@@ -1,0 +1,19 @@
+---
+global:
+  imageRegistry: {{ .Values.imageRegistry }}
+  security:
+    allowInsecureImages: true
+
+controller:
+  image:
+    registry: {{ .Values.imageRegistry }}
+    repository: {{ .Values.controllerRepository }}
+    tag: {{ .Values.controllerTag }}
+    digest: "{{ .Values.controllerDigest }}"
+
+speaker:
+  image:
+    registry: {{ .Values.imageRegistry }}
+    repository: {{ .Values.speakerRepository }}
+    tag: {{ .Values.speakerTag }}
+    digest: "{{ .Values.speakerDigest }}"
