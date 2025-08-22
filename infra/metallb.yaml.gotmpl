@@ -5,29 +5,43 @@ environments:
       - namespace: metallb-system
       - version: 6.4.22
       - ipRange: 0.0.0.0-0.0.0.10 # DUMMY RANGE
+      - imageRegistry: ghcr.io
+      - controllerRepository: stuttgart-things/metallb-controller
+      - controllerTag: 0.15.2-debian-12-r7
+      - controllerDigest: ""
+      - speakerRepository: stuttgart-things/metallb-speaker
+      - speakerTag: 0.15.2-debian-12-r6
+      - speakerDigest: ""
+      - deployMetallb: true
+      - configureMetallb: false
 ---
 releases:
+{{- if .Values.deployMetallb }}
   - name: metallb-deployment
     installed: true
     namespace: {{ .Values.namespace }}
-    chart: bitnami/metallb
+    chart: stuttgart-things/charts/metallb/metallb
     version: {{ .Values.version }}
+    values:
+      - "values/metallb-deployment.values.yaml.gotmpl"
+    hooks:
+      - events: ["presync"]
+        command: "sh"
+        args: ["-c", "echo 'Waiting for CRDs'; sleep 10"]
+{{- end }}
 
+{{- if .Values.configureMetallb }}
   - name: metallb-configuration
     disableValidationOnInstall: true
-    needs:
-      - metallb-system/metallb-deployment
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
       - "values/metallb.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
-    oci: false
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true

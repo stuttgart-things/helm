@@ -121,17 +121,29 @@ helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
 <details><summary>METALLB</summary>
 
 ```bash
-cat <<EOF > metallb.yaml
+cat <<EOF > metallb-deployment.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb.yaml.gotmpl
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb-deployment.yaml.gotmpl
     values:
-      - version: 6.4.5
-      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
+      - version: 6.4.22
+      - configureMetallb: false
+      - deployMetallb: true
 EOF
 
-helmfile template -f metallb.yaml # RENDER ONLY
-helmfile apply -f metallb.yaml # APPLY HELMFILE
+cat <<EOF > metallb-configuration.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/metallb-configuration.yaml.gotmpl
+    values:
+      - ipRange: 10.31.103.4-10.31.103.4 # EXAMPLE RANGE
+      - configureMetallb: true
+      - deployMetallb: false
+EOF
+
+helmfile apply -f metallb-deployment.yaml # APPLY DEPLOYMENT
+kubectl wait --for=condition=Ready pods --all -n metallb-system --timeout=120s
+helmfile apply -f metallb-configuration.yaml # APPLY CONFIGURATION
 ```
 
 </details>
