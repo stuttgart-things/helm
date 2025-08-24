@@ -73,8 +73,9 @@ mirror_image() {
     local image_name="${image%%:*}"
     local tag="${image##*:}"
 
-    echo "=== Mirroring image: $image → $target_registry/$(basename $image_name):$tag ==="
-    skopeo copy "docker://$image" "docker://$target_registry/$(basename $image_name):$tag"
+    echo "=== Mirroring image: $image → $target_registry/$(basename "$image_name"):$tag ==="
+    skopeo copy "docker://$image" "docker://$target_registry/$(basename "$image_name"):$tag"
+
     echo
 }
 

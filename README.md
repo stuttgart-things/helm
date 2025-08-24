@@ -102,40 +102,6 @@ helmfile apply -f minio.yaml # APPLY HELMFILE
 </details>
 
 
-<details><summary>VAULT</summary>
-
-### DEPLOY
-
-```bash
-cat <<EOF > vault.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml
-    values:
-      - namespace: vault
-      - injectorEnabled: true
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
-      - hostname: vault
-      - domain: 172.18.0.2.nip.io
-      - ingressClassName: nginx
-EOF
-
-helmfile template -f vault.yaml # RENDER ONLY
-helmfile apply -f vault.yaml # APPLY HELMFILE
-```
-
-### UNSEAL
-
-```bash
-kubectl -n vault exec -it vault-server-0 -- vault operator init
-kubectl -n vault exec -it vault-server-0 -- vault operator unseal <UNSEALKEY-X>
-kubectl -n vault exec -it vault-server-0 -- vault operator unseal <UNSEALKEY-Y>
-# ...
-kubectl -n vault exec -it vault-server-0 -- vault status
-```
-
-</details>
 
 <details><summary>KOMOPLANE</summary>
 
