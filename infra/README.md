@@ -4,18 +4,20 @@ Infrastructure Helmfile templates for deploying common Kubernetes components.
 
 ---
 
-## Usage
+## USAGE
 
 Each service can be deployed by writing a small Helmfile definition and then applying it.
 
 ```bash
-# Render only
+# RENDER ONLY
 helmfile template -f <service>.yaml
 
-# Apply
+# APPLY
 helmfile apply -f <service>.yaml
-```
 
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
 ---
 
 ## SERVICES
@@ -36,9 +38,6 @@ helmfiles:
       - openebs_local_zfs_enabled: false
       - openebs_replicated_mayastor_enabled: false
 EOF
-
-helmfile template -f openebs.yaml # RENDER ONLY
-helmfile apply -f openebs.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -57,9 +56,6 @@ helmfiles:
       - ipRangeStart: 172.18.250.0
       - ipRangeEnd: 172.18.250.50
 EOF
-
-helmfile template -f cilium.yaml # RENDER ONLY
-helmfile apply -f cilium.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -74,9 +70,6 @@ helmfiles:
     values:
       - enableHostPort: false # for kind enable
 EOF
-
-helmfile template -f ingress-nginx.yaml # RENDER ONLY
-helmfile apply -f ingress-nginx.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -94,9 +87,6 @@ helmfiles:
       - version: v1.17.1
       - config: selfsigned
 EOF
-
-helmfile template -f cert-manager.yaml # RENDER ONLY
-helmfile apply -f cert-manager.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -111,9 +101,6 @@ helmfiles:
     values:
       - longhornDefaultClass: false
 EOF
-
-helmfile template -f longhorn.yaml # RENDER ONLY
-helmfile apply -f longhorn.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
@@ -156,9 +143,6 @@ cat <<EOF > metrics-server.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/metrics-server.yaml.gotmpl
 EOF
-
-helmfile template -f metrics-server.yaml # RENDER ONLY
-helmfile apply -f metrics-server.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -176,9 +160,6 @@ helmfiles:
       - clusterName: k3d-my-cluster
       - nfsSharePath: /data/col1/sthings
 EOF
-
-helmfile template -f nfs-csi.yaml # RENDER ONLY
-helmfile apply -f nfs-csi.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -193,9 +174,6 @@ helmfiles:
     values:
       - version: 1.8.0
 EOF
-
-helmfile template -f nfs-server-provisioner.yaml # RENDER ONLY
-helmfile apply -f nfs-server-provisioner.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -220,9 +198,6 @@ helmfiles:
       - s3Location: artifacts.172.18.0.2.nip.io
       - imageAwsVeleroPlugin: velero/velero-plugin-for-aws:v1.11.1
 EOF
-
-helmfile template -f velero.yaml # RENDER ONLY
-helmfile sync -f velero.yaml # APPLY HELMFILE
 ```
 
 </details>

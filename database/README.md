@@ -1,19 +1,38 @@
 # stuttgart-things/helm/database
 
+Database Helmfile templates for deploying common stateful services.
+
+---
+
+## USAGE
+
+Each service can be deployed by writing a small Helmfile definition and then applying it.
+
+```bash
+# RENDER ONLY
+helmfile template -f <service>.yaml
+
+# APPLY
+helmfile apply -f <service>.yaml
+
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
+---
+
+## SERVICES
+
 <details><summary>OPENLDAP</summary>
 
 ```bash
 cat <<EOF > openldap.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@datbase/openldap.yaml.gotmpl
+  - path: git::https://github.com/stuttgart-things/helm.git@database/openldap.yaml.gotmpl
     values:
       - adminUser: admin
       - ldapDomain: dc=sthings,dc=de
 EOF
-
-helmfile template -f openldap.yaml # RENDER ONLY
-helmfile apply -f openldap.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -21,7 +40,7 @@ helmfile apply -f openldap.yaml # APPLY HELMFILE
 <details><summary>ZOT </summary>
 
 ```bash
-cat <<EOF > zot-registry.yaml
+cat <<EOF > zot.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@database/zot.yaml.gotmpl
@@ -33,9 +52,6 @@ helmfiles:
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
 EOF
-
-helmfile template -f zot-registry.yaml # RENDER ONLY
-helmfile apply -f zot-registry.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -50,16 +66,13 @@ helmfiles:
     values:
       - ingressClassName: nginx
       - hostname: keycloak
-      - domain: k8scluster.sthings-vsphere.example.com
+      - domain: k8scluster.example.com
       - adminUser: admin
       - adminPassword: <your-password>
       - storageClass: nfs4-csi
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
 EOF
-
-helmfile template -f keycloak.yaml # RENDER ONLY
-helmfile apply -f keycloak.yaml # APPLY HELMFILE
 ```
 
 ```bash
@@ -71,9 +84,6 @@ helmfiles:
       - clusterIssuer: selfsigned
       - domain: 172.18.0.4.nip.io
 EOF
-
-helmfile template -f keycloak-minimal.yaml # RENDER ONLY
-helmfile apply -f keycloak-minimal.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -81,27 +91,27 @@ helmfile apply -f keycloak-minimal.yaml # APPLY HELMFILE
 
 <details><summary>REGISTRY</summary>
 
+### DEPLOYMENT
+
 ```bash
 cat <<EOF > registry.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@database/registry.yaml.gotmpl
     values:
-      # see @database/registry.yaml.gotmpl for more default values to overwrite
+      # see @database/registry.yaml.gotmpl for more defaults to overwrite
       - clusterIssuer: letsencrypt-prod
       - hostname: registry
       - projectStorageClass: vsphere-csi
       - domain: example.com
       - size: 10Gi
-      # generate htpassd pw
-      # sudo apt-get install apache2-utils   # Debian/Ubuntu
+      # generate htpasswd password:
       # htpasswd -nbB admin admin
       - htpasswd: admin:$2y$05$lzjRgAlLIavPLxXi9Q7lnOcjW2rIIQXkeXU0Pj2kA7K9bMAYKianC
 EOF
-
-helmfile template -f registry.yaml # RENDER ONLY
-helmfile apply -f registry.yaml # APPLY HELMFILE
 ```
+
+### USAGE EXAMPLES
 
 ```bash
 # login w/ container runtime
@@ -132,6 +142,21 @@ curl $auth -v sSL -X DELETE "https://${registry}/v2/${repo_name}/manifests/$(
 
 </details>
 
+<details><summary>POSTGRESDB</summary>
+
+```bash
+cat <<EOF > postgresdb.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/postgresdb.yaml.gotmpl
+    values:
+      - namespace: postgres
+      - version: 16.7.26
+EOF
+```
+
+</details>
+
 <details><summary>POSTGRES</summary>
 
 ### DEPLOY OPERATOR
@@ -145,9 +170,6 @@ helmfiles:
       - namespace: postgres
       - version: 0.24.0
 EOF
-
-helmfile template -f postgres.yaml # RENDER ONLY
-helmfile apply -f postgres.yaml # APPLY HELMFILE
 ```
 
 ### CONFIGURE INSTANCE (EXAMPLE)
