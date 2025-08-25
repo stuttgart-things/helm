@@ -1,20 +1,37 @@
 # stuttgart-things/helm/monitoring
 
+Monitoring Helmfile templates for deploying observability components (Loki, Grafana, Promtail, Headlamp, etc.) on Kubernetes.
+
+---
+
+## USAGE
+
+Each service can be deployed by writing a small Helmfile definition and then applying it.
+
+```bash
+# RENDER ONLY
+helmfile template -f <service>.yaml
+
+# APPLY
+helmfile apply -f <service>.yaml
+
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
+---
+
 <details><summary>LOKI</summary>
 
 ```bash
 cat <<EOF > loki.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@database/loki.yaml.gotmpl
+  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/loki.yaml.gotmpl
     values:
       - namespace: observability
       - version: 6.31.0
       - profile: fs
 EOF
-
-helmfile template -f loki.yaml # RENDER ONLY
-helmfile apply -f loki.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -25,7 +42,7 @@ helmfile apply -f loki.yaml # APPLY HELMFILE
 cat <<EOF > grafana.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/grafana.yaml.gotmpl
+  - path: git::https://github.com/stuttgart-things/helm.git@monitoring/grafana.yaml.gotmpl
     values:
       - ingressEnabled: true
       - hostname: grafana.k8scluster
@@ -40,14 +57,13 @@ helmfiles:
       #       root_url: https://grafana.example.com
       #       serve_from_sub_path: false
 EOF
-
-helmfile template -f grafana.yaml # RENDER ONLY
-helmfile apply -f grafana.yaml# APPLY HELMFILE # APPLY HELMFILE
 ```
 
 </details>
 
 <details><summary>HEADLAMP</summary>
+
+### DEPLOYMENT
 
 ```bash
 cat <<EOF > headlamp.yaml
@@ -55,20 +71,19 @@ cat <<EOF > headlamp.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@monitoring/headlamp.yaml.gotmpl
     values:
-	  - ingressEnabled: true
-	  - storageEnabled: false
-	  - storageAccessModes: ReadWriteOnce
-	  - hostname: headlamp.k8scluster
-	  - domain: sthings-vsphere.example.com
-    - storageClassName: longhorn
-	  - clusterIssuer: cluster-issuer-approle
-	  - issuerKind: ClusterIssuer
-	  - storageSize: 1Gi
+      - ingressEnabled: true
+      - storageEnabled: false
+      - storageAccessModes: ReadWriteOnce
+      - hostname: headlamp.k8scluster
+      - domain: sthings-vsphere.example.com
+      - storageClassName: longhorn
+      - clusterIssuer: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+      - storageSize: 1Gi
 EOF
-
-helmfile template -f headlamp.yaml # RENDER ONLY
-helmfile apply -f headlamp.yaml # APPLY HELMFILE
 ```
+
+### RBAC
 
 ```bash
 kubectl apply -f - <<EOF
@@ -109,12 +124,16 @@ kubectl -n kube-system get secret headlamp-admin-token -o jsonpath='{.data.token
 
 <details><summary>PROMTAIL</summary>
 
+### ⚠️ Prerequisite: increase inotify limits on nodes:
+
 ```bash
 # MAKE SURE TO SET THIS ON THE CLUSTER NODES
 echo "fs.inotify.max_user_instances = 1024" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 sysctl fs.inotify
 ```
+
+### DEPLOYMENT
 
 ```bash
 cat <<EOF > promtail.yaml
@@ -127,9 +146,6 @@ helmfiles:
       - lokiServiceName: loki-loki
       - lokiNamespace: observability
 EOF
-
-helmfile template -f promtail.yaml # RENDER ONLY
-helmfile apply -f promtail.yaml # APPLY HELMFILE
 ```
 
 </details>

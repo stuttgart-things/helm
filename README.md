@@ -4,9 +4,9 @@ Deploy Helm charts declaratively
 
 | Category    | Description           |
 |-------------|-----------------------|
-| 🛠️ [INFRA](./infra/README.md) | Infra apps |
-| 💾 [DATABASES](./database/README.md)  | Database deployments |
-| 📊 [MONITORING](./monitoring/README.md) | Monitoring stack setup |
+| 🛠️ [INFRA](./infra/README.md) | Infrastructure Helmfile templates for deploying common Kubernetes components. |
+| 💾 [DATABASE](./database/README.md)  | Database Helmfile templates for deploying common stateful services.|
+| 📊 [MONITORING](./monitoring/README.md) | Monitoring Helmfile templates for deploying observability components on Kubernetes. |
 | 🔁 [CICD](./cicd/README.md) | CI/CD apps |
 | 📱 [APPS](./apps/README.md)  | App deployments |
 
@@ -29,22 +29,7 @@ helmfile apply -f kyverno.yaml # APPLY HELMFILE
 
 </details>
 
-<details><summary>FLUX-OPERATOR</summary>
 
-```bash
-cat <<EOF > flux-operator.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/flux-operator.yaml
-    values:
-      - namespace: flux-system
-EOF
-
-helmfile template -f flux-operator.yaml # RENDER ONLY
-helmfile apply -f flux-operator.yaml # APPLY HELMFILE
-```
-
-</details>
 
 <details><summary>HARBOR</summary>
 
