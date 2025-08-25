@@ -8,6 +8,9 @@ global:
       password: {{ .Values.password }}
       database: {{ .Values.database }}
 
+  security:
+    allowInsecureImages: true
+
 image:
   registry: {{ .Values.imageRegistry }}
   repository: {{ .Values.imageRepository }}

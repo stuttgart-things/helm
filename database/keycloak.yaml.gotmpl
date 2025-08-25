@@ -18,7 +18,13 @@ environments:
       - storageClass: standard
       - issuerKindAnnotation: "cluster-issuer"
       - createCertificateResource: false
-      - version: 25.1.0
+      - version: 25.2.0
+      - imageRegistry: ghcr.io
+      - imageRepository: stuttgart-things/keycloak
+      - imageTag: 26.3.3-debian-12-r0
+      - imageRegistryPostgres: ghcr.io
+      - imageRepositoryPostgres: stuttgart-things/postgresql
+      - imageTagPostgres: 17.6.0-debian-12-r0
 ---
 releases:
 {{- if .Values.createCertificateResource }}
@@ -35,7 +41,7 @@ releases:
     disableValidationOnInstall: true
     installed: true
     namespace: keycloak
-    chart: bitnami/keycloak
+    chart: stuttgart-things/charts/keycloak/keycloak
     version: {{ .Values.version }}
 {{- if .Values.createCertificateResource }}
     needs:
@@ -45,11 +51,6 @@ releases:
       - "values/keycloak.values.yaml.gotmpl"
 
 repositories:
-{{- if .Values.createCertificateResource }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
-{{- end }}
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
-    oci: false

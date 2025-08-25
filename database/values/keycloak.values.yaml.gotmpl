@@ -37,8 +37,34 @@ extraEnvVars:
 global:
   defaultStorageClass: {{ .Values.storageClass }}
   storageClass: {{ .Values.storageClass }}
+  imageRegistry: {{ .Values.imageRegistry }}
+  security:
+    allowInsecureImages: true
 
 startupProbe:
   enabled: true
   failureThreshold: 30
   periodSeconds: 10
+
+image:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ .Values.imageRepository }}
+  tag: {{ .Values.imageTag }}
+
+postgresql:
+  enabled: true
+  image:
+    registry: {{ .Values.imageRegistryPostgres }}
+    repository: {{ .Values.imageRepositoryPostgres }}
+    tag: {{ .Values.imageTagPostgres }}
+
+
+  auth:
+    postgresPassword: ""
+    username: bn_keycloak
+    password: ""
+    database: bitnami_keycloak
+    existingSecret: ""
+    secretKeys:
+      userPasswordKey: password
+  architecture: standalone

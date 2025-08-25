@@ -1,5 +1,24 @@
 # stuttgart-things/helm/monitoring
 
+<details><summary>LOKI</summary>
+
+```bash
+cat <<EOF > loki.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/loki.yaml.gotmpl
+    values:
+      - namespace: observability
+      - version: 6.31.0
+      - profile: fs
+EOF
+
+helmfile template -f loki.yaml # RENDER ONLY
+helmfile apply -f loki.yaml # APPLY HELMFILE
+```
+
+</details>
+
 <details><summary>GRAFANA</summary>
 
 ```bash
