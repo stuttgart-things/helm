@@ -4,22 +4,6 @@ Database Helmfile templates for deploying common stateful services.
 
 ---
 
-## USAGE
-
-Each service can be deployed by writing a small Helmfile definition and then applying it.
-
-```bash
-# RENDER ONLY
-helmfile template -f <service>.yaml
-
-# APPLY
-helmfile apply -f <service>.yaml
-
-# DESTROY
-helmfile destroy -f <service>.yaml
-```
----
-
 ## SERVICES
 
 <details><summary>OPENLDAP</summary>
@@ -212,3 +196,19 @@ EOF
 ```
 
 </details>
+
+## USAGE
+
+Each service can be deployed by writing a small Helmfile definition and then applying it.
+
+```bash
+# RENDER ONLY
+helmfile template -f <service>.yaml
+
+# APPLY
+helmfile apply -f <service>.yaml
+
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
+---

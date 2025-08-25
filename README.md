@@ -4,9 +4,9 @@ Deploy Helm charts declaratively
 
 | Category    | Description           |
 |-------------|-----------------------|
-| 🛠️ [INFRA](./infra/README.md) | Infrastructure Helmfile templates for deploying common Kubernetes components. |
-| 💾 [DATABASE](./database/README.md)  | Database Helmfile templates for deploying common stateful services.|
-| 📊 [MONITORING](./monitoring/README.md) | Monitoring Helmfile templates for deploying observability components on Kubernetes. |
+| 🛠️ [INFRA](./infra/README.md) | Infrastructure Helmfile templates for deploying common Kubernetes components |
+| 💾 [DATABASE](./database/README.md)  | Database Helmfile templates for deploying common stateful services |
+| 📊 [MONITORING](./monitoring/README.md) | Monitoring Helmfile templates for deploying observability components on Kubernetes |
 | 🔁 [CICD](./cicd/README.md) | CI/CD apps |
 | 📱 [APPS](./apps/README.md)  | App deployments |
 

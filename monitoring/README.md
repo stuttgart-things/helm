@@ -4,22 +4,6 @@ Monitoring Helmfile templates for deploying observability components (Loki, Graf
 
 ---
 
-## USAGE
-
-Each service can be deployed by writing a small Helmfile definition and then applying it.
-
-```bash
-# RENDER ONLY
-helmfile template -f <service>.yaml
-
-# APPLY
-helmfile apply -f <service>.yaml
-
-# DESTROY
-helmfile destroy -f <service>.yaml
-```
----
-
 <details><summary>LOKI</summary>
 
 ```bash
@@ -149,3 +133,19 @@ EOF
 ```
 
 </details>
+
+## USAGE
+
+Each service can be deployed by writing a small Helmfile definition and then applying it.
+
+```bash
+# RENDER ONLY
+helmfile template -f <service>.yaml
+
+# APPLY
+helmfile apply -f <service>.yaml
+
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
+---
