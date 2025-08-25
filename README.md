@@ -292,9 +292,6 @@ helmfile apply -f ccert-manager.yaml # APPLY HELMFILE
 
 </details>
 
-
-
-
 ## USAGE/DEV
 
 <details><summary>TASKS</summary>
