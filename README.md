@@ -299,6 +299,15 @@ task: Available tasks for this project:
 
 </details>
 
+<details><summary>MIRROR CHARTS+IMAGES</summary>
+
+```bash
+# EXAMPLE REG+SOURCES FILE
+./tests/mirror.sh ghcr.io/stuttgart-things tests/sources.yaml
+```
+
+</details>
+
 <details><summary>HELMFILE</summary>
 
 ```bash

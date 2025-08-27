@@ -1,6 +1,12 @@
 ---
 {{- if .Values.ingressEnabled }}
 server:
+  image:
+    registry: docker.io
+    repository: bitnami/vault
+    tag: 1.9.0-debian-12-r4
+    digest: ""
+    pullPolicy: IfNotPresent
   ingress:
     enabled: {{ .Values.ingressEnabled }}
     ingressClassName: {{ .Values.ingressClassName }}
@@ -13,7 +19,23 @@ server:
 global:
   storageClass: {{ .Values.storageClass }}
 
+
 injector:
   enabled: {{ .Values.injectorEnabled }}
   serviceAccount:
     automountServiceAccountToken: true
+  image:
+    registry: docker.io
+    repository: bitnami/vault-k8s
+    tag: 1.7.0-debian-12-r4
+    pullPolicy: IfNotPresent
+
+
+volumePermissions:
+  enabled: false
+  image:
+    registry: docker.io
+    repository: bitnami/os-shell
+    tag: 12-debian-12-r50
+    digest: ""
+    pullPolicy: IfNotPresent
