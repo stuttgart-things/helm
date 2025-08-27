@@ -1,3 +1,28 @@
+---
+global:
+  imageRegistry: {{ .Values.imageRegistry }}
+  security:
+    allowInsecureImages: true
+
+image:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ .Values.imageRepository }}
+  tag: {{ .Values.imageTag }}
+  digest: {{ .Values.imageDigest }}
+  pullPolicy: {{ .Values.imagePullPolicy }}
+
+## 'volume-permissions' init container
+## Used to change the owner and group of the persistent volume(s) mountpoint(s) to 'runAsUser:fsGroup' on each node
+defaultInitContainers:
+  volumePermissions:
+    enabled: {{ .Values.imageVolumeContainerEnabled }}
+    image:
+      registry: {{ .Values.imageVolumePermissionsRegistry }}
+      repository: {{ .Values.imageVolumePermissionsRepository }}
+      tag: {{ .Values.imageVolumePermissionsTag }}
+      digest: {{ .Values.imageVolumePermissionsDigest }}
+      pullPolicy: {{ .Values.imageVolumePermissionsPullPolicy }}
+
 networkPolicy:
   enabled: true
   allowExternal: true

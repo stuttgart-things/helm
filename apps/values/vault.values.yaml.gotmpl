@@ -1,12 +1,13 @@
 ---
-{{- if .Values.ingressEnabled }}
 server:
   image:
-    registry: docker.io
-    repository: bitnami/vault
-    tag: 1.9.0-debian-12-r4
+    registry: {{ .Values.registry }}
+    repository: {{ .Values.repository }}
+    tag: {{ .Values.tag }}
     digest: ""
-    pullPolicy: IfNotPresent
+    pullPolicy: {{ .Values.pullPolicy }}
+
+{{- if .Values.ingressEnabled }}
   ingress:
     enabled: {{ .Values.ingressEnabled }}
     ingressClassName: {{ .Values.ingressClassName }}
