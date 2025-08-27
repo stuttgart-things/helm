@@ -1,4 +1,22 @@
 ---
+environments:
+  default:
+    values:
+      - version: 27.0.3
+      - namespace: harbor
+      - enablePersistence: true
+      - storageClass: standard
+      - issuerName: selfsigned
+      - issuerKindCert: ClusterIssuer
+      - issuerKind: cluster-issuer
+      - hostname: harbor
+      - domain: 172.18.0.5.nip.io
+      - ingressClassName: nginx
+      - adminPassword: halloHarborTest123
+      - pvSizeRegistry: 12Gi
+      - pvSizeTrivy: 5Gi
+      - pvSizeJobService: 1Gi
+---
 releases:
   - name: certificate-configuration
     installed: true
@@ -12,7 +30,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: bitnami/harbor
-    version: 24.4.1
+    version: {{ .Values.version }}
     needs:
       - {{ .Values.namespace }}/certificate-configuration
     values:

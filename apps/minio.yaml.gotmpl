@@ -1,0 +1,41 @@
+---
+environments:
+  default:
+    values:
+      - namespace: minio
+      - version: 16.0.10
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+      - rootUser: adminadmin
+      - rootPassword: adminadmin
+      - hostnameConsole: artifacts-console
+      - hostnameApi: artifacts
+      - storageClass: standard
+      - imageRegistry: ghcr.io
+      - imageRepository: stuttgart-things/minio
+      - imageTag: 2025.4.22-debian-12-r1
+      - imageDigest: ""
+      - imagePullPolicy: IfNotPresent
+      - imageVolumePermissionsRegistry: ghcr.io
+      - imageVolumePermissionsRepository: bitnami/os-shell
+      - imageVolumePermissionsTag: 12-debian-12-r50
+      - imageVolumePermissionsDigest: ""
+      - imageVolumePermissionsPullPolicy: IfNotPresent
+      - imageVolumeContainerEnabled: false
+---
+releases:
+  - name: minio
+    disableValidationOnInstall: true
+    installed: true
+    namespace: minio
+    chart: stuttgart-things/charts/minio/minio
+    version: {{ .Values.version }}
+    values:
+      - "values/minio.values.16.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true

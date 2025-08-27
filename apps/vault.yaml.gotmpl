@@ -10,6 +10,12 @@ environments:
       - domain: example.com
       - storageClass: standard
       - injectorEnabled: true
+      - registry: ghcr.io
+      - repository: bitnami/vault
+      - tag: 1.9.0-debian-12-r4
+      - pullPolicy: IfNotPresent
+
+
 
 ---
 releases:
