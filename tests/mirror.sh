@@ -1,16 +1,8 @@
 #!/usr/bin/env bash
 set -x
 
-# Usage: ./mirror.sh TARGET_REGISTRY
-# Example: ./mirror.sh ghcr.io/YOUR_USER
-
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 TARGET_REGISTRY"
-    exit 1
-fi
-
 TARGET_REGISTRY="$1"
-SOURCES_FILE="sources.yaml"
+SOURCES_FILE="$2"
 
 if [[ ! -f "$SOURCES_FILE" ]]; then
     echo "Error: $SOURCES_FILE not found"
@@ -27,21 +19,23 @@ mirror_chart() {
     local chart_spec=$1
     local target_registry=$2
 
-    # parse chart URL and version
-    local chart url version
+    local chart_name url version tgz_file
+
     if [[ "$chart_spec" =~ ^oci:// ]]; then
-        # OCI format: oci://registry/repo/chart:version
-        chart="$chart_spec"
+        # OCI chart (oci://registry/repo/chart:version)
         version="${chart_spec##*:}"
-        url="$chart_spec"
-        chart_name=$(basename "${chart%%:*}")
+        url="${chart_spec%:*}"             # strip :version
+        chart_name=$(basename "$url")      # get "nginx"
+
+        echo "=== Mirroring chart: $chart_name:$version ==="
+        helm pull "$chart_spec" --version "$version"
+        tgz_file="${chart_name}-${version}.tgz"
+
     else
-        # classic Helm repo URL: https://charts.bitnami.com/bitnami/metallb:6.4.22
+        # Classic Helm repo chart (https://.../repo/chart:version)
         url="${chart_spec%:*}"
         version="${chart_spec##*:}"
         chart_name=$(basename "$url")
-
-        # Extract repo name from URL (e.g., bitnami)
         repo_name=$(basename "$(dirname "$url")")
 
         echo "Adding Helm repo $repo_name -> $url"
@@ -50,15 +44,10 @@ mirror_chart() {
 
         echo "Pulling $repo_name/$chart_name:$version ..."
         helm pull "$repo_name/$chart_name" --version "$version"
+        tgz_file="${chart_name}-${version}.tgz"
     fi
 
-    echo "=== Mirroring chart: $chart_name:$version ==="
-
-    # Pull chart as tgz
-    helm pull "$url" --version "$version"
-    tgz_file="${chart_name}-${version}.tgz"
-
-    # Push to target OCI registry
+    # Push to target registry
     echo "Pushing $tgz_file → $target_registry/charts/$chart_name"
     helm push "$tgz_file" "oci://$target_registry/charts/$chart_name"
 

@@ -1,0 +1,27 @@
+---
+environments:
+  default:
+    values:
+      - ingressEnabled: false
+      - ingressClassName: nginx
+      - issuerKind: ClusterIssuer
+      - issuerKindAnnotation: "cluster-issuer"
+      - hostname: vault
+      - domain: example.com
+      - storageClass: standard
+      - injectorEnabled: true
+
+---
+releases:
+  - name: vault
+    installed: true
+    namespace: vault
+    chart: bitnami/vault
+    version: 1.9.0
+    values:
+      - "values/vault.values.yaml.gotmpl"
+
+repositories:
+  - name: bitnami
+    url: registry-1.docker.io/bitnamicharts
+    oci: true

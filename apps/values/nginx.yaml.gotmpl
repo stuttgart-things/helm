@@ -1,3 +1,15 @@
+---
+global:
+  imageRegistry: {{ .Values.imageRegistry }}
+  security:
+    allowInsecureImages: true
+
+image:
+  registry: {{ .Values.imageRegistry }}
+  repository: {{ .Values.imageRepository }}
+  tag: {{ .Values.imageTag }}
+  pullPolicy: {{ .Values.imagePullPolicy }}
+
 replicaCount: {{ .Values.replicas }}
 
 {{- if .Values.enableIngress }}
@@ -16,3 +28,7 @@ ingress:
 
 service:
   type: {{ .Values.serviceType }}
+
+nodePorts:
+  http: {{ .Values.serviceNodePortHttp }}
+  https: {{ .Values.serviceNodePortHttps }}

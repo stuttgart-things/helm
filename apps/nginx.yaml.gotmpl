@@ -4,7 +4,7 @@ environments:
     values:
       - replicas: 1
       - serviceType: ClusterIP
-      - enableIngress: true
+      - enableIngress: false
       - clusterIssuer: selfsigned
       - issuerKind: ClusterIssuer
       - issuerKindAnnotation: "cluster-issuer"
@@ -13,18 +13,22 @@ environments:
       - ingressClassName: nginx
       - namespace: nginx
       - profile: nginx
+      - imageRegistry: ghcr.io
+      - imageRepository: stuttgart-things/nginx
+      - imageTag: 21.1.23
+      - imagePullPolicy: IfNotPresent
+      - serviceNodePortHttp: ""
+      - serviceNodePortHttps: ""
 ---
 repositories:
-  - name: bitnami
-    url: https://charts.bitnami.com/bitnami
   - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true
 
 releases:
   - name: nginx
     namespace: {{ .Values.namespace }}
-    chart: bitnami/nginx
-    version: 21.0.6
+    chart: stuttgart-things/charts/nginx/nginx
+    version: 21.1.23
     values:
       - values/{{ .Values.profile }}.yaml.gotmpl
