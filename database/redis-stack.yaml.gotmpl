@@ -1,0 +1,28 @@
+---
+environments:
+  default:
+    values:
+      - chartVersion: 17.1.4
+      - namespace: redis-stack
+      - serviceType: ClusterIP
+      - password: <your-password>
+      - persistenceEnabled: true
+      - storageClass: standard
+      - imageRegistry: ghcr.io
+      - imageRepository: stuttgart-things/redis
+      - redisStackVersion: 7.2.0-v18 #6.2.6-v9
+
+
+---
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+releases:
+  - name: redis-stack
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/charts/redis/redis
+    version: {{ .Values.chartVersion }}
+    values:
+      - "values/redis-stack.yaml.gotmpl"
