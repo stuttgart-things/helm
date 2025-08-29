@@ -86,30 +86,6 @@ helmfile apply -f minio.yaml # APPLY HELMFILE
 
 </details>
 
-
-
-<details><summary>KOMOPLANE</summary>
-
-```bash
-cat <<EOF > komoplane.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/komoplane.yaml
-    values:
-      - namespace: crossplane-system
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
-      - hostname: komoplane
-      - domain: 172.18.0.5.nip.io
-      - ingressClassName: nginx
-EOF
-
-helmfile template -f komoplane.yaml # RENDER ONLY
-helmfile apply -f komoplane.yaml # APPLY HELMFILE
-```
-
-</details>
-
 <details><summary>CLUSTERBOOK</summary>
 
 ```bash

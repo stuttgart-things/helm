@@ -1,6 +1,7 @@
 ---
+{{- if .Values.enableIngress }}
 ingress:
-  enabled: true
+  enabled: {{ .Values.enableIngress }}
   className: {{ .Values.ingressClassName }}
   annotations:
     cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
@@ -13,3 +14,4 @@ ingress:
     - hosts:
         - {{ .Values.hostname }}.{{ .Values.domain }}
       secretName: {{ .Values.hostname }}-ingress-tls
+{{- end }}
