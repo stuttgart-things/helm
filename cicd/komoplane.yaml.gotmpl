@@ -1,10 +1,22 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: crossplane-system
+      - version: 0.1.6
+      - enableIngress: true
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: komoplane
+      - domain: 172.18.0.5.nip.io
+      - ingressClassName: nginx
+---
 releases:
   - name: komoplane
     installed: true
     namespace: {{ .Values.namespace }}
     chart: komodorio/komoplane
-    version: 0.1.5
+    version: {{ .Values.version }}
     values:
       - "values/komoplane.values.yaml.gotmpl"
 
