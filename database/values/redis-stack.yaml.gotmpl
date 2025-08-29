@@ -10,6 +10,10 @@ sentinel:
   parallelSyncs: 1
   service:
     type: {{ .Values.serviceType }}
+  image:
+    registry: {{ .Values.imageRegistrySentinel }}
+    repository: {{ .Values.imageRepositorySentinel }}
+    tag: {{ .Values.redisSentinelVersion }}
 
 image:
   registry: {{ .Values.imageRegistry }}

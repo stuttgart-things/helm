@@ -1,5 +1,28 @@
 # stuttgart-things/helm/apps
 
+App Helmfile templates.
+
+---
+
+## SERVICES
+
+<details><summary>REDIS-STACK</summary>
+
+```bash
+# BASIC
+cat <<EOF > redis-stack.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/redis-stack.yaml.gotmpl
+    values:
+      - namespace: redis-stack
+      - password: {{ env "REDIS_STACK_PASSWORD" | default "whateverpa$$w0rd" }}
+      - storageClass: standard
+EOF
+```
+
+</details>
+
 <details><summary>GITEA</summary>
 
 ```bash
