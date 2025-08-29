@@ -25,6 +25,8 @@ EOF
 
 <details><summary>GITEA</summary>
 
+### SIMPLE DEPLOYMENT
+
 ```bash
 # BASIC
 cat <<EOF > gitea.yaml
@@ -36,6 +38,8 @@ helmfiles:
       - version: 12.1.3
 EOF
 ```
+
+### GITEA DEPLOYMENT + KEYCLOAK AUTH
 
 ```bash
 # KEYCLOAK OAUTH + NOEDPORT SERVICE, ALLOW WEBHOOKS
@@ -63,9 +67,6 @@ helmfiles:
       - rootUrl: http://maverick.example.com:31635/
       - serverDomain: maverick.example.com
 EOF
-
-helmfile template -f gitea.yaml # RENDER ONLY
-helmfile apply -f gitea.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -78,19 +79,11 @@ helmfile apply -f gitea.yaml # APPLY HELMFILE
 cat <<EOF > vault.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml.gotmpl
     values:
       - namespace: vault
-      - injectorEnabled: true
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
-      - hostname: vault
-      - domain: 172.18.0.2.nip.io
-      - ingressClassName: nginx
+      - storageClass: standard
 EOF
-
-helmfile template -f vault.yaml # RENDER ONLY
-helmfile apply -f vault.yaml # APPLY HELMFILE
 ```
 
 ### UNSEAL
@@ -104,3 +97,58 @@ kubectl -n vault exec -it vault-server-0 -- vault status
 ```
 
 </details>
+
+<details><summary>NGINX</summary>
+
+### w/ LOADBALANCER
+
+```bash
+cat <<EOF > nginx-lb.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
+    values:
+      - profile: nginx
+      - replicas: 1
+      - serviceType: LoadBalancer
+      - enableIngress: false
+EOF
+```
+
+### w/ INGRESS + CERT
+
+```bash
+cat <<EOF > nginx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
+    values:
+      - namespace: nginx
+      - profile: nginx
+      - serviceType: ClusterIP
+      - enableIngress: true
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - hostname: webserver
+      - domain: dev3.172.18.0.3.nip.io
+      - ingressClassName: nginx
+EOF
+```
+
+</details>
+
+## USAGE
+
+Each service can be deployed by writing a small Helmfile definition and then applying it.
+
+```bash
+# RENDER ONLY
+helmfile template -f <service>.yaml
+
+# APPLY
+helmfile apply -f <service>.yaml
+
+# DESTROY
+helmfile destroy -f <service>.yaml
+```
+---

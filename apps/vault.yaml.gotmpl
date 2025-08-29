@@ -11,20 +11,27 @@ environments:
       - storageClass: standard
       - injectorEnabled: true
       - registry: ghcr.io
-      - repository: bitnami/vault
-      - tag: 1.9.0-debian-12-r4
+      - repository: stuttgart-things/vault
       - pullPolicy: IfNotPresent
+      - tag: 1.20.2-debian-12-r2
+      - injectorRepository: stuttgart-things/vault-k8s
+      - injectorTag: 1.7.0-debian-12-r4
+      - injectorPullPolicy: IfNotPresent
+      - enableVolumePermissions: true
+      - osShellRepository: stuttgart-things/os-shell
+      - osShellTag: 12-debian-12-r50
+      - osShellPullPolicy: IfNotPresent
 ---
 releases:
   - name: vault
     installed: true
     namespace: vault
-    chart: bitnami/vault
+    chart: stuttgart-things/charts/vault/vault
     version: 1.9.0
     values:
       - "values/vault.values.yaml.gotmpl"
 
 repositories:
-  - name: bitnami
-    url: registry-1.docker.io/bitnamicharts
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
     oci: true
