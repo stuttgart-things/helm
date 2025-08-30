@@ -137,6 +137,151 @@ EOF
 
 </details>
 
+<details><summary>CLUSTERBOOK</summary>
+s
+```bash
+cat <<EOF > clusterbook.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/clusterbook.yaml
+    values:
+      - namespace: clusterbook
+      - enableIngress: true
+      - enableCertificateRequest: true
+      - ingressDomain: 172.18.0.5.nip.io
+      - issuerKind: ClusterIssuer
+      - issuerName: selfsigned
+      - imageTag: v1.5.0 # pragma: allowlist secret
+      - hostname: clusterbook
+      - tlsSecretName: clusterbook-ingress-tls # pragma: allowlist secret
+      - app: clusterbook
+EOF
+```
+
+</details>
+
+<details><summary>AWX</summary>
+
+### AWX-OPERATOR
+
+```bash
+cat <<EOF > awx-operator.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx-operator.yaml
+    values:
+      - namespace: awx
+EOF
+```
+
+### AWX INSTANCE
+
+```bash
+cat <<EOF > awx.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx.yaml
+    values:
+      - namespace: awx
+      - app: awx
+      - ingressType: ingress
+      - postgresStorageClass: standard
+      - projectStorageClass: standard
+      - clusterIssuer: selfsigned
+      - secrets:
+          sthings-admin-password:
+            namespace: awx
+            kvs:
+              password: ref+vault://apps/awx/password-dev
+          sthings-custom-certs:
+            namespace: awx
+            kvs:
+              bundle-ca.crt: ref+vault://apps/awx/cabundle
+
+      - instances:
+          dev:
+            name: awx-dev
+            namespace: awx
+            adminUser: sthings
+            adminPasswordSecret: sthings-admin-password
+            bundleCacertSecret: sthings-custom-certs
+            hostname: awx-dev
+            domain: 172.18.0.3.nip.io
+            ingressClassName: nginx
+            ingressSecret: awx-dev
+            postgresStorageLimits: 8Gi
+            postgresStorageRequest: 1Gi
+            projectPersistence: false
+            projectsStorageAccessMode: ReadWriteOnce
+            fsGroupChangePolicy: OnRootMismatch
+EOF
+```
+
+</details>
+
+<details><summary>KYVERNO</summary>
+
+```bash
+cat <<EOF > kyverno.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/kyverno.yaml
+    values:
+      - namespace: kyverno
+EOF
+```
+
+</details>
+
+<details><summary>HARBOR</summary>
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml
+    values:
+      - namespace: harbor
+      - enablePersistence: true
+      - storageClass: standard
+      - issuerName: selfsigned
+      - issuerKindCert: ClusterIssuer
+      - issuerKind: cluster-issuer
+      - hostname: harbor
+      - domain: 172.18.0.5.nip.io
+      - ingressClassName: nginx
+      - adminPassword: halloHarborTest123
+      - pvSizeRegistry: 12Gi
+      - pvSizeTrivy: 5Gi
+      - pvSizeJobService: 1Gi
+EOF
+```
+
+</details>
+
+<details><summary>MINIO</summary>
+
+```bash
+cat <<EOF > minio.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/minio.yaml
+    values:
+      - namespace: minio
+      - clusterIssuer: selfsigned
+      - issuerKind: cluster-issuer
+      - domain: 172.18.0.2.nip.io
+      - ingressClassName: nginx
+      - rootUser: adminadmin
+      - rootPassword: adminadmin
+      - hostnameConsole: artifacts-console
+      - hostnameApi: artifacts
+      - storageClass: standard
+EOF
+```
+
+</details>
+
 ## USAGE
 
 Each service can be deployed by writing a small Helmfile definition and then applying it.

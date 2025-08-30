@@ -98,7 +98,6 @@ helmfile apply -f flux-operator.yaml # APPLY HELMFILE # APPLY HELMFILE
 
 </details>
 
-
 <details><summary>CROSSPLANE</summary>
 
 ```bash
