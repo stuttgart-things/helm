@@ -1,4 +1,4 @@
-# stuttgart-things/helm/apps
+ss# stuttgart-things/helm/apps
 
 App Helmfile templates.
 
@@ -168,11 +168,30 @@ EOF
 cat <<EOF > awx-operator.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx-operator.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx.yaml.gotmpl
     values:
       - namespace: awx
+      - version: 3.2.0
+      - installOperator: true
 EOF
 ```
+
+```bash
+cat <<EOF > awx-instance.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/awx.yaml.gotmpl
+    values:
+      - namespace: awx
+      - installOperator: false
+      - secrets:
+          sthings-admin-password:
+            namespace: awx
+            kvs:
+              password: whatever
+EOF
+```
+
 
 ### AWX INSTANCE
 

@@ -1,0 +1,52 @@
+---
+environments:
+  default:
+    values:
+      - version: 3.2.0
+      - namespace: awx
+      - installOperator: true
+      - createSSLCerts: false
+      - createAppInstances: false
+---
+releases:
+  - name: awx-operator
+    installed: {{ .Values.installOperator }}
+    namespace: {{ .Values.namespace }}
+    chart: awx/awx-operator
+    version: {{ .Values.version }}
+    values:
+      - "values/awx-operator.values.yaml.gotmpl"
+
+{{- if hasKey .Values "secrets" }}
+  - name: awx-secrets
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-secrets.values.yaml.gotmpl"
+{{- end }}
+
+  - name: awx-certificates
+    installed: {{ .Values.createSSLCerts }}
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-certificates.values.yaml.gotmpl"
+
+  - name: awx-instances
+    installed: {{ .Values.createAppInstances }}
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/awx-instances.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+  - name: awx
+    url: https://ansible-community.github.io/awx-operator-helm/
+    oci: false
