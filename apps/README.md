@@ -176,6 +176,9 @@ helmfiles:
 EOF
 ```
 
+### AWX-INSTANCE
+
+
 ```bash
 cat <<EOF > awx-instance.yaml
 ---
@@ -184,11 +187,32 @@ helmfiles:
     values:
       - namespace: awx
       - installOperator: false
+      - ingressType: ingress
+      - postgresStorageClass: standard
+      - projectStorageClass: standard
+      - clusterIssuer: selfsigned
       - secrets:
           sthings-admin-password:
             namespace: awx
             kvs:
               password: whatever
+      - createSSLCerts: true
+      - instances:
+          dev:
+            name: awx-dev
+            namespace: awx
+            adminUser: sthings
+            adminPasswordSecret: sthings-admin-password
+            bundleCacertSecret: sthings-custom-certs
+            hostname: awx-dev
+            domain: 172.18.0.3.nip.io
+            ingressClassName: nginx
+            ingressSecret: awx-dev
+            postgresStorageLimits: 8Gi
+            postgresStorageRequest: 1Gi
+            projectPersistence: false
+            projectsStorageAccessMode: ReadWriteOnce
+            fsGroupChangePolicy: OnRootMismatch
 EOF
 ```
 
