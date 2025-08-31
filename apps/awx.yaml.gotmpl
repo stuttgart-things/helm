@@ -6,7 +6,6 @@ environments:
       - namespace: awx
       - installOperator: true
       - createSSLCerts: false
-      - createAppInstances: false
 ---
 releases:
   - name: awx-operator
@@ -27,6 +26,7 @@ releases:
       - "values/awx-secrets.values.yaml.gotmpl"
 {{- end }}
 
+{{- if hasKey .Values "secrets" }}
   - name: awx-certificates
     installed: {{ .Values.createSSLCerts }}
     namespace: {{ .Values.namespace }}
@@ -36,12 +36,13 @@ releases:
       - "values/awx-certificates.values.yaml.gotmpl"
 
   - name: awx-instances
-    installed: {{ .Values.createAppInstances }}
+    installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
     version: 0.3.15
     values:
       - "values/awx-instances.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
   - name: stuttgart-things
