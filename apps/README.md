@@ -1,4 +1,4 @@
-ss# stuttgart-things/helm/apps
+# stuttgart-things/helm/apps
 
 App Helmfile templates.
 
