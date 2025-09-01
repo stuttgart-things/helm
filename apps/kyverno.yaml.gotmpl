@@ -1,10 +1,16 @@
 ---
+environments:
+  default:
+    values:
+      - namespace: kyverno
+      - version: 3.5.1
+---
 releases:
   - name: kyverno
     installed: true
     namespace: {{ .Values.namespace }}
     chart: kyverno/kyverno
-    version: 3.3.7
+    version: {{ .Values.version }}
 
 repositories:
   - name: kyverno

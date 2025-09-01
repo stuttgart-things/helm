@@ -268,8 +268,9 @@ EOF
 cat <<EOF > kyverno.yaml
 ---
 helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/kyverno.yaml
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/kyverno.yaml.gotmpl
     values:
+      - version: 3.5.1
       - namespace: kyverno
 EOF
 ```
