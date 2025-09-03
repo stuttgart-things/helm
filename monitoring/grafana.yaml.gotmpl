@@ -42,7 +42,7 @@ releases:
   - name: grafana-deployment
     disableValidationOnInstall: true
     installed: true
-    namespace: grafana
+    namespace: {{ .Values.namespace }}
     chart: grafana/grafana
     version: {{ .Values.version }}
     values:
