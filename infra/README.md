@@ -63,13 +63,32 @@ EOF
 ### w/ SELF-SIGNED
 
 ```bash
-cat <<EOF > cert-manager.yaml
+cat <<EOF > cert-manager-selfsigned.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
     values:
       - version: v1.17.1
       - config: selfsigned
+EOF
+```
+
+### w/ VAULT-APPROLE
+
+```bash
+cat <<EOF > cert-manager-vault.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
+    values:
+      - version: v1.17.1
+      - config: vault-approle
+      - approleID: 6b701b9b-33ed-3aca-4197-52fbf6fa44a3
+      - approleSecret: {{ env "VAULT_SECRET_ID" }}
+      - issuer: 4sthings
+      - pkiPath: pki/sign/4sthings.example.com
+      - pkiServer: https://vault-vsphere.example.com:8200
+      - pkiCA: "LS0tLS1CRU" # INCOMPLETE
 EOF
 ```
 
