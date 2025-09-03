@@ -47,7 +47,7 @@ releases:
     version: {{ .Values.version }}
 {{- if .Values.createCertificateResource }}
     needs:
-      - grafana/grafana-configuration
+      - grafana/grafana-cert-configuration
 {{- end }}
     values:
       - values/grafana.values.yaml.gotmpl
