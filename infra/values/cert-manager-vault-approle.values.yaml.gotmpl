@@ -5,6 +5,7 @@ secrets:
     namespace: {{ .Release.Namespace }}
     secretKVs:
       approle: {{ .Values.approleSecret }}
+
 customresources:
   cluster-issuer:
     apiVersion: cert-manager.io/v1
