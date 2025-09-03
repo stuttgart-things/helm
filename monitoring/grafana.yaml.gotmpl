@@ -45,9 +45,5 @@ releases:
     namespace: grafana
     chart: grafana/grafana
     version: {{ .Values.version }}
-{{- if .Values.createCertificateResource }}
-    needs:
-      - grafana/grafana-cert-configuration
-{{- end }}
     values:
       - values/grafana.values.yaml.gotmpl
