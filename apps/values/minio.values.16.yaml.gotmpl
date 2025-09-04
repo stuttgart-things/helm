@@ -35,23 +35,27 @@ ingress:
   tls: true
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    {{- if not .Values.createCertificateResource }}
     cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+    {{- end }}
   extraTls:
     - hosts:
         - {{ .Values.hostnameConsole }}.{{ .Values.domain }}
-      secretName: {{ .Values.hostnameConsole }}-ingress-tls
+      secretName: {{ .Values.hostnameConsole }}.{{ .Values.domain }}-tls
   hostname: {{ .Values.hostnameConsole }}.{{ .Values.domain }}
 apiIngress:
   enabled: true
   ingressClassName: nginx
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 500m
+    {{- if not .Values.createCertificateResource }}
     cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+    {{- end }}
   tls: true
   extraTls:
     - hosts:
         - {{ .Values.hostnameApi }}.{{ .Values.domain }}
-      secretName: {{ .Values.hostnameApi }}-ingress-tls
+      secretName: {{ .Values.hostnameConsole }}.{{ .Values.domain }}-tls
   hostname: {{ .Values.hostnameApi }}.{{ .Values.domain }}
 persistence:
   enabled: true

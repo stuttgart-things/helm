@@ -115,7 +115,7 @@ helmfiles:
 EOF
 ```
 
-### w/ INGRESS + CERT
+### w/ INGRESS + CERT (INGRESS ANNOTAION - CERT-MANAGER)
 
 ```bash
 cat <<EOF > nginx.yaml
@@ -132,6 +132,31 @@ helmfiles:
       - hostname: webserver
       - domain: dev3.172.18.0.3.nip.io
       - ingressClassName: nginx
+EOF
+```
+
+### w/ INGRESS + CERT CREATION (CERTIFICATION - CR)
+
+```bash
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
+    values:
+      - namespace: nginx
+      - profile: nginx
+      - serviceType: ClusterIP
+      - enableIngress: true
+      - hostname: webserver
+      - domain: sthings-infra-dev.example.com
+      - ingressClassName: nginx
+      - createCertificateResource: true
+      - certicates:
+          nginx:
+            hostname: webserver
+            domain: sthings-infra-dev.example.com
+            issuerName: labda-4sthings
+            issuerKind: ClusterIssuer
+            namespace: nginx
+            secretName: webserver.sthings-infra-dev.example.com-tls
 EOF
 ```
 
