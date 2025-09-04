@@ -24,6 +24,22 @@ environments:
       - imageVolumePermissionsDigest: ""
       - imageVolumePermissionsPullPolicy: IfNotPresent
       - imageVolumeContainerEnabled: false
+      - createCertificateResource: false
+      - certicates:
+          api:
+            hostname: artifacts
+            domain: 172.18.0.2.nip.io
+            issuerName: selfsigned
+            issuerKind: ClusterIssuer
+            namespace: minio
+            secretName: artifacts.172.18.0.2.nip.io-tls
+          console:
+            hostname: artifacts-console
+            domain: 172.18.0.2.nip.io
+            issuerName: selfsigned
+            issuerKind: ClusterIssuer
+            namespace: minio
+            secretName: artifacts-console.172.18.0.2.nip.io-tls
 ---
 releases:
   - name: minio
@@ -34,6 +50,17 @@ releases:
     version: {{ .Values.version }}
     values:
       - "values/minio.values.16.yaml.gotmpl"
+
+{{- if .Values.createCertificateResource }}
+  - name: minio-ingress-certs
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - values/certificate.values.yaml.gotmpl
+{{- end }}
 
 repositories:
   - name: stuttgart-things

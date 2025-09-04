@@ -8,17 +8,26 @@ environments:
       - clusterIssuer: selfsigned
       - issuerKind: ClusterIssuer
       - issuerKindAnnotation: "cluster-issuer"
-      - hostname: app
-      - domain: example.com
+      - hostname: webserver
+      - domain: 172.18.0.2.nip.io
       - ingressClassName: nginx
       - namespace: nginx
       - profile: nginx
       - imageRegistry: ghcr.io
       - imageRepository: stuttgart-things/nginx
-      - imageTag: 21.1.23
+      - imageTag: 1.29.1-debian-12-r0
       - imagePullPolicy: IfNotPresent
       - serviceNodePortHttp: ""
       - serviceNodePortHttps: ""
+      - createCertificateResource: false
+      - certicates:
+          nginx:
+            hostname: webserver
+            domain: 172.18.0.2.nip.io
+            issuerName: selfsigned
+            issuerKind: ClusterIssuer
+            namespace: nginx
+            secretName: webserver.172.18.0.2.nip.io-tls
 ---
 repositories:
   - name: stuttgart-things
@@ -32,3 +41,14 @@ releases:
     version: 21.1.23
     values:
       - values/{{ .Values.profile }}.yaml.gotmpl
+
+{{- if .Values.createCertificateResource }}
+  - name: nginx-ingress-certs
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - values/certificate.values.yaml.gotmpl
+{{- end }}

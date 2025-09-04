@@ -16,14 +16,18 @@ replicaCount: {{ .Values.replicas }}
 ingress:
   enabled: true
   ingressClassName: {{ .Values.ingressClassName }}
+  {{- if not .Values.createCertificateResource }}
   annotations:
     cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+  {{- end }}
   hostname: {{ .Values.hostname }}.{{ .Values.domain }}
   paths:
     - /
-  tls:
-    - secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
-      hostname: {{ .Values.hostname }}.{{ .Values.domain }}
+  tls: true
+  extraTls:
+    - hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
 {{- end }}
 
 service:
