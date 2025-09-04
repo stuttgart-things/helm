@@ -138,6 +138,7 @@ EOF
 ### w/ INGRESS + CERT CREATION (CERTIFICATION - CR)
 
 ```bash
+cat <<EOF > nginx.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@apps/nginx.yaml.gotmpl
     values:
