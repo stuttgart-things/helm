@@ -204,7 +204,6 @@ EOF
 
 ### AWX-INSTANCE
 
-
 ```bash
 cat <<EOF > awx-instance.yaml
 ---
@@ -241,7 +240,6 @@ helmfiles:
             fsGroupChangePolicy: OnRootMismatch
 EOF
 ```
-
 
 ### AWX INSTANCE
 
@@ -331,6 +329,8 @@ EOF
 
 <details><summary>MINIO</summary>
 
+### w/ INGRESS + CERT (INGRESS ANNOTAION - CERT-MANAGER)
+
 ```bash
 cat <<EOF > minio.yaml
 ---
@@ -347,6 +347,43 @@ helmfiles:
       - hostnameConsole: artifacts-console
       - hostnameApi: artifacts
       - storageClass: standard
+EOF
+```
+
+### w/ INGRESS + CERT CREATION (CERTIFICATION - CR)
+
+```bash
+cat <<EOF > minio.yaml
+---
+helmfiles:
+  - path: /home/sthings/projects/apps/helm/apps/minio.yaml.gotmpl
+    values:
+      - namespace: minio
+      - clusterIssuer: labda-4sthings
+      - issuerKind: cluster-issuer
+      - domain: sthings-infra-dev.example.com
+      - ingressClassName: nginx
+      - rootUser: adminadmin
+      - rootPassword: adminadmin
+      - hostnameConsole: artifacts-console
+      - hostnameApi: artifacts
+      - storageClass: openebs-hostpath
+      - createCertificateResource: true
+      - certicates:
+          api:
+            hostname: artifacts
+            domain: sthings-infra-dev.example.com
+            issuerName: labda-4sthings
+            issuerKind: ClusterIssuer
+            namespace: minio
+            secretName: artifacts.sthings-infra-dev.example.com-tls
+          console:
+            hostname: artifacts-console
+            domain: sthings-infra-dev.example.com
+            issuerName: labda-4sthings
+            issuerKind: ClusterIssuer
+            namespace: minio
+            secretName: artifacts-console.sthings-infra-dev.example.com-tls
 EOF
 ```
 
