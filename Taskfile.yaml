@@ -78,7 +78,7 @@ tasks:
       APP:
         sh: gum input --placeholder "Enter app name"
       KIND:
-        sh: gum choose "infra" "database" "monitoring" "apps"
+        sh: gum choose "infra" "database" "monitoring" "apps" "cicd"
       INCLUDE:
         sh: gum choose "local" "git" --header="Local or git include?"
       CLUSTER_NAME:
