@@ -3,7 +3,7 @@ environments:
   default:
     values:
       - namespace: flux-system
-      - version: 0.26.0
+      - version: 0.28.0
 ---
 releases:
   - name: flux-operator
@@ -12,7 +12,35 @@ releases:
     chart: fluxcd/flux-operator
     version: {{ .Values.version }}
 
+{{- if hasKey .Values "secrets" }}
+  - name: flux-secrets
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/secrets.values.yaml.gotmpl"
+{{- end }}
+
+{{- if hasKey .Values "instance" }}
+  - name: flux-{{ .Values.instance.name }}-configration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/flux-instance.values.yaml.gotmpl"
+    needs:
+      - {{ .Values.namespace }}/flux-operator
+{{- end }}
+
 repositories:
   - name: fluxcd
     url: ghcr.io/controlplaneio-fluxcd/charts
     oci: true
+{{- if or (hasKey .Values "secrets") (hasKey .Values "instances") }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}
