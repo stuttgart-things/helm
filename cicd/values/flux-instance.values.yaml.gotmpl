@@ -1,10 +1,10 @@
 ---
 customresources:
-  cluster-issuer:
+  {{ .Values.instance.name }}:
     apiVersion: fluxcd.controlplane.io/v1
     kind: FluxInstance
     metadata:
-      name: flux-instance
+      name: {{ .Values.instance.name }}
       namespace: {{ .Release.Namespace }}
       annotations:
         fluxcd.controlplane.io/reconcileEvery: "1h"
@@ -26,6 +26,7 @@ customresources:
         multitenant: false
         networkPolicy: true
         domain: "cluster.local"
+{{- if .Values.instance.enableSops }}
       kustomize:
         patches:
           - patch: |
@@ -47,9 +48,10 @@ customresources:
               - op: add
                 path: /spec/template/spec/containers/0/args/-
                 value: --requeue-dependency=5s
+{{- end }}
       sync:
         kind: GitRepository
-        url: https://github.com/stuttgart-things/stuttgart-things.git
-        ref: refs/heads/main
-        path: clusters/labda/vsphere/sthings-runner
-        pullSecret: git-token-auth
+        url: {{ .Values.instance.gitUrl }}
+        ref: {{ .Values.instance.gitRef }}
+        path: {{ .Values.instance.gitPath }}
+        pullSecret: {{ .Values.instance.gitTokenSecretRef }}
