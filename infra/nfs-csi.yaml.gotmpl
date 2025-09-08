@@ -11,6 +11,9 @@ environments:
       - nfsServiceAccountCreate: true
       - nfsRbacCreate: true
       - nfsRbacName: nfs
+      - nfsServerFQDN: bla
+      - nfsSharePath: /mnt/nfs/kubedata
+      - clusterName: test
       - nfsDriverName: nfs.csi.k8s.io
       - nfsFeatureEnableFSGroupPolicy: true
       - nfsFeatureEnableInlineVolume: false
@@ -32,7 +35,7 @@ releases:
   - name: nfs-csi
     installed: true
     namespace: {{ .Values.namespace }}
-    chart: nfs-driver-nfs/csi-driver-nfs
+    chart: csi-driver-nfs/csi-driver-nfs
     version: {{ .Values.version }}
     values:
       - "values/nfs-csi.values.yaml.gotmpl"
