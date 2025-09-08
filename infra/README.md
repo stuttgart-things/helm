@@ -187,10 +187,6 @@ sudo ufw allow 32765:32767/udp
 sudo ufw reload
 ```
 
-
-
-
-
 ### OPTIONAL: DEPLOY NFS-CSI
 
 ```bash
@@ -200,9 +196,9 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml.gotmpl
     values:
       - nfsServerFQDN: 10.31.101.26
-      - nfsSharePath: /data/col1/sthings
-      - clusterName: k3d-my-cluster
-      - nfsSharePath: /data/col1/sthings
+      - nfsSharePath: /data/k8s/sthings
+      - clusterName: app1
+      - nfsSharePath: /data/k8s/sthings
 EOF
 ```
 
