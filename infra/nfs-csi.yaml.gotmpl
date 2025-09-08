@@ -32,7 +32,7 @@ releases:
   - name: nfs-csi
     installed: true
     namespace: {{ .Values.namespace }}
-    chart: scsi-driver-nfs/csi-driver-nfs
+    chart: nfs-driver-nfs/csi-driver-nfs
     version: {{ .Values.version }}
     values:
       - "values/nfs-csi.values.yaml.gotmpl"
