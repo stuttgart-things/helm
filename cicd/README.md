@@ -85,15 +85,53 @@ EOF
 
 <details><summary>FLUX-OPERATOR</summary>
 
+### DEPLOY FLUX-OPERATOR ONLY
+
 ```bash
 cat <<EOF > flux-operator.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/flux-operator.yaml.gotmpl
+    values:
+      - version: 0.28.0
 EOF
 
 helmfile template -f flux-operator.yaml # RENDER ONLY
 helmfile apply -f flux-operator.yaml # APPLY HELMFILE # APPLY HELMFILE
+```
+
+### DEPLOY FLUX-OPERATOR+SOPS+INSTANCE
+
+```bash
+
+```bash
+cat <<EOF > flux-sops-instance.yaml
+---
+helmfiles:
+  - path: /home/sthings/projects/apps/helm/cicd/flux-operator.yaml.gotmpl
+    values:
+      - version: 0.28.0
+  - path: /home/sthings/projects/apps/helm/cicd/flux-operator.yaml.gotmpl
+    values:
+      - version: 0.28.0
+      - installOperator: false
+      - secrets:
+         git-token-auth:
+           namespace: flux-system
+           kvs:
+             username: {{ env "GITHUB_USER" }}
+             password: {{ env "GITHUB_TOKEN" }}
+         sops-age:
+           namespace: flux-system
+           kvs:
+             age.agekey: "<REPLACE-ME>"
+      - instance:
+          name: flux-stuttgart-things
+          gitUrl: https://github.com/stuttgart-things/stuttgart-things.git
+          gitRef: refs/heads/main
+          gitPath: clusters/stuttgart-things/clusters/vcluster/xplane
+          gitTokenSecretRef: git-token-auth
+          enableSops: true
 ```
 
 </details>

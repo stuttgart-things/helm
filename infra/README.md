@@ -152,6 +152,47 @@ EOF
 
 <details><summary>NFS-CSI</summary>
 
+### OPTIONAL: CREATE NFS SERVER
+
+```bash
+# CREATE NFS DIR
+sudo mkdir -p /opt/nfs
+sudo chown nobody:nogroup /opt/nfs
+sudo chmod 777 /opt/nfs
+```
+
+```bash
+# CONFIGURE EXPORTS
+sudo vi /etc/exports
+
+# ADD NFS SERVER LIKE THIS
+/opt/nfs *(rw,sync,no_subtree_check,no_root_squash)
+
+sudo exportfs -rav
+```
+
+```bash
+# INSTALL NFS-SERVER
+sudo apt update -y
+sudo apt install nfs-kernel-server -y
+```
+
+```bash
+# Allow NFS ports from anywhere
+sudo ufw allow 2049/tcp    # NFS
+sudo ufw allow 111/tcp     # rpcbind
+sudo ufw allow 111/udp
+sudo ufw allow 32765:32767/tcp   # NFS high ports
+sudo ufw allow 32765:32767/udp
+sudo ufw reload
+```
+
+
+
+
+
+### OPTIONAL: DEPLOY NFS-CSI
+
 ```bash
 cat <<EOF > nfs-csi.yaml
 ---

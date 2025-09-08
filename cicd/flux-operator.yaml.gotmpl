@@ -4,16 +4,20 @@ environments:
     values:
       - namespace: flux-system
       - version: 0.28.0
+      - installOperator: true
 ---
 releases:
+{{- if .Values.installOperator }}
   - name: flux-operator
-    installed: true
+    installed: {{ .Values.installOperator }}
     namespace: {{ .Values.namespace }}
     chart: fluxcd/flux-operator
     version: {{ .Values.version }}
+{{- end }}
 
 {{- if hasKey .Values "secrets" }}
   - name: flux-secrets
+    disableValidationOnInstall: true
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
@@ -31,8 +35,6 @@ releases:
     version: 0.3.15
     values:
       - "values/flux-instance.values.yaml.gotmpl"
-    needs:
-      - {{ .Values.namespace }}/flux-operator
 {{- end }}
 
 repositories:
