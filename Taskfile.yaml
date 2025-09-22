@@ -57,8 +57,29 @@ tasks:
 
   # create-vcluster-cluster:
 
-
-
+  generate-helmfile:
+    desc: Generate Helmfile configuration + values
+    cmds:
+      - |
+        k2n gen \
+        --examples-dirs "{{ .EXAMPLE_DIRS }}" \
+        --ruleset-env-dir {{ .RULESET_ENV_DIR }} \
+        --usecase {{ .USECASE }} \
+        --example-file-ext ".yaml,.tf,.gotmpl,.md" \
+        --verbose=true \
+        --prompt-to-ai={{ .PROMPT }} \
+        --instruction "Give me a helmfile + values for {{ .CHART }}. I deployed like this w/ helm cli: {{ .HELM_CLI_INSTALL_CMD }} .See examples for schema. Do not invent values - just use the information from the helm install command" \
+        --destination "" # stdout
+    vars:
+      USECASE: helmfile
+      EXAMPLE_DIRS: .k2n/helmfile-examples
+      RULESET_ENV_DIR: .k2n/env-ruleset
+      CHART:
+        sh: gum input --placeholder "Enter helm chart name"
+      HELM_CLI_INSTALL_CMD:
+        sh: gum input --placeholder "Enter helm cli install command"
+      PROMPT:
+        sh: gum choose "true" "false" --header="Prompt to ai?"
 
   generate-helmfile-include:
     desc: Generate Helmfile include config for dev cluster
@@ -75,7 +96,7 @@ tasks:
         --destination "" # stdout
     vars:
       USECASE: helmfile
-      EXAMPLE_DIRS: .k2n/examples
+      EXAMPLE_DIRS: .k2n/include-examples
       RULESET_ENV_DIR: .k2n/env-ruleset
       RULESET_USECASE_DIR: .k2n/rulesets/terraformvm
       PROMPT:
@@ -294,8 +315,6 @@ tasks:
           kind delete clusters "{{ .CLUSTER_NAME }}"
 
         fi
-
-
 
   output-ingress-nipio:
     desc: Output ingress domain

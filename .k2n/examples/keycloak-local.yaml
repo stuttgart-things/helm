@@ -1,7 +1,0 @@
----
-# this is a local include
-helmfiles:
-  - path: /home/sthings/projects/apps/helm/database/keycloak.yaml.gotmpl
-    values:
-      - clusterIssuer: selfsigned
-      - domain: 172.18.0.4.nip.io

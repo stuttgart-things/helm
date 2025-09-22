@@ -1,5 +1,27 @@
 # stuttgart-things/helm/cicd
 
+<details><summary>VCLUSTER</summary>
+
+## DEPLOYMENT
+
+```bash
+cat <<EOF > argocd.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@cicd/vcluster.yaml.gotmpl
+    values:
+      - clusterName: dev-cluster
+      - namespace: vcluster
+```
+
+## CONNECT TO VCLUSTER
+
+```bash
+vcluster connect dev-cluster -n vcluster
+```
+
+</details>
+
 <details><summary>ARGOCD</summary>
 
 ### GENERATE PASSWORD
