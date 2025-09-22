@@ -1,0 +1,21 @@
+---
+environments:
+  default:
+    values:
+      - namespace: vcluster
+      - clusterName: vcluster
+      - version: v0.28.0
+---
+releases:
+  - name: {{ .Values.clusterName }}
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: loft/vcluster
+    version: {{ .Values.version }}
+    values:
+      - "values/vcluster.values.yaml.gotmpl"
+
+repositories:
+  - name: loft
+    url: https://charts.loft.sh
+    oci: false

@@ -1,8 +1,0 @@
----
-# this is a local include
-helmfiles:
-  - path: /home/sthings/projects/apps/helm/apps/nginx.yaml.gotmpl
-    values:
-      - hostname: webserver
-      - domain: 172.18.0.4.nip.io
-      - ingressClassName: nginx
