@@ -5,13 +5,14 @@
 ## DEPLOYMENT
 
 ```bash
-cat <<EOF > argocd.yaml
+cat <<EOF > vcluster.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/vcluster.yaml.gotmpl
     values:
       - clusterName: dev-cluster
       - namespace: vcluster
+EOF
 ```
 
 ## CONNECT TO VCLUSTER
