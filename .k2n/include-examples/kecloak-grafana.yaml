@@ -1,0 +1,20 @@
+---
+# this are multiple helmfiles that are used to deploy keycloak and grafana
+# this is a local include
+helmfiles:
+  - path: /home/sthings/projects/apps/helm/database/keycloak.yaml.gotmpl
+    values:
+      - clusterIssuer: selfsigned
+      - domain: 172.18.0.4.nip.io
+      - ingressClassName: nginx
+      - storageClass: standard
+  - path: /home/sthings/projects/apps/helm/monitoring/grafana.yaml.gotmpl
+    values:
+      - hostname: grafana
+      - domain: 172.18.0.4.nip.io
+      - ingressClassName: nginx
+      - clusterIssuer: selfsigned
+      - storageClassName: standard
+      - grafanaConfig: |
+          server:
+            serve_from_sub_path: false

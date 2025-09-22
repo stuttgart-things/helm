@@ -1,0 +1,27 @@
+# tekton.yaml.gotmpl
+---
+environments:
+  default:
+    values:
+      - namespace: tekton-operator
+      - pipelineNamespace: tekton-pipelines
+      - autoInstallComponents: false
+      - pipelineNamespace: tekton-pipelines
+      - imagePullPolicy: Always
+      - disableInlineSpec: ""
+      - enableTektonPipeline: true
+---
+releases:
+  - name: tekton
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/tekton
+    version: 0.76.1
+    values:
+      - "tekton.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things/tekton
+    oci: true

@@ -1,0 +1,12 @@
+
+# crossplane.values.yaml.gotmpl
+---
+args:
+  - '--debug'
+  - '--enable-usages'
+  - '--enable-external-secret-stores'
+provider:
+  packages:
+    {{- range .Values.providers }}
+    - {{ . }}
+    {{- end }}
