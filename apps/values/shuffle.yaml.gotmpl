@@ -1,0 +1,109 @@
+---
+shuffle:
+  appRegistry: {{ .Values.appRegistry }}
+
+backend:
+  image:
+    pullPolicy: {{ .Values.pullPolicy }}
+    tag: {{ .Values.backendTag }}
+frontend:
+  image:
+    pullPolicy: {{ .Values.pullPolicy }}
+    tag: {{ .Values.frontendTag }}
+
+{{- if .Values.enableIngress }}
+ingress:
+  enabled: {{ .Values.enableIngress }}
+  extraTls:
+  - hosts:
+    - {{ .Values.hostname }}.{{ .Values.domain }}
+    secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
+  hostname: {{ .Values.hostname }}.{{ .Values.domain }}
+  ingressClassName: {{ .Values.ingressClassName }}
+  tls: true
+{{- end }}
+
+opensearch:
+  enabled: {{ .Values.openSearchEnabled }}
+  coordinating:
+    replicaCount: {{ .Values.openSearchReplicas }}
+  dashboards:
+    enabled: {{ .Values.openSearchDashboards }}
+  data:
+    replicaCount: {{ .Values.openSearchDataReplicas }}
+  enabled: {{ .Values.openSearchEnabled }}
+  global:
+    storageClass: {{ .Values.storageClass }}
+  ingest:
+    replicaCount: {{ .Values.openSearchIngestReplicas }}
+  master:
+    replicaCount: {{ .Values.openSearchMasterReplicas }}
+
+volumePermissions:
+  enabled: {false
+  image:
+    registry: docker.io
+    repository: bitnami/os-shell
+    tag: 12-debian-12-r30
+    digest: ""
+    pullPolicy: IfNotPresent
+
+
+persistence:
+  appBuilder:
+    accessModes:
+    - {{ .Values.accessMode }}
+    size: {{ .Values.storageSizeBuilder }}
+    storageClass: {{ .Values.storageClass }}
+  apps:
+    accessModes:
+    - {{ .Values.accessMode }}
+    size: {{ .Values.storageSizeApps }}
+    storageClass: {{ .Values.storageClass }}
+  files:
+    accessModes:
+    - {{ .Values.accessMode }}
+    size: {{ .Values.storageSizeFiles }}
+    storageClass: {{ .Values.storageClass }}
+worker:
+  image:
+    pullPolicy: {{ .Values.pullPolicy }}
+    tag: {{ .Values.workerTag }}
+
+
+orborus:
+  extraEnvVars:
+    - name: CLEANUP
+      value: "true"
+    - name: SHUFFLE_ORBORUS_EXECUTION_TIMEOUT
+      value: "180"
+    - name: SHUFFLE_ORBORUS_EXECUTION_CONCURRENCY
+      value: "10"
+    - name: SHUFFLE_SWARM_CONFIG
+      value: "run"
+    - name: SHUFFLE_KUBERNETES_USE_JOBS
+      value: "false"
+    - name: SHUFFLE_KUBERNETES_USE_PODS
+      value: "true"
+    - name: SHUFFLE_KUBERNETES_USE_DEPLOYMENTS
+      value: "false"
+    - name: SHUFFLE_WORKER_MODE
+      value: kubernetes
+    - name: SHUFFLE_APP_SDK_VERSION
+      value: "{{ .Values.workerTag }}"
+    - name: SHUFFLE_WORKER_VERSION
+      value: "{{ .Values.workerTag }}"
+    - name: SHUFFLE_PIPELINE_MODE
+      value: "true"
+    - name: SHUFFLE_SKIP_PIPELINES
+      value: "true"
+    - name: SHUFFLE_PIPELINE_URL
+      value: "http://shuffle-backend.shuffle.svc.cluster.local:5001"
+    - name: SHUFFLE_VERBOSE
+      value: "false"
+    - name: SHUFFLE_CLEANUP
+      value: "true"
+    - name: SHUFFLE_CLEANUP_INTERVAL
+      value: "60"
+    - name: SHUFFLE_LOGS_DISABLED
+      value: "false"

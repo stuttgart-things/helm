@@ -1,0 +1,42 @@
+---
+environments:
+  default:
+    values:
+      - namespace: shuffle
+      - version: 2.1.0-nightly-02072026
+      - appRegistry: ""
+      - pullPolicy: Always
+      - backendTag: 2.0.2
+      - frontendTag: 2.0.2
+      - workerTag: 2.0.2
+      - ingressEnabled: true
+      - storageClass: standard
+      - accessMode: ReadWriteMany
+      - storageSizeBuilder: 5Gi
+      - storageSizeApps: 5Gi
+      - storageSizeFiles: 5Gi
+      - openSearchEnabled: false
+      - openSearchReplicas: 1
+      - openSearchDashboards: false
+      - openSearchDataReplicas: 1
+      - openSearchEnabled: true
+      - openSearchIngestReplicas: 0
+      - openSearchMasterReplicas: 1
+      - hostname: shuffle
+      - domain: example.com
+      - ingressClassName: nginx
+      - enableIngress: false
+---
+releases:
+  - name: shuffle
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: shuffle/shuffle
+    version: {{ .Values.version }}
+    values:
+      - values/shuffle.yaml.gotmpl
+
+repositories:
+  - name: shuffle
+    url: ghcr.io/shuffle/charts
+    oci: true
