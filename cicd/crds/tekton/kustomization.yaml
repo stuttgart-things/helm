@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - https://raw.githubusercontent.com/stuttgart-things/stage-time/refs/heads/main/tekton/crds/customresourcedefinition-tektontriggers.operator.tekton.dev.yaml
+  - https://raw.githubusercontent.com/stuttgart-things/stage-time/refs/heads/main/tekton/crds/customresourcedefinition-tektonresults.operator.tekton.dev.yaml
+  - https://raw.githubusercontent.com/stuttgart-things/stage-time/refs/heads/main/tekton/crds/customresourcedefinition-tektonpruners.operator.tekton.dev.yaml
+  - https://raw.githubusercontent.com/stuttgart-things/stage-time/refs/heads/main/tekton/crds/customresourcedefinition-tektonpipelines.operator.tekton.dev.yaml
+  - https://raw.githubusercontent.com/stuttgart-things/stage-time/refs/heads/main/tekton/crds/customresourcedefinition-tektonconfigs.operator.tekton.dev.yaml

@@ -5,10 +5,11 @@ environments:
       - namespace: tekton-operator
       - pipelineNamespace: tekton-pipelines
       - autoInstallComponents: false
-      - pipelineNamespace: tekton-pipelines
       - imagePullPolicy: Always
       - disableInlineSpec: ""
       - enableTektonPipeline: true
+      - tektonPruner:
+          enabled: false
 ---
 releases:
   - name: tekton
@@ -16,7 +17,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/tekton
-    version: 0.76.1
+    version: 0.77.5
     values:
       - "values/tekton.values.yaml.gotmpl"
 
