@@ -28,6 +28,14 @@ EOF
 
 <details><summary>CILIUM</summary>
 
+### CRDS
+
+```bash
+kubectl apply -k https://github.com/stuttgart-things/helm/infra/crds/cilium
+```
+
+### DEPLOY
+
 ```bash
 cat <<EOF > cilium.yaml
 ---

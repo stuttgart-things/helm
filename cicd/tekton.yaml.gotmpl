@@ -9,6 +9,8 @@ environments:
       - imagePullPolicy: Always
       - disableInlineSpec: ""
       - enableTektonPipeline: true
+      - version: 0.77.5
+      - enableTektonPruner: false
 ---
 releases:
   - name: tekton
@@ -16,7 +18,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/tekton
-    version: 0.76.1
+    version: {{ .Values.version }}
     values:
       - "values/tekton.values.yaml.gotmpl"
 
