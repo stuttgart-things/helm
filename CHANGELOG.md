@@ -1,3 +1,25 @@
+# [1.2.0](https://github.com/stuttgart-things/helm/compare/v1.1.0...v1.2.0) (2025-10-04)
+
+
+### Features
+
+* feat/add-flux-instance ([ffda12d](https://github.com/stuttgart-things/helm/commit/ffda12d11594f3903695e14cebaf62d851a20db3))
+* feat/add-flux-instance ([b2ab17e](https://github.com/stuttgart-things/helm/commit/b2ab17e1e88f689c3f9ef9da1e5acb9ca57b3e00))
+* feat/add-vcluster ([d3c920d](https://github.com/stuttgart-things/helm/commit/d3c920dfac9d17a9f50a0579dc954ba494d0f7aa))
+* feat/tekton-crds ([14a8048](https://github.com/stuttgart-things/helm/commit/14a80488afebb1a474b6328204febb112205948d))
+* feat/udpate-tekton-readme ([564fe43](https://github.com/stuttgart-things/helm/commit/564fe43defc85411c0fe9187d8fa927a75255ab3))
+* feat/update-minio ([5746e82](https://github.com/stuttgart-things/helm/commit/5746e829a75bd9a0f298a464cb02dfcc8b0f717d))
+* fix/readme ([8831fa6](https://github.com/stuttgart-things/helm/commit/8831fa6310c64f7f9a29180edd4d6ab8e8f175fa))
+* main ([40720f6](https://github.com/stuttgart-things/helm/commit/40720f69efbcf864ddb48cd2651dbe8319970e62))
+* main ([82deba6](https://github.com/stuttgart-things/helm/commit/82deba675a3156d298ead692100ba24b4e852f5c))
+* main ([d130c80](https://github.com/stuttgart-things/helm/commit/d130c800a380d48f33b039ec6799a69f871d217f))
+* main ([88f2a96](https://github.com/stuttgart-things/helm/commit/88f2a96cf3434ca47f01d1e04c3086ac728a1059))
+* main ([e97b3c8](https://github.com/stuttgart-things/helm/commit/e97b3c84302231667843092cb761dbbc5a0f0cc2))
+* main ([859527d](https://github.com/stuttgart-things/helm/commit/859527d7d9d5a0482ff8fe1f20eceb57c5ecde79))
+* main ([6675b66](https://github.com/stuttgart-things/helm/commit/6675b664a0e3954371ee63e1cadf1df8061458ea))
+* main ([24099cd](https://github.com/stuttgart-things/helm/commit/24099cd29f49248b4527c3a8f4dd85af8ac8906a))
+* main ([d76feb8](https://github.com/stuttgart-things/helm/commit/d76feb8e68b04702475cd0a5abc05ee14aad7842))
+
 # [1.1.0](https://github.com/stuttgart-things/helm/compare/v1.0.0...v1.1.0) (2025-09-03)
 
 
