@@ -16,18 +16,27 @@ Deploy Helm charts declaratively
 
 ```bash
 task: Available tasks for this project:
-* branch:                      Create branch from main
-* check:                       Run pre-commit hooks
-* commit:                      Commit + push code into branch
-* create-test-app:             Switch to local branch
-* pr:                          Create pull request into main
-* release:                     push new version
-* run-pre-commit-hook:         Run the pre-commit hook script to replace .example.com with .example.com
-* switch-local:                Switch to local branch
-* switch-remote:               Switch to remote branch
-* tasks:                       Select a task to run
-* tests-create-includes:       Create test files
-* tests-render-includes:       Test render includes
+* branch:                           Create branch from main
+* check:                            Run pre-commit hooks
+* commit:                           Commit + push code into branch
+* create-kind-cluster:              Create, Start & Configure kind cluster
+* destroy-kind-cluster:             Destroy kind cluster
+* do:                               Select a task to run
+* execute-base-cluster-setup:       Execute base setup on kind cluster
+* generate-helmfile:                Generate Helmfile configuration + values
+* generate-helmfile-include:        Generate Helmfile include config for dev cluster
+* helmfile-action:                  Get app name
+* install-release:                  Test a release
+* output-ingress-nipio:             Output ingress domain
+* pr:                               Create pull request into main
+* release:                          push new version
+* render:                           Render helmfile
+* run-pre-commit-hook:              Run the pre-commit hook script to replace .example.com with .example.com
+* switch-local:                     Switch to local branch
+* switch-remote:                    Switch to remote branch
+* tests-create-includes:            Create test files
+* tests-render-includes:            Test render includes
+* uninstall-release:                Uninstall a release
 ```
 
 </details>
