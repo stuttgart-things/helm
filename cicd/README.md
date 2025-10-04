@@ -195,13 +195,23 @@ helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
 
 <details><summary>TEKTON</summary>
 
+### CRDS
+
+```bash
+kubectl apply -k https://github.com/stuttgart-things/helm/cicd/crds/tekton
+```
+
+### DEPLOY
+
 ```bash
 cat <<EOF > tekton.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml.gotmpl
     values:
-      - namespace: tekton-pipelines
+      - namespace: tekton-operator
+      - pipelineNamespace: tekton-pipelines
+      - version: 0.77.5
 EOF
 
 helmfile template -f tekton.yaml # RENDER ONLY
