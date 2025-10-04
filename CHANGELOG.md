@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/stuttgart-things/helm/compare/v1.2.0...v1.2.1) (2025-10-04)
+
+
+### Bug Fixes
+
+* fix/kustomize ([8b2230a](https://github.com/stuttgart-things/helm/commit/8b2230a728785450fe5353487aecd28c17725853))
+
 # [1.2.0](https://github.com/stuttgart-things/helm/compare/v1.1.0...v1.2.0) (2025-10-04)
 
 
