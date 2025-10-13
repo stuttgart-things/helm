@@ -9,23 +9,21 @@ environments:
       - backendTag: 2.0.2
       - frontendTag: 2.0.2
       - workerTag: 2.0.2
-      - ingressEnabled: true
-      - storageClass: standard
-      - accessMode: ReadWriteMany
+      - storageClass: openebs-hostpath
+      - accessMode: ReadWriteOnce
       - storageSizeBuilder: 5Gi
       - storageSizeApps: 5Gi
       - storageSizeFiles: 5Gi
-      - openSearchEnabled: false
+      - openSearchEnabled: true
       - openSearchReplicas: 1
       - openSearchDashboards: false
       - openSearchDataReplicas: 1
-      - openSearchEnabled: true
       - openSearchIngestReplicas: 0
       - openSearchMasterReplicas: 1
       - hostname: shuffle
-      - domain: example.com
+      - domain: 172.18.0.4.nip.io
       - ingressClassName: nginx
-      - enableIngress: false
+      - enableIngress: true
 ---
 releases:
   - name: shuffle

@@ -72,7 +72,6 @@ EOF
 
 </details>
 
-
 <details><summary>REGISTRY</summary>
 
 ### DEPLOYMENT

@@ -6,6 +6,7 @@ backend:
   image:
     pullPolicy: {{ .Values.pullPolicy }}
     tag: {{ .Values.backendTag }}
+
 frontend:
   image:
     pullPolicy: {{ .Values.pullPolicy }}
@@ -39,15 +40,14 @@ opensearch:
   master:
     replicaCount: {{ .Values.openSearchMasterReplicas }}
 
-volumePermissions:
-  enabled: {false
   image:
     registry: docker.io
-    repository: bitnami/os-shell
-    tag: 12-debian-12-r30
-    digest: ""
-    pullPolicy: IfNotPresent
+    repository: bitnamilegacy/opensearch
 
+  sysctlImage:
+    enabled: true
+    registry: docker.io
+    repository: bitnamilegacy/os-shell
 
 persistence:
   appBuilder:
@@ -65,11 +65,11 @@ persistence:
     - {{ .Values.accessMode }}
     size: {{ .Values.storageSizeFiles }}
     storageClass: {{ .Values.storageClass }}
+
 worker:
   image:
     pullPolicy: {{ .Values.pullPolicy }}
     tag: {{ .Values.workerTag }}
-
 
 orborus:
   extraEnvVars:
