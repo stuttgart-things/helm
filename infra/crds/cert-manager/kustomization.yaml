@@ -4,3 +4,6 @@ kind: Kustomization
 resources:
   - https://raw.githubusercontent.com/cert-manager/cert-manager/11c9f1c3b506ec8aea957452a68d5f6873ca56d2/deploy/crds/cert-manager.io_issuers.yaml
   - https://raw.githubusercontent.com/cert-manager/cert-manager/11c9f1c3b506ec8aea957452a68d5f6873ca56d2/deploy/crds/cert-manager.io_certificates.yaml
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_clusterissuers.yaml
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_certificates.yaml
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_certificaterequests.yaml
