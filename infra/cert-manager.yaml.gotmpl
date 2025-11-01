@@ -3,8 +3,9 @@ environments:
   default:
     values:
       - namespace: cert-manager
-      - version: v1.18.2
+      - version: v1.19.1
       - config: selfsigned
+      - installCrds: true
 ---
 repositories:
   - name: jetstack
@@ -22,7 +23,7 @@ releases:
     version: {{ .Values.version }}
     values:
       - crds:
-          enabled: true
+          enabled: {{ .Values.installCrds }}
 
   - name: cert-manager-configration
     disableValidationOnInstall: true
