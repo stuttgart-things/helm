@@ -6,22 +6,22 @@ environments:
       - namespace: homerun
       - ingressClass: nginx
       - ingressPort: 80
-      - persistenceEnabled: true
-      - storageClass: local-path
       - stream: homerun
       - searchIndex: homerun
       - hostname: homerun
       - domain: example.com
-      - persistenceEabled: true
       - issuerKind: ClusterIssuer
       - issuerName: selfsigned
-      - redisStack:
-          serviceType: ClusterIP
-          enabled: true
-          password: {{ env "redisPassword" }}
-          storageSize: 4Gi
-          port: 6379
-          serviceName: homerun-redis-stack-headless
+      - persistenceEnabled: true
+      - storageClass: standard
+      - redisStackServiceType: ClusterIP
+      - redisStackEnabled: true
+      - redisStackPersistenceEnabled: true
+      - redisStackPassword: {{ env "redisPassword" }}
+      - redisStackStorageClass: openebs-hostpath
+      - redisStackStorageSize: 4Gi
+      - redisStackPort: 6379
+      - redisStackServiceName: homerun-redis-stack-headless
       - genericPitcher:
           enabled: true
           name: homerun-generic-pitcher

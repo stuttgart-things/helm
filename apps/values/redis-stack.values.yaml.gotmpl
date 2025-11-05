@@ -1,26 +1,26 @@
 ---
 redis-stack:
+  enabled: {{ .Values.redisStackEnabled }}
   sentinel:
     service:
-      type: {{ .Values.redisStack.serviceType }}
+      type: {{ .Values.redisStackServiceType }}
 
-  enabled: {{ .Values.persistenceEabled }}
 
   global:
-    redis:
-      password: {{ .Values.redisStack.password }}
+    password: {{ .Values.redisStackPassword }}
+    storageClass: {{ .Values.redisStackStorageClass }}
 
   master:
     service:
-      type: {{ .Values.redisStack.serviceType }}
+      type: {{ .Values.redisStackServiceType }}
 
     persistence:
-      enabled: {{ .Values.redisStack.enabled }}
-      storageClass: {{ .Values.storageClass }}
-      size: {{ .Values.redisStack.storageSize }}
+      enabled: {{ .Values.redisStackPersistenceEnabled }}
+      storageClass: {{ .Values.redisStackStorageClass }}
+      size: {{ .Values.redisStackStorageSize }}
 
   replica:
     persistence:
-      enabled: {{ .Values.redisStack.enabled }}
-      storageClass: {{ .Values.storageClass }}
-      size: {{ .Values.redisStack.storageSize }}
+      enabled: {{ .Values.redisStackPersistenceEnabled }}
+      storageClass: {{ .Values.redisStackStorageClass }}
+      size: {{ .Values.redisStackStorageSize }}
