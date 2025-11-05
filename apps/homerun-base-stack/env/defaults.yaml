@@ -1,0 +1,11 @@
+---
+ingressClass: nginx
+ingressPort: 80
+
+redisStack:
+  serviceType: ClusterIP
+  enabled: true
+  password: ref+vault://apps/homerun/redisPassword
+  storageSize: 4Gi
+  port: 6379
+  serviceName: homerun-redis-stack-headless
