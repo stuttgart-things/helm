@@ -6,6 +6,40 @@ App Helmfile templates.
 
 ## SERVICES
 
+<details><summary>HOMERUN-BASE-STACK</summary>
+
+```bash
+# BASIC APPLY
+
+cat <<EOF > homerun-base-stack.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/homerun-base-stack.yaml.gotmpl
+    values:
+      - namespace: homerun
+      - stream: homerun
+      - searchIndex: homerun
+      - domain: demo-infra.sthings-vsphere.labul.sva.de
+      - issuerName: cluster-issuer-approle
+      - storageClass: nfs4-csi
+EOF
+```
+
+```bash
+# SET SECRETS AND APPLY
+
+export redisPassword=whaetver
+export genericPitcherToken=whaetver
+
+helmfile apply -f homerun-base-stack.yaml
+```
+
+
+
+</details>
+
+
+
 <details><summary>REDIS-STACK</summary>
 
 ```bash

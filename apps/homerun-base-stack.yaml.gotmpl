@@ -1,0 +1,65 @@
+---
+environments:
+  default:
+    values:
+      - version: v0.2.1
+      - namespace: homerun
+      - ingressClass: nginx
+      - ingressPort: 80
+      - persistenceEnabled: true
+      - storageClass: local-path
+      - stream: homerun
+      - searchIndex: homerun
+      - hostname: homerun
+      - domain: example.com
+      - persistenceEabled: true
+      - issuerKind: ClusterIssuer
+      - issuerName: selfsigned
+      - redisStack:
+          serviceType: ClusterIP
+          enabled: true
+          password: {{ env "redisPassword" }}
+          storageSize: 4Gi
+          port: 6379
+          serviceName: homerun-redis-stack-headless
+      - genericPitcher:
+          enabled: true
+          name: homerun-generic-pitcher
+          port: 4000
+          apiPath: generic
+          token: {{ env "genericPitcherToken" }}
+      - textCatcher:
+          enabled: true
+          name: homerun-text-catcher
+          logging: terminal
+
+releases:
+  - name: homerun-redis-stack
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/homerun
+    version: {{ .Values.version }}
+    values:
+      - "values/redis-stack.values.yaml.gotmpl"
+
+  - name: homerun-generic-pitcher
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/homerun
+    version: {{ .Values.version }}
+    values:
+      - "values/generic-pitcher.values.yaml.gotmpl"
+
+  - name: homerun-text-catcher
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/homerun
+    version: {{ .Values.version }}
+    values:
+      - "values/text-catcher.values.yaml.gotmpl"
+
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
