@@ -2,35 +2,31 @@
 environments:
   default:
     values:
-      - version: v0.2.1
-      - namespace: homerun
-      - redisStackEnabled: true
-      - redisStackServiceType: ClusterIP
-      - redisStackStorageClass: openebs-hostpath
-      - redisStackStorageSize: 4Gi
-      - redisStackPort: 6379
-      - redisStackServiceName: redis-stack-headless
+      - version: {{ .Values.version | default "v0.2.1" }}
+      - namespace: {{ .Values.namespace | default "homerun" }}
+      - redisStackEnabled: {{ .Values.redisStackEnabled | default true }}
+      - redisStackServiceType: {{ .Values.redisStackServiceType | default "ClusterIP" }}
+      - redisStackStorageClass: {{ .Values.redisStackStorageClass | default "openebs-hostpath" }}
+      - redisStackStorageSize: {{ .Values.redisStackStorageSize | default "4Gi" }}
+      - redisStackPort: {{ .Values.redisStackPort | default 6379 }}
+      - redisStackServiceName: {{ .Values.redisStackServiceName | default "redis-stack-headless" }}
       - redisStackPassword: {{ env "redisPassword" }}
-      - textCatcherEnabled: true
-      - textCatcherLogging: terminal
-      - textCatcherName: homerun-text-catcher
-      - ingressClass: nginx
-      - ingressPort: 80
-      - stream: homerun
-      - searchIndex: homerun
-      - hostname: homerun
-      - domain: example.com
-      - issuerKind: ClusterIssuer
-      - issuerName: selfsigned
-      - persistenceEnabled: true
-      - storageClass: standard
-
-      - genericPitcher:
-          enabled: true
-          name: homerun-generic-pitcher
-          port: 4000
-          apiPath: generic
-          token: {{ env "genericPitcherToken" }}
+      - textCatcherEnabled: {{ .Values.textCatcherEnabled | default true }}
+      - textCatcherLogging: {{ .Values.textCatcherLogging | default "terminal" }}
+      - textCatcherName: {{ .Values.textCatcherName | default "homerun-text-catcher" }}
+      - genericPitcherEnabled: {{ .Values.genericPitcherEnabled | default true }}
+      - genericPitcherName: {{ .Values.genericPitcherName | default "homerun-generic-pitcher" }}
+      - genericPitcherIngressClass: {{ .Values.genericPitcherIngressClass | default "nginx" }}
+      - genericPitcherIngressPort: {{ .Values.genericPitcherIngressPort | default 80 }}
+      - genericPitcherContainerPort: {{ .Values.genericPitcherContainerPort | default 4000 }}
+      - genericPitcherApiPath: {{ .Values.genericPitcherApiPath | default "generic" }}
+      - genericPitcherHostname: {{ .Values.genericPitcherHostname | default "homerun" }}
+      - genericPitcherDomain: {{ .Values.genericPitcherDomain | default "example.com" }}
+      - genericPitcherIssuerKind: {{ .Values.genericPitcherIssuerKind | default "ClusterIssuer" }}
+      - genericPitcherIssuerName: {{ .Values.genericPitcherIssuerName | default "selfsigned" }}
+      - genericPitcherToken: {{ env "genericPitcherToken" }}
+      - stream: {{ .Values.stream | default "homerun" }}
+      - searchIndex: {{ .Values.searchIndex | default "homerun" }}
 
 {{- if .Values.redisStackEnabled }}
 helmfiles:
@@ -44,13 +40,18 @@ helmfiles:
 {{- end }}
 
 releases:
-#  - name: homerun-generic-pitcher
-#    installed: true
-#    namespace: {{ .Values.namespace }}
-#    chart: stuttgart-things/homerun
-#    version: {{ .Values.version }}
-#    values:
-#      - "values/generic-pitcher.values.yaml.gotmpl"
+{{- if .Values.genericPitcherEnabled }}
+  - name: homerun-generic-pitcher
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/homerun
+    version: {{ .Values.version }}
+    values:
+      - "values/generic-pitcher.values.yaml.gotmpl"
+    set:
+      - name: genericPitcherDomain
+        value: {{ .Values.genericPitcherDomain }}
+{{- end }}
 
 {{- if .Values.textCatcherEnabled }}
   - name: homerun-text-catcher

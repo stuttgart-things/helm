@@ -1,11 +1,11 @@
 ---
 generic-pitcher:
-  enabled: {{ .Values.genericPitcher.enabled }}
+  enabled: {{ .Values.genericPitcherEnabled }}
 
   configmaps:
-    {{ .Values.genericPitcher.name }}:
-      API_PATH: {{ .Values.genericPitcher.apiPath }}
-      PORT: "{{ .Values.genericPitcher.port }}"
+    {{ .Values.genericPitcherName }}:
+      API_PATH: {{ .Values.genericPitcherApiPath }}
+      PORT: "{{ .Values.genericPitcherContainerPort }}"
       REDIS_STREAM: {{ .Values.stream }}
       REDISEARCH_INDEX: {{ .Values.searchIndex }}
 
@@ -13,15 +13,15 @@ generic-pitcher:
     generic-token:
       name: generic-token
       labels:
-        app: {{ .Values.genericPitcher.name }}
+        app: {{ .Values.genericPitcherName }}
       dataType: stringData
       secretKVs:
-        WEBHOOK_TOKEN: {{ .Values.genericPitcher.token }}
+        WEBHOOK_TOKEN: {{ .Values.genericPitcherToken }}
 
-    redis-connection-{{ .Values.genericPitcher.name }}:
-      name: redis-connection-{{ .Values.genericPitcher.name }}
+    redis-connection-{{ .Values.genericPitcherName }}:
+      name: redis-connection-{{ .Values.genericPitcherName }}
       labels:
-        app: {{ .Values.genericPitcher.name }}
+        app: {{ .Values.genericPitcherName }}
       dataType: stringData
       secretKVs:
         REDIS_SERVER: {{ .Values.redisStackServiceName }}.{{ .Release.Namespace }}.svc.cluster.local
@@ -29,37 +29,37 @@ generic-pitcher:
         REDIS_PASSWORD: {{ .Values.redisStackPassword }}
 
   customresources:
-    {{ .Values.genericPitcher.name }}-certificate:
+    {{ .Values.genericPitcherName }}-certificate:
       apiVersion: cert-manager.io/v1
       kind: Certificate
       metadata:
-        name: {{ .Values.genericPitcher.name }}-ingress
+        name: {{ .Values.genericPitcherName }}-ingress
         labels:
-          app: {{ .Values.genericPitcher.name }}
+          app: {{ .Values.genericPitcherName }}
       spec:
-        commonName: {{ .Values.hostname }}.{{ .Values.domain }}
+        commonName: {{ .Values.genericPitcherHostname }}.{{ .Values.genericPitcherDomain }}
         dnsNames:
-          - {{ .Values.hostname }}.{{ .Values.domain }}
+          - {{ .Values.genericPitcherHostname }}.{{ .Values.genericPitcherDomain }}
         issuerRef:
-          name: {{ .Values.issuerName }}
-          kind: {{ .Values.issuerKind }}
-        secretName: {{ .Values.genericPitcher.name }}-ingress-tls
+          name: {{ .Values.genericPitcherIssuerName }}
+          kind: {{ .Values.genericPitcherIssuerKind  }}
+        secretName: {{ .Values.genericPitcherName }}-ingress-tls
 
   ingress:
-    {{ .Values.genericPitcher.name }}-ingress:
+    {{ .Values.genericPitcherName }}-ingress:
       labels:
-        app: {{ .Values.genericPitcher.name }}
-      name: {{ .Values.genericPitcher.name }}
-      ingressClassName: {{ .Values.ingressClass }}
+        app: {{ .Values.genericPitcherName }}
+      name: {{ .Values.genericPitcherName }}
+      ingressClassName: {{ .Values.genericPitcherIngressClass }}
       annotations:
         nginx.ingress.kubernetes.io/ssl-redirect: "true"
       service:
-        name: {{ .Values.genericPitcher.name }}-service
-        port: {{ .Values.ingressPort }}
-        path: /{{ .Values.genericPitcher.apiPath }}
+        name: {{ .Values.genericPitcherName }}-service
+        port: {{ .Values.genericPitcherContainerPort }}
+        path: /{{ .Values.genericPitcherApiPath }}
         pathType: Prefix
-      hostname: {{ .Values.hostname }}
-      domain: {{ .Values.domain }}
+      hostname: {{ .Values.genericPitcherHostname }}
+      domain: {{ .Values.genericPitcherDomain }}
       tls:
-        secretName: {{ .Values.genericPitcher.name }}-ingress-tls
-        host: {{ .Values.hostname }}.{{ .Values.domain }}
+        secretName: {{ .Values.genericPitcherName }}-ingress-tls
+        host: {{ .Values.genericPitcherHostname }}.{{ .Values.genericPitcherDomain }}

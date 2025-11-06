@@ -1,14 +1,12 @@
 #!/bin/bash
-#ADDRESS=https://homerun.fluxdev-2.sthings-vsphere.labul.sva.de/generic
-#ADDRESS=https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic
-#ADDRESS=https://k3s-sprechstunde.labul.sva.de/generic
 
 read -r -p "ENTER COUNT MESSAGES [5]: " COUNT_MESSAGE
 COUNT_MESSAGE=${COUNT_MESSAGE:-5}
 echo "$COUNT_MESSAGE"
 
-read -r -p "ENTER ADDRESS [https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic]: " ADDRESS
-ADDRESS=${ADDRESS:-https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic}
+ADDRESS_DEFAULT="${HOMERUN_ADDRESS:-https://your-custom-address.com/endpoint}"
+read -r -p "ENTER ADDRESS [${ADDRESS_DEFAULT}]: " ADDRESS
+ADDRESS=${ADDRESS:-$ADDRESS_DEFAULT}
 echo "$ADDRESS"
 
 read -r -p "ENTER DELAY [10]: " DELAY
@@ -134,7 +132,7 @@ for ((i=1; i<=COUNT_MESSAGE; i++)); do
 
   curl -k -X POST "${ADDRESS}" \
       -H "Content-Type: application/json" \
-      -H "X-Auth-Token: IhrGeheimerToken" \
+      -H "X-Auth-Token: Atlan7is2026!" \
       -d "{
             \"title\": \"${TITLE}\",
             \"message\": \"${MESSAGE}\",

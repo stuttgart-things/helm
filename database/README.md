@@ -9,11 +9,29 @@ Database Helmfile templates for deploying common stateful services.
 <details><summary>REDIS-STACK</summary>
 
 ```bash
+# IMPERATIVE
 helmfile apply -f \
 git::https://github.com/stuttgart-things/helm.git@database/redis-stack.yaml.gotmpl \
 --state-values-set storageClass=openebs-hostpath \
 --state-values-set password=<REPLACE-ME>
 ```
+
+<details><summary>REDIS-STACK</summary>
+
+```bash
+# DECLARATIVE
+cat <<EOF > redis-stack.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/redis-stack.yaml.gotmpl
+    values:
+      - namespace: redis-stack
+      - password: {{ env "REDIS_STACK_PASSWORD" | default "whateverpa$$w0rd" }}
+      - storageClass: standard
+EOF
+```
+
+</details>
 
 </details>
 
