@@ -10,38 +10,29 @@ App Helmfile templates.
 
 ```bash
 # BASIC APPLY
-helmfile apply -f /home/sthings/projects/apps/helm/apps/homerun-base-stack.yaml.gotmpl --state-values-set redisStackStorageClass=openebs-hostpath
 
+export redisPassword=<REDIS-PASSWORD>
+export genericPitcherToken=<GENERIC-TOKEN>
+
+helmfile apply -f \
+git::https://github.com/stuttgart-things/helm.git@apps/apps/homerun-base-stack.yaml.gotmpl \
+--state-values-set redisStackStorageClass=openebs-hostpath\
+--state-values-set genericPitcherDomain=demo-infra.example.com
 ```
 
 ```bash
-# SET SECRETS AND APPLY
+# CREATE REDISEARCH INDEX
+sudo apt install redis-tools -y
+kubectl port-forward -n homerun svc/redis-stack 6379:6379
+redis-cli -h localhost -p 6379 -a <REDIS-PASSWORD>
 
-export redisPassword=whaetver
-export genericPitcherToken=whaetver
-
-helmfile apply -f homerun-base-stack.yaml
+FT.CREATE homerun ON HASH PREFIX 1 "message:" SCHEMA messageID TEXT SORTABLE timestamp NUMERIC SORTABLE
+FT._LIST
 ```
 
-
-
-</details>
-
-
-
-<details><summary>REDIS-STACK</summary>
-
 ```bash
-# BASIC
-cat <<EOF > redis-stack.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/redis-stack.yaml.gotmpl
-    values:
-      - namespace: redis-stack
-      - password: {{ env "REDIS_STACK_PASSWORD" | default "whateverpa$$w0rd" }}
-      - storageClass: standard
-EOF
+export HOMERUN_ADDRESS=https://homerun.demo-infra.whatever.de/generic
+bash tests/homerun-send-events.sh
 ```
 
 </details>
