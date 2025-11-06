@@ -24,6 +24,7 @@ master:
   persistence:
     enabled: {{ .Values.persistenceEnabled }}
     storageClass: {{ .Values.storageClass }}
+    size: {{ .Values.storageSize }}
   args:
     - -c
     - /opt/bitnami/scripts/merged-start-scripts/start-master.sh
@@ -39,6 +40,8 @@ replica:
   persistence:
     enabled: {{ .Values.persistenceEnabled }}
     storageClass: {{ .Values.storageClass }}
+    size: {{ .Values.storageSize }}
+
   replicaCount: 1
   args:
     - -c

@@ -3,17 +3,17 @@
 #ADDRESS=https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic
 #ADDRESS=https://k3s-sprechstunde.labul.sva.de/generic
 
-read -p "ENTER COUNT MESSAGES [5]: " COUNT_MESSAGE
+read -r -p "ENTER COUNT MESSAGES [5]: " COUNT_MESSAGE
 COUNT_MESSAGE=${COUNT_MESSAGE:-5}
-echo $COUNT_MESSAGE
+echo "$COUNT_MESSAGE"
 
-read -p "ENTER ADDRESS [https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic]: " ADDRESS
+read -r -p "ENTER ADDRESS [https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic]: " ADDRESS
 ADDRESS=${ADDRESS:-https://homerun.homerun-dev.sthings-vsphere.labul.sva.de/generic}
-echo $ADDRESS
+echo "$ADDRESS"
 
-read -p "ENTER DELAY [10]: " DELAY
+read -r -p "ENTER DELAY [10]: " DELAY
 DELAY=${DELAY:-5}
-echo $DELAY
+echo "$DELAY"
 
 # POSSIBLE DATA
 SYSTEMS=("github" "gitlab") #) "flux" "ansible")
@@ -50,11 +50,16 @@ generate_random_email() {
 generate_random_timestamp() {
   # Generate random values for the timestamp components
   local year=$((RANDOM % 10 + 2024))          # Random year from 2024 to 2033
-  local month=$(printf "%02d" $((RANDOM % 12 + 1)))  # Random month from 01 to 12
-  local day=$(printf "%02d" $((RANDOM % 28 + 1)))    # Random day from 01 to 28
-  local hour=$(printf "%02d" $((RANDOM % 24)))       # Random hour from 00 to 23
-  local minute=$(printf "%02d" $((RANDOM % 60)))     # Random minute from 00 to 59
-  local second=$(printf "%02d" $((RANDOM % 60)))     # Random second from 00 to 59
+  local month
+  month=$(printf "%02d" $((RANDOM % 12 + 1)))  # Random month from 01 to 12
+  local day
+  day=$(printf "%02d" $((RANDOM % 28 + 1)))    # Random day from 01 to 28
+  local hour
+  hour=$(printf "%02d" $((RANDOM % 24)))       # Random hour from 00 to 23
+  local minute
+  minute=$(printf "%02d" $((RANDOM % 60)))     # Random minute from 00 to 59
+  local second
+  second=$(printf "%02d" $((RANDOM % 60)))     # Random second from 00 to 59
 
   # Construct the ISO 8601 timestamp
   echo "${year}-${month}-${day}T${hour}:${minute}:${second}Z"
@@ -89,7 +94,7 @@ generate_random_url() {
     echo "${protocol}://${subdomain}.${domain}/${path}"
 }
 
-for ((i=1; i<=${COUNT_MESSAGE}; i++)); do
+for ((i=1; i<=COUNT_MESSAGE; i++)); do
 
   RANDOM_TIMESTAMP=$(generate_random_timestamp)
   #echo "RANDOM TIMESTAMP: ${RANDOM_TIMESTAMP}"
@@ -124,7 +129,7 @@ for ((i=1; i<=${COUNT_MESSAGE}; i++)); do
   ARTIFACT=$(get_random_item "${ARTIFACTS[@]}")
   #echo "ARTIFACT: ${ARTIFACT}"
 
-  printf "\nWAITING FOR ${DELAY} SECONDS BEFORE SENDING THE (NEXT) EVENT\n"
+  printf '\nWAITING FOR %s SECONDS BEFORE SENDING THE (NEXT) EVENT\n' "${DELAY}"
   sleep "$DELAY"  # Pause für die angegebene Anzahl von Sekunden zwischen den Events
 
   curl -k -X POST "${ADDRESS}" \
