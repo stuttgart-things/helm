@@ -10,19 +10,8 @@ App Helmfile templates.
 
 ```bash
 # BASIC APPLY
+helmfile apply -f /home/sthings/projects/apps/helm/apps/homerun-base-stack.yaml.gotmpl --state-values-set redisStackStorageClass=openebs-hostpath
 
-cat <<EOF > homerun-base-stack.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/homerun-base-stack.yaml.gotmpl
-    values:
-      - namespace: homerun
-      - stream: homerun
-      - searchIndex: homerun
-      - domain: demo-infra.sthings-vsphere.labul.sva.de
-      - issuerName: cluster-issuer-approle
-      - storageClass: nfs4-csi
-EOF
 ```
 
 ```bash

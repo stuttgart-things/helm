@@ -6,6 +6,17 @@ Database Helmfile templates for deploying common stateful services.
 
 ## SERVICES
 
+<details><summary>REDIS-STACK</summary>
+
+```bash
+helmfile apply -f \
+git::https://github.com/stuttgart-things/helm.git@database/redis-stack.yaml.gotmpl \
+--state-values-set storageClass=openebs-hostpath \
+--state-values-set password=<REPLACE-ME>
+```
+
+</details>
+
 <details><summary>OPENLDAP</summary>
 
 ```bash
