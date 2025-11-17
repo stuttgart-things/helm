@@ -1,0 +1,18 @@
+---
+customresources:
+{{- range $k, $v := $.Values.certicates }}
+  {{ $k }}:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: {{ $v.hostname }}-ingress
+      namespace: {{ $v.namespace }}
+    spec:
+      commonName: {{ $v.hostname }}.{{ $v.domain }}
+      dnsNames:
+        - {{ $v.hostname }}.{{ $v.domain }}
+      issuerRef:
+        name: {{ $v.issuerName }}
+        kind: {{ $v.issuerKind }}
+      secretName: {{ $v.secretName }}
+{{- end }}

@@ -5,7 +5,7 @@ environments:
       - replicas: 1
       - serviceType: ClusterIP
       - enableIngress: false
-      - clusterIssuer: selfsigned
+      - issuerName: selfsigned
       - issuerKind: ClusterIssuer
       - issuerKindAnnotation: "cluster-issuer"
       - hostname: webserver

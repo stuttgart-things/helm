@@ -11,7 +11,9 @@ server:
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
+      {{- if not .Values.createCertificateResource }}
+      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.issuerName }}"
+      {{- end }}
     ingressClassName: {{ .Values.ingressClassName }}
     hostname: {{ .Values.hostname }}.{{ .Values.domain }}
     tls: true

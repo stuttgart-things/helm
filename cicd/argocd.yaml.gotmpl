@@ -9,6 +9,20 @@ environments:
       - adminPasswordMTime: ""
       - version: 8.2.5
       - namespace: argocd
+      - createCertificateResource: false
+      - hostname: argocd
+      - domain: example.com
+      - ingressClassName: nginx
+      - issuerName: selfsigned
+      - issuerKind: ClusterIssuer
+      - certicates:
+          argocd:
+            hostname: {{ .Values.hostname }}
+            domain: {{ .Values.domain }}
+            issuerName: {{ .Values.issuerName }}
+            issuerKind: {{ .Values.issuerKind }}
+            namespace: {{ .Values.namespace }}
+            secretName: argocd-server-tls
 ---
 releases:
 {{- if .Values.enableAvp }}
@@ -34,8 +48,19 @@ releases:
     values:
       - "values/argocd.values.yaml.gotmpl"
 
+{{- if .Values.createCertificateResource }}
+  - name: argocd-certs
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - values/certificate.values.yaml.gotmpl
+{{- end }}
+
 repositories:
-{{- if .Values.enableAvp }}
+{{- if or .Values.enableAvp .Values.createCertificateResource }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true

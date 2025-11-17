@@ -29,7 +29,7 @@ vcluster connect dev-cluster -n vcluster
 
 ```bash
 sudo apt -y install apache2-utils
-adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n')
+adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n' | sed 's/$2y/$2a/')
 adminPasswordMTime=$(echo $(date +%FT%T%Z))
 ```
 
@@ -58,11 +58,27 @@ helmfiles:
       - imageAvp: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
 EOF
 
-helmfile template -f argocd.yaml # RENDER ONLY
 helmfile apply -f argocd.yaml # APPLY HELMFILE
 ```
 
-### ARGOCD w/o VAULT PLUGIN
+### ARGOCD w/o VAULT PLUGIN + CERT CREATION OUTSIDE CERT-MANAGER
+
+```bash
+helmfile apply -f /home/sthings/projects/apps/helm/cicd/argocd.yaml.gotmpl \
+--state-values-set namespace=argocd \
+--state-values-set issuerName=cluster-issuer-approle \
+--state-values-set issuerKind=clusterIssuer \
+--state-values-set domain=demo-infra.example.com \
+--state-values-set ingressClassName=nginx \
+--state-values-set adminPassword="$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n' | sed 's/$2y/$2a/')" \
+--state-values-set adminPasswordMTime="$(echo $(date +%FT%T%Z))" \
+--state-values-set enableIngress=true \
+--state-values-set enableAvp=false \
+--state-values-set createCertificateResource=true \
+--state-values-set issuerKind=ClusterIssuer
+```
+
+### ARGOCD w/o VAULT PLUGIN + w/o INGRESS
 
 ```bash
 cat <<EOF > argocd.yaml
