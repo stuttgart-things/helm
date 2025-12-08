@@ -6,10 +6,11 @@ global:
 
 bootstrapPassword: {{ .Values.bootstrapPassword }}
 hostname: {{ .Values.hostname }}.{{ .Values.domain }}
-privateCA: true
+privateCA: {{ .Values.privateCA }}
+
 ingress:
   enabled: true
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.ingressClass }}
   servicePort: 80
   tls:
     source: secret

@@ -64,7 +64,7 @@ helmfile apply -f argocd.yaml # APPLY HELMFILE
 ### ARGOCD w/o VAULT PLUGIN + CERT CREATION OUTSIDE CERT-MANAGER
 
 ```bash
-helmfile apply -f /home/sthings/projects/apps/helm/cicd/argocd.yaml.gotmpl \
+helmfile apply -f git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl \
 --state-values-set namespace=argocd \
 --state-values-set issuerName=cluster-issuer-approle \
 --state-values-set issuerKind=clusterIssuer \
