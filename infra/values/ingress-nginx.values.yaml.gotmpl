@@ -1,4 +1,4 @@
-{{- if .Values.enableHostPort }}
+{{- if .Values.enableKindHostPort }}
 ---
 controller:
   nodeSelector:
@@ -15,4 +15,23 @@ controller:
     enabled: false  # Avoids potential Kind issues
   hostPort:
     enabled: true  # Enables direct binding to host ports
+{{- end }}
+
+
+{{- if .Values.enableNodePort }}
+---
+controller:
+  nodeSelector:
+    ingress-ready: "true"
+    node-role.kubernetes.io/control-plane: "true"  # Matches real node
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+  service:
+    type: NodePort
+  admissionWebhooks:
+    enabled: false
+  hostPort:
+    enabled: true
 {{- end }}

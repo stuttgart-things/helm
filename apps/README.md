@@ -13,9 +13,10 @@ App Helmfile templates.
 export RANCHER_PASSWORD=<REPLACE-ME>
 
 helmfile apply -f \
-git::https://github.com/stuttgart-things/helm.git@apps/apps/homerun-base-stack.yaml.gotmpl \
+git::https://github.com/stuttgart-things/helm.git@apps/apps/rancher.yaml.gotmpl \
 --state-values-set issuerName=cluster-issuer-approle \
---state-values-set domain=demo-infra.sthings-vsphere.labul.sva.de \ --state-values-set bootstrapPassword={{ env "RANCHER_PASSWORD" | default "hall01234R@ncher" }} \
+--state-values-set domain=demo-infra.sthings-vsphere.labul.sva.de \
+--state-values-set bootstrapPassword={{ env "RANCHER_PASSWORD" | default "hall01234R@ncher" }} \
 --state-values-set cacerts=LS0tLS1CRUdJTiBDRV#..
 ```
 
