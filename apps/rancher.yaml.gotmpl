@@ -9,7 +9,7 @@ environments:
       - issuerKind: ClusterIssuer
       - issuerName: vault-approle
       - cacerts: ""
-      - bootstrapPassword: "Adminpassword!123"
+      - bootstrapPassword: "Adminpassword!123" # pragma: allowlist secret
       - ingressClass: nginx
       - privateCA: true
 ---
