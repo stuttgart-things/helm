@@ -71,6 +71,12 @@ EOF
 ### w/ SELF-SIGNED
 
 ```bash
+kubectl apply -k https://github.com/stuttgart-things/helm/infra/crds/cert-manager
+
+helmfile apply -f git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl --state-values-set  installCrds=false
+```
+
+```bash
 cat <<EOF > cert-manager-selfsigned.yaml
 ---
 helmfiles:
