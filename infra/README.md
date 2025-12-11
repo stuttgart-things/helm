@@ -73,7 +73,7 @@ EOF
 ```bash
 kubectl apply -k https://github.com/stuttgart-things/helm/infra/crds/cert-manager
 
-helmfile apply -f git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl --state-values-set  installCrds=false
+helmfile apply -f git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl --state-values-set installCrds=false
 ```
 
 ```bash

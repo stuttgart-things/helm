@@ -4,7 +4,8 @@ environments:
     values:
       - namespace: ingress-nginx
       - version: 4.14.1
-      - enableHostPort: false
+      - enableKindHostPort: false
+      - enableNodePort: false
 ---
 releases:
   - name: ingress-nginx
