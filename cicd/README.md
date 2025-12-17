@@ -178,6 +178,15 @@ helmfiles:
 <details><summary>CROSSPLANE</summary>
 
 ```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \ helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml.gotmpl" \
+--operation apply \
+--state-values "version=2.1.3" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+```bash
 cat <<EOF > crossplane.yaml
 ---
 helmfiles:
