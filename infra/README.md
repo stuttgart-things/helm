@@ -31,7 +31,16 @@ EOF
 ### CRDS
 
 ```bash
+# w/ kubectl
 kubectl apply -k https://github.com/stuttgart-things/helm/infra/crds/cilium
+```
+
+```bash
+# w/ dagger
+dagger call -m github.com/stuttgart-things/dagger/kubernetes@v0.57.0 kubectl \
+--operation apply \
+--kustomize-source https://github.com/stuttgart-things/helm/infra/crds/cilium \
+--kube-config file://config.yaml
 ```
 
 ### DEPLOY
@@ -48,6 +57,16 @@ helmfiles:
       - ipRangeStart: 172.18.250.0
       - ipRangeEnd: 172.18.250.50
 EOF
+```
+
+```bash
+# w/ dagger
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl" \
+--operation apply \
+--state-values "config=kind,clusterName=dev,configureLB=false" \
+--kube-config file://config.yaml \
+--progress plain -vv
 ```
 
 </details>
