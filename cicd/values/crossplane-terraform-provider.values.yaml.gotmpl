@@ -1,6 +1,6 @@
 ---
 secrets:
-{{- range $k, $v := .Values.secrets }}
+{{- range $k, $v := .Values.terraform.secrets }}
   {{ $k }}:
     name: {{ $k }}
     namespace: {{ $v.namespace }}
@@ -24,16 +24,18 @@ customresources:
           template:
             spec:
               containers:
-              - envFrom:
+              {{- if .Values.terraform.s3SecretName }}
+              envFrom:
                 - secretRef:
                     name: {{ .Values.terraform.s3SecretName }}
-                name: package-runtime
-                image: {{ .Values.terraform.image }}
-                args:
-                  - -d
-                  - --poll={{ .Values.terraform.poll }}
-                  - --max-reconcile-rate={{ .Values.terraform.reconcileRate }}
-                resources: {}
+              {{- end }}
+              name: package-runtime
+              image: {{ .Values.terraform.image }}
+              args:
+                - -d
+                - --poll={{ .Values.terraform.poll }}
+                - --max-reconcile-rate={{ .Values.terraform.reconcileRate }}
+              resources: {}
   provider:
     apiVersion: pkg.crossplane.io/v1
     kind: Provider

@@ -2,8 +2,19 @@
 args:
   - '--debug'
   - '--enable-usages'
+
+{{- if .Values.providers }}
 provider:
   packages:
     {{- range .Values.providers }}
     - {{ . }}
     {{- end }}
+{{- end }}
+
+{{- if .Values.configurations }}
+configuration:
+  packages:
+    {{- range .Values.configurations }}
+    - {{ . }}
+    {{- end }}
+{{- end }}
