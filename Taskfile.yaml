@@ -396,3 +396,47 @@ tasks:
 
         # Run the selected task
         [ -n "$task_name" ] && task "$task_name"
+
+  render-helmfile-local:
+    desc: Render helmfile locally using dagger helm module
+    cmds:
+      - |
+        set -e
+
+        # Find helmfiles in specific directories
+        HELMFILES=$(find apps cicd database infra monitoring -maxdepth 1 -type f \( -name "*.yaml.gotmpl" -o -name "*.yaml" \) 2>/dev/null | sort)
+
+        if [ -z "$HELMFILES" ]; then
+          echo "❌ No helmfiles found in apps, cicd, database, infra, or monitoring directories"
+          exit 1
+        fi
+
+        # Let user choose helmfile
+        HELMFILE=$(echo "$HELMFILES" | gum choose --header "Select helmfile to render:")
+
+        if [ -z "$HELMFILE" ]; then
+          echo "❌ No helmfile selected"
+          exit 1
+        fi
+
+        # Extract directory and filename
+        HELMFILE_DIR=$(dirname "$HELMFILE")
+        HELMFILE_NAME=$(basename "$HELMFILE")
+
+        # Normalize path (remove ./ prefix)
+        SRC="${HELMFILE_DIR#./}"
+        [ "$SRC" = "." ] && SRC="."
+
+        echo ""
+        echo "📋 Rendering helmfile:"
+        echo "  Source  : $SRC"
+        echo "  File    : $HELMFILE_NAME"
+        echo ""
+
+        # Render using dagger
+        dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+          helmfile-operation \
+          --operation template \
+          --src "$SRC" \
+          --helmfile-ref "$HELMFILE_NAME" \
+          --progress plain -vv
