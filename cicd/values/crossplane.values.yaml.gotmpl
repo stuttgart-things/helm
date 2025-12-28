@@ -18,3 +18,11 @@ configuration:
     - {{ . }}
     {{- end }}
 {{- end }}
+
+{{- if .Values.functions }}
+function:
+  packages:
+    {{- range .Values.configurations }}
+    - {{ . }}
+    {{- end }}
+{{- end }}
