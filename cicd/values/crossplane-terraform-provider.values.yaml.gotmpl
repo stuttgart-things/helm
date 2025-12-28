@@ -23,8 +23,8 @@ customresources:
           strategy: {}
           template:
             spec:
-              containers:
               {{- if .Values.terraform.s3SecretName }}
+              containers:
               envFrom:
                 - secretRef:
                     name: {{ .Values.terraform.s3SecretName }}
