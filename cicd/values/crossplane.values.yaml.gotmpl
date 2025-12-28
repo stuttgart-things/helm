@@ -22,7 +22,7 @@ configuration:
 {{- if .Values.functions }}
 function:
   packages:
-    {{- range .Values.configurations }}
+    {{- range .Values.functions }}
     - {{ . }}
     {{- end }}
 {{- end }}
