@@ -184,7 +184,7 @@ helmfile-operation \
 --operation template \
 --src "cicd" \
 --helmfile-ref "crossplane.yaml.gotmpl" \
---state-values "version=2.1.3,terraform.configName=terraform-runtime-config,terraform.s3SecretName=terraform-s3,terraform.image=ghcr.io/stuttgart-things/sthings-cptf:1.14.3,terraform.poll=30s,deployTeraformProvider=true,terraform.reconcileRate=10,terraform.package=xpkg.upbound.io/upbound/provider-terraform,terraform.version=v1.0.5" \
+--state-values "version=2.1.3,terraform.configName=terraform-runtime-config,terraform.s3SecretName=terraform-s3,terraform.image=ghcr.io/stuttgart-things/sthings-cptf:1.14.3,terraform.poll=30s,deployTeraformProvider=true,terraform.reconcileRate=10,terraform.package=xxpkg.upbound.io/upbound/provider-terraform,terraform.version=v1.0.5" \
 --progress plain -vv
 ```
 
