@@ -242,6 +242,18 @@ kubectl apply -k https://github.com/stuttgart-things/helm/cicd/crds/tekton
 ### DEPLOY
 
 ```bash
+# DEPLOY w/ DAGGER
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+  helmfile-operation \
+  --helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/tekton.yaml.gotmpl" \
+  --operation apply \
+  --state-values "namespace=tekton-operator,pipelineNamespace=tekton-pipelines,version=0.77.5" \
+  --kube-config file://~/.kube/config \
+  --progress plain -vv
+```
+
+```bash
+# DEPLOY w/ INCLUDE-FILE + HELMFILE BIN
 cat <<EOF > tekton.yaml
 ---
 helmfiles:

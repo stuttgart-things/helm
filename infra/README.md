@@ -9,6 +9,18 @@ Infrastructure Helmfile templates for deploying common Kubernetes components.
 <details><summary>OPENEBS</summary>
 
 ```bash
+# DEPLOY w/ DAGGER
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+  helmfile-operation \
+  --helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml.gotmpl" \
+  --operation apply \
+  --state-values "namespace=openebs-system,profile=localpv,openebs_volumesnapshots_enabled=false,openebs_csi_node_init_containers_enabled=false,openebs_local_lvm_enabled=false,openebs_local_zfs_enabled=false,openebs_replicated_mayastor_enabled=false" \
+  --kube-config file://~/.kube/config \
+  --progress plain -vv
+```
+
+```bash
+# DEPLOY w/ INCLUDE-FILE + HELMFILE BIN
 cat <<EOF > openebs.yaml
 ---
 helmfiles:
