@@ -1,0 +1,10 @@
+customresources:
+{{- range $key, $fn := .Values.configurations }}
+  {{ $key }}:
+    apiVersion: pkg.crossplane.io/v1
+    kind: Configuration
+    metadata:
+      name: {{ $fn.name | required (printf "functions.%s.name is required" $key) }}
+    spec:
+      package: {{ printf "%s:%s" $fn.image $fn.tag | required (printf "functions.%s.image and tag are required" $key) }}
+{{- end }}
