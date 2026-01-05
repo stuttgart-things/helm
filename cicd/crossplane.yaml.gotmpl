@@ -4,19 +4,12 @@ environments:
     values:
       - namespace: crossplane-system
       - version: 2.1.3
-      - functions:
-          - xpkg.crossplane.io/crossplane-contrib/function-auto-ready:v0.6.0
-          - xpkg.crossplane.io/crossplane-contrib/function-go-templating:v0.11.3
-          - xpkg.upbound.io/crossplane-contrib/function-kcl:v0.12.0
-          - xpkg.upbound.io/crossplane-contrib/function-patch-and-transform:v0.9.3
+      - deployFunctions: true
+      - deployConfigurations: true
+      - deployTeraformProvider: false
       - providers:
           - xpkg.upbound.io/crossplane-contrib/provider-helm:v1.0.6
           - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v1.2.0
-      - configurations:
-          - ghcr.io/stuttgart-things/crossplane/cloud-config:v0.4.1
-          - ghcr.io/stuttgart-things/crossplane/harvester-vm:v0.2.3
-          - ghcr.io/stuttgart-things/crossplane/volume-claim:v0.1.1
-      - deployTeraformProvider: false
       - terraform:
           secrets:
             terraform-s3:
@@ -32,6 +25,36 @@ environments:
           reconcileRate: 10
           package: xpkg.upbound.io/upbound/provider-terraform
           version: v1.0.5
+      - functions:
+          autoReady:
+            name: function-auto-ready
+            image: xpkg.crossplane.io/crossplane-contrib/function-auto-ready
+            tag: v0.6.0
+          functionGo:
+            name: function-go-templating
+            image: xpkg.crossplane.io/crossplane-contrib/function-go-templating
+            tag: v0.11.3
+          kcl:
+            name: function-kcl
+            image: xpkg.upbound.io/crossplane-contrib/function-kcl
+            tag: v0.12.0
+          patchAndTransform:
+            name: function-patch-and-transform
+            image: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
+            tag: v0.9.3
+      - configurations:
+          cloudConfig:
+            name: cloud-config
+            image: ghcr.io/stuttgart-things/crossplane/cloud-config
+            tag: v0.4.1
+          harvesterVM:
+            name: harvester-vm
+            image: ghcr.io/stuttgart-things/crossplane/harvester-vm
+            tag: v0.2.3
+          volumeClaim:
+            name: volume-claim
+            image: ghcr.io/stuttgart-things/crossplane/volume-claim
+            tag: v0.1.1
 ---
 releases:
   - name: crossplane-deployment
@@ -41,6 +64,32 @@ releases:
     version: {{ .Values.version }}
     values:
       - "values/crossplane.values.yaml.gotmpl"
+
+{{- if .Values.deployFunctions }}
+  - name: terraform-functions
+    installed: true
+    needs:
+      - "{{ .Values.namespace }}/crossplane-deployment"
+    disableValidationOnInstall: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/crossplane-functions.values.yaml.gotmpl"
+{{- end }}
+
+{{- if .Values.deployFunctions }}
+  - name: terraform-configurations
+    installed: true
+    needs:
+      - "{{ .Values.namespace }}/crossplane-deployment"
+    disableValidationOnInstall: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.15
+    values:
+      - "values/crossplane-configurations.values.yaml.gotmpl"
+{{- end }}
 
 {{- if .Values.deployTeraformProvider }}
   - name: terraform-provider
@@ -59,8 +108,6 @@ repositories:
   - name: crossplane-stable
     url: https://charts.crossplane.io/stable
     oci: false
-{{- if .Values.deployTeraformProvider }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
-{{- end }}
