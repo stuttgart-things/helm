@@ -10,11 +10,3 @@ provider:
     - {{ . }}
     {{- end }}
 {{- end }}
-
-{{- if .Values.configurations }}
-configuration:
-  packages:
-    {{- range .Values.configurations }}
-    - {{ . }}
-    {{- end }}
-{{- end }}
