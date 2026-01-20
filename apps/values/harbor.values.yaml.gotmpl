@@ -1,7 +1,48 @@
 ---
 externalURL: {{ .Values.hostname }}.{{ .Values.domain }}
-clusterDomain: {{ .Values.domain }}
+clusterDomain: cluster.local
 adminPassword: {{ .Values.adminPassword }}
+
+global:
+  imageRegistry: docker.io
+
+nginx:
+  image:
+    repository: bitnamilegacy/nginx
+
+portal:
+  image:
+    repository: bitnamilegacy/harbor-portal
+
+core:
+  image:
+    repository: bitnamilegacy/harbor-core
+
+jobservice:
+  image:
+    repository: bitnamilegacy/harbor-jobservice
+
+registry:
+  server:
+    image:
+      repository: bitnamilegacy/harbor-registry
+  controller:
+    image:
+      repository: bitnamilegacy/harbor-registryctl
+
+trivy:
+  image:
+    repository: bitnamilegacy/harbor-adapter-trivy
+
+exporter:
+  image:
+    repository: bitnamilegacy/harbor-exporter
+
+volumePermissions:
+  image:
+    repository: bitnamilegacy/os-shell
+
+
 
 exposureType: ingress
 service:
@@ -23,7 +64,9 @@ ingress:
           - {{ .Values.hostname }}.{{ .Values.domain }}
         secretName: {{ .Values.hostname }}.{{ .Values.domain }}-tls
     annotations:
-      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.issuerName }}"
+      {{- if not .Values.createCertificateResource }}
+      cert-manager.io/{{ .Values.issuerKindAnnotation }}: "{{ .Values.issuerName }}"
+      {{- end }}
       ingress.kubernetes.io/ssl-redirect: "true"
       ingress.kubernetes.io/proxy-body-size: "0"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -45,3 +88,11 @@ persistence:
     jobservice:
       size: {{ .Values.pvSizeJobService }}
 {{- end }}
+
+postgresql:
+  image:
+    repository: bitnamilegacy/postgresql
+
+redis:
+  image:
+    repository: bitnamilegacy/redis

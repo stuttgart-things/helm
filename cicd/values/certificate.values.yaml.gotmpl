@@ -1,6 +1,6 @@
 ---
 customresources:
-{{- range $k, $v := $.Values.certicates }}
+{{- range $k, $v := $.Values.certificates }}
   {{ $k }}:
     apiVersion: cert-manager.io/v1
     kind: Certificate

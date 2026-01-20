@@ -15,7 +15,7 @@ environments:
       - ingressClassName: nginx
       - issuerName: selfsigned
       - issuerKind: ClusterIssuer
-      - certicates:
+      - certificates:
           argocd:
             hostname: {{ .Values.hostname }}
             domain: {{ .Values.domain }}
