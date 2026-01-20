@@ -180,7 +180,7 @@ helmfiles:
       - domain: sthings-infra-dev.example.com
       - ingressClassName: nginx
       - createCertificateResource: true
-      - certicates:
+      - certificates:
           nginx:
             hostname: webserver
             domain: sthings-infra-dev.example.com
@@ -333,29 +333,14 @@ EOF
 
 <details><summary>HARBOR</summary>
 
-```bash
-cat <<EOF > harbor.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml
-    values:
-      - namespace: harbor
-      - enablePersistence: true
-      - storageClass: standard
-      - issuerName: selfsigned
-      - issuerKindCert: ClusterIssuer
-      - issuerKind: cluster-issuer
-      - hostname: harbor
-      - domain: 172.18.0.5.nip.io
-      - ingressClassName: nginx
-      - adminPassword: halloHarborTest123
-      - pvSizeRegistry: 12Gi
-      - pvSizeTrivy: 5Gi
-      - pvSizeJobService: 1Gi
-EOF
-```
+### w/ INGRESS + CERT (INGRESS ANNOTATION - CERT-MANAGER)
 
-</details>
+```bash
+export HARBOR_PASSWORD=<REPLACE-ME>
+
+helmfile apply -f git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl \
+--state-values-set-string "namespace=harbor,domain=idp.kubermatic.sva.dev,issuerName=letsencrypt-prod,storageClass=vsphere-csi,adminPassword=${HARBOR_PASSWORD}"
+```
 
 <details><summary>MINIO</summary>
 
@@ -399,7 +384,7 @@ helmfiles:
       - hostnameApi: artifacts
       - storageClass: openebs-hostpath
       - createCertificateResource: true
-      - certicates:
+      - certificates:
           api:
             hostname: artifacts
             domain: sthings-infra-dev.example.com
