@@ -1,0 +1,42 @@
+---
+clusterDomain: {{ .Values.clusterDomain }}
+
+ingress:
+  enabled: {{ .Values.ingress.enabled }}
+  className: {{ .Values.ingress.className }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer }}
+  host: {{ .Values.ingress.host }}.{{ .Values.clusterDomain }}
+  tls:
+    enabled: {{ .Values.ingress.tlsEnabled }}
+
+postgresql:
+  enabled: {{ .Values.postgresql.enabled }}
+  auth:
+    username: {{ .Values.postgresql.username }}
+    password: {{ .Values.postgresql.password }} # pragma: allowlist secret
+  architecture: {{ .Values.postgresql.architecture }}
+
+backstage:
+  replicas: {{ .Values.backstage.replicas }}
+  image:
+    registry: {{ .Values.backstage.imageRegistry }}
+    repository: {{ .Values.backstage.imageRepository }}
+    tag: {{ .Values.backstage.imageTag }}
+
+{{- range $secretName, $secretConfig := .Values.secrets }}
+  extraEnvVars:
+{{- range $key, $value := $secretConfig.kvs }}
+    - name: {{ $key }}
+      valueFrom:
+        secretKeyRef:
+          name: {{ $secretName }}
+          key: {{ $key }}
+{{- end }}
+{{- end }}
+
+{{- if hasKey .Values.backstage "extraAppConfig" }}
+  extraAppConfig:
+    - filename: {{ .Values.backstage.extraAppConfig.filename }}
+      configMapRef: {{ .Values.backstage.extraAppConfig.configMapRef }}
+{{- end }}
