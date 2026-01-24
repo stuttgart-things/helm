@@ -1,0 +1,67 @@
+---
+environments:
+  default:
+    values:
+      - version: "2.6.3"
+      - namespace: backstage
+      - clusterDomain: "172.18.0.3.nip.io"
+      - postgresql:
+          enabled: true
+          username: backstage
+          password: backstage # pragma: allowlist secret
+          architecture: standalone
+      - ingress:
+          enabled: false
+          className: nginx
+          clusterIssuer: selfsigned
+          host: backstage
+          tlsEnabled: true
+      - backstage:
+          replicas: 1
+          imageRegistry: ttl.sh
+          imageRepository: sthings/backstage
+          imageTag: "0.1.0"
+          extraAppConfig:
+            filename: app-config.extra.yaml
+            configMapRef: backstage-app-config
+      - secrets:
+          backstage-secrets:
+            namespace: backstage
+            kvs:
+              APP_TITLE: Stuttgart Things Backstage
+              ORGANIZATION_NAME: stuttgart-things
+              APP_BASE_URL: "" # pragma: allowlist secret
+              BACKEND_BASE_URL: "" # pragma: allowlist secret
+              BACKEND_PORT: "" # pragma: allowlist secret
+              CORS_ORIGIN: "" # pragma: allowlist secret
+              AUTH_ENVIRONMENT: "" # pragma: allowlist secret
+              GITHUB_TOKEN: "" # pragma: allowlist secret
+              GITHUB_CLIENT_ID: "" # pragma: allowlist secret
+              GITHUB_CLIENT_SECRET: "" # pragma: allowlist secret
+              BACKEND_SECRET: "" # pragma: allowlist secret
+---
+repositories:
+  - name: backstage
+    url: ghcr.io/backstage/charts
+    oci: true
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+
+releases:
+{{- if hasKey .Values.backstage "extraAppConfig" }}
+  - name: app-config-secret
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    values:
+      - values/backstage-appconfig-secret.values.gotmpl
+{{- end }}
+  - name: backstage
+    namespace: {{ .Values.namespace }}
+    chart: backstage/backstage
+    version: {{ .Values.version }}
+    values:
+      - values/backstage.values.yaml.gotmpl
