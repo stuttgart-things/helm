@@ -1,4 +1,4 @@
-s# stuttgart-things/helm/apps
+# stuttgart-things/helm/apps
 
 App Helmfile templates.
 
@@ -399,6 +399,301 @@ helmfiles:
             issuerKind: ClusterIssuer
             namespace: minio
             secretName: artifacts-console.sthings-infra-dev.example.com-tls
+EOF
+```
+
+</details>
+
+</details>
+
+<details><summary>BACKSTAGE</summary>
+
+### BASIC DEPLOYMENT
+
+```bash
+cat <<EOF > backstage.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/backstage.yaml.gotmpl
+    values:
+      - namespace: portal
+      - storageClass: openebs-hostpath
+      - clusterDomain: <CLUSTER-DOMAIN>
+      - postgresql:
+          enabled: true
+          username: backstage
+          password: <POSTGRES-PASSWORD>
+          architecture: standalone
+      - backstage:
+          replicas: 1
+          imageRegistry: ghcr.io
+          imageRepository: stuttgart-things/sthings-backstage
+          imageTag: "<IMAGE-TAG>"
+          extraAppConfig:
+              filename: app-config.extra.yaml
+              configMapRef: backstage-app-config
+EOF
+```
+
+### w/ INGRESS
+
+```bash
+cat <<EOF > backstage.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/backstage.yaml.gotmpl
+    values:
+      - namespace: portal
+      - storageClass: openebs-hostpath
+      - clusterDomain: <CLUSTER-DOMAIN>
+      - postgresql:
+          enabled: true
+          username: backstage
+          password: <POSTGRES-PASSWORD>
+          architecture: standalone
+      - ingress:
+          enabled: true
+      - backstage:
+          replicas: 1
+          imageRegistry: ghcr.io
+          imageRepository: stuttgart-things/sthings-backstage
+          imageTag: "<IMAGE-TAG>"
+          extraAppConfig:
+              filename: app-config.extra.yaml
+              configMapRef: backstage-app-config
+      - secrets:
+          backstage-secrets:
+              namespace: portal
+              kvs:
+                  APP_TITLE: <APP-TITLE>
+                  ORGANIZATION_NAME: <ORG-NAME>
+                  APP_BASE_URL: https://backstage.<CLUSTER-DOMAIN>
+                  BACKEND_BASE_URL: https://backstage.<CLUSTER-DOMAIN>
+                  CORS_ORIGIN: https://backstage.<CLUSTER-DOMAIN>
+                  CLAIM_MACHINERY_API_URL: https://claim-api.<CLUSTER-DOMAIN>
+                  CLAIM_MACHINERY_REGISTRY_URL: https://registry-api.<CLUSTER-DOMAIN>
+                  AUTH_ENVIRONMENT: development
+                  GITHUB_TOKEN: <GITHUB-TOKEN>
+                  GITHUB_CLIENT_ID: <GITHUB-CLIENT-ID>
+                  GITHUB_CLIENT_SECRET: <GITHUB-CLIENT-SECRET>
+                  BACKEND_SECRET: <BACKEND-SECRET>
+      - appConfig: |
+          app:
+            title: Backstage
+            baseUrl: ${APP_BASE_URL}
+          organization:
+            name: ${ORGANIZATION_NAME}
+          backend:
+            auth:
+              keys:
+                - secret: ${BACKEND_SECRET:-change-me-in-production}
+            baseUrl: ${BACKEND_BASE_URL:-http://localhost:7007}
+            listen:
+              port: ${BACKEND_PORT:-7007}
+            csp:
+              connect-src: ["'self'", 'http:', 'https:']
+            cors:
+              origin: ${CORS_ORIGIN:-http://localhost:3000}
+              methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+              credentials: true
+            database:
+              client: better-sqlite3
+              connection: ':memory:'
+          integrations:
+            github:
+              - host: github.com
+                token: ${GITHUB_TOKEN}
+          proxy:
+            endpoints:
+              '/claim-machinery':
+                target: ${CLAIM_MACHINERY_API_URL:-https://claim-api.idp.kubermatic.sva.dev}
+                changeOrigin: true
+                pathRewrite:
+                  '^/api/proxy/claim-machinery': ''
+                allowedHeaders: ['*']
+                credentials: 'dangerously-allow-unauthenticated'
+              '/machinery-registry':
+                target: ${CLAIM_MACHINERY_REGISTRY_URL:-https://claim-api.idp.kubermatic.sva.dev}
+                changeOrigin: true
+                pathRewrite:
+                  '^/api/proxy/machinery-registry': ''
+                allowedHeaders: ['*']
+                credentials: 'dangerously-allow-unauthenticated'
+          techdocs:
+            builder: 'local'
+            generator:
+              runIn: 'local'
+            publisher:
+              type: 'local'
+          auth:
+            environment: development
+            providers:
+              guest: {}
+              github:
+                development:
+                  clientId: ${GITHUB_CLIENT_ID}
+                  clientSecret: ${GITHUB_CLIENT_SECRET}
+                  signIn:
+                    resolvers:
+                      - resolver: usernameMatchingUserEntityName
+          scaffolder: {}
+          claimMachinery:
+            apiUrl: ${CLAIM_MACHINERY_API_URL:-https://claim-api.idp.kubermatic.sva.dev}
+          catalog:
+            import:
+              entityFilename: catalog-info.yaml
+              pullRequestBranchName: backstage-integration
+            rules:
+              - allow: [Component, System, API, Resource, Location, Template]
+            locations:
+              - type: url
+                target: https://github.com/stuttgart-things/backstage-resources/blob/main/org/sthings-dev/org.yaml
+                rules:
+                  - allow: [User, Group]
+              - type: url
+                target: https://github.com/stuttgart-things/backstage-resources/blob/main/services/sthings-dev/catalog-index.yaml
+                rules:
+                  - allow: [Component, Location, System, API, Resource, Template]
+          kubernetes:
+            serviceLocatorMethod:
+              type: multiTenant
+            clusterLocatorMethods:
+              - type: localKubectlProxy
+          permission:
+            enabled: true
+EOF
+```
+
+### w/ GATEWAY API
+
+```bash
+cat <<EOF > backstage.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/backstage.yaml.gotmpl
+    values:
+      - namespace: portal
+      - storageClass: openebs-hostpath
+      - clusterDomain: <CLUSTER-DOMAIN>
+      - postgresql:
+          enabled: true
+          username: backstage
+          password: <POSTGRES-PASSWORD>
+          architecture: standalone
+      - ingress:
+          enabled: false
+      - backstage:
+          replicas: 1
+          imageRegistry: ghcr.io
+          imageRepository: stuttgart-things/sthings-backstage
+          imageTag: "<IMAGE-TAG>"
+          extraAppConfig:
+              filename: app-config.extra.yaml
+              configMapRef: backstage-app-config
+      - secrets:
+          backstage-secrets:
+              namespace: portal
+              kvs:
+                  APP_TITLE: <APP-TITLE>
+                  ORGANIZATION_NAME: <ORG-NAME>
+                  APP_BASE_URL: https://backstage.<CLUSTER-DOMAIN>
+                  BACKEND_BASE_URL: https://backstage.<CLUSTER-DOMAIN>
+                  CORS_ORIGIN: https://backstage.<CLUSTER-DOMAIN>
+                  CLAIM_MACHINERY_API_URL: https://claim-api.<CLUSTER-DOMAIN>
+                  CLAIM_MACHINERY_REGISTRY_URL: https://registry-api.<CLUSTER-DOMAIN>
+                  AUTH_ENVIRONMENT: development
+                  GITHUB_TOKEN: <GITHUB-TOKEN>
+                  GITHUB_CLIENT_ID: <GITHUB-CLIENT-ID>
+                  GITHUB_CLIENT_SECRET: <GITHUB-CLIENT-SECRET>
+                  BACKEND_SECRET: <BACKEND-SECRET>
+      - gateway:
+          name: <GATEWAY-NAME>
+          namespace: default
+          hostname: backstage
+      - appConfig: |
+          app:
+            title: Backstage
+            baseUrl: ${APP_BASE_URL}
+          organization:
+            name: ${ORGANIZATION_NAME}
+          backend:
+            auth:
+              keys:
+                - secret: ${BACKEND_SECRET:-change-me-in-production}
+            baseUrl: ${BACKEND_BASE_URL:-http://localhost:7007}
+            listen:
+              port: ${BACKEND_PORT:-7007}
+            csp:
+              connect-src: ["'self'", 'http:', 'https:']
+            cors:
+              origin: ${CORS_ORIGIN:-http://localhost:3000}
+              methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+              credentials: true
+            database:
+              client: better-sqlite3
+              connection: ':memory:'
+          integrations:
+            github:
+              - host: github.com
+                token: ${GITHUB_TOKEN}
+          proxy:
+            endpoints:
+              '/claim-machinery':
+                target: ${CLAIM_MACHINERY_API_URL:-https://claim-api.idp.kubermatic.sva.dev}
+                changeOrigin: true
+                pathRewrite:
+                  '^/api/proxy/claim-machinery': ''
+                allowedHeaders: ['*']
+                credentials: 'dangerously-allow-unauthenticated'
+              '/machinery-registry':
+                target: ${CLAIM_MACHINERY_REGISTRY_URL:-https://claim-api.idp.kubermatic.sva.dev}
+                changeOrigin: true
+                pathRewrite:
+                  '^/api/proxy/machinery-registry': ''
+                allowedHeaders: ['*']
+                credentials: 'dangerously-allow-unauthenticated'
+          techdocs:
+            builder: 'local'
+            generator:
+              runIn: 'local'
+            publisher:
+              type: 'local'
+          auth:
+            environment: development
+            providers:
+              guest: {}
+              github:
+                development:
+                  clientId: ${GITHUB_CLIENT_ID}
+                  clientSecret: ${GITHUB_CLIENT_SECRET}
+                  signIn:
+                    resolvers:
+                      - resolver: usernameMatchingUserEntityName
+          scaffolder: {}
+          claimMachinery:
+            apiUrl: ${CLAIM_MACHINERY_API_URL:-https://claim-api.idp.kubermatic.sva.dev}
+          catalog:
+            import:
+              entityFilename: catalog-info.yaml
+              pullRequestBranchName: backstage-integration
+            rules:
+              - allow: [Component, System, API, Resource, Location, Template]
+            locations:
+              - type: url
+                target: https://github.com/stuttgart-things/backstage-resources/blob/main/org/sthings-dev/org.yaml
+                rules:
+                  - allow: [User, Group]
+              - type: url
+                target: https://github.com/stuttgart-things/backstage-resources/blob/main/services/sthings-dev/catalog-index.yaml
+                rules:
+                  - allow: [Component, Location, System, API, Resource, Template]
+          kubernetes:
+            serviceLocatorMethod:
+              type: multiTenant
+            clusterLocatorMethods:
+              - type: localKubectlProxy
+          permission:
+            enabled: true
 EOF
 ```
 
