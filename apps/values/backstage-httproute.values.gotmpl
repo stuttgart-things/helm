@@ -1,0 +1,42 @@
+customresources:
+  backstage-referencegrant:
+    apiVersion: gateway.networking.k8s.io/v1beta1
+    kind: ReferenceGrant
+    metadata:
+      name: backstage-gateway-access
+      namespace: {{ .Values.namespace }}
+      labels:
+        app.kubernetes.io/name: backstage
+        app.kubernetes.io/instance: backstage
+    spec:
+      from:
+        - group: gateway.networking.k8s.io
+          kind: Gateway
+          namespace: {{ .Values.gateway.namespace }}
+      to:
+        - group: ""
+          kind: Service
+  backstage-httproute:
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: backstage
+      namespace: {{ .Values.namespace }}
+      labels:
+        app.kubernetes.io/name: backstage
+        app.kubernetes.io/instance: backstage
+    spec:
+      hostnames:
+        - {{ .Values.gateway.hostname }}.{{ .Values.clusterDomain }}
+      parentRefs:
+        - name: {{ .Values.gateway.name }}
+          namespace: {{ .Values.gateway.namespace }}
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          backendRefs:
+            - name: backstage
+              namespace: {{ .Values.namespace }}
+              port: 7007

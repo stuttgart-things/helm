@@ -1,6 +1,11 @@
 ---
 clusterDomain: {{ .Values.clusterDomain }}
 
+{{- if .Values.storageClass }}
+global:
+  storageClass: {{ .Values.storageClass }}
+{{- end }}
+
 ingress:
   enabled: {{ .Values.ingress.enabled }}
   className: {{ .Values.ingress.className }}
@@ -23,7 +28,7 @@ backstage:
   image:
     registry: {{ .Values.backstage.imageRegistry }}
     repository: {{ .Values.backstage.imageRepository }}
-    tag: {{ .Values.backstage.imageTag }}
+    tag: "{{ .Values.backstage.imageTag }}"
 
 {{- range $secretName, $secretConfig := .Values.secrets }}
   extraEnvVars:

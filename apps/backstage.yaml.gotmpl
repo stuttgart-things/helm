@@ -59,6 +59,16 @@ releases:
     values:
       - values/backstage-appconfig-secret.values.gotmpl
 {{- end }}
+{{- if hasKey .Values "gateway" }}
+  - name: backstage-httproute
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    values:
+      - values/backstage-httproute.values.gotmpl
+{{- end }}
   - name: backstage
     namespace: {{ .Values.namespace }}
     chart: backstage/backstage
