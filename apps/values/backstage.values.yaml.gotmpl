@@ -9,6 +9,7 @@ ingress:
   host: {{ .Values.ingress.host }}.{{ .Values.clusterDomain }}
   tls:
     enabled: {{ .Values.ingress.tlsEnabled }}
+    secretName: {{ .Values.ingress.host }}-tls
 
 postgresql:
   enabled: {{ .Values.postgresql.enabled }}
