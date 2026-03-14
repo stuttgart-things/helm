@@ -55,7 +55,7 @@ dagger call -m github.com/stuttgart-things/dagger/kubernetes@v0.57.0 kubectl \
 --kube-config file://config.yaml
 ```
 
-### DEPLOY
+### KIND
 
 ```bash
 cat <<EOF > cilium.yaml
@@ -72,11 +72,38 @@ EOF
 ```
 
 ```bash
-# w/ dagger
+# w/ dagger (kind)
 dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 helmfile-operation \
 --helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl" \
 --operation apply \
 --state-values "config=kind,clusterName=dev,configureLB=false" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### K3S
+
+```bash
+cat <<EOF > cilium.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl
+    values:
+      - config: k3s
+      - clusterName: cluster1.labul.sva.de
+      - networkDevice: ens192
+      - configureLB: true
+      - ipRangeStart: 10.31.103.50
+      - ipRangeEnd: 10.31.103.80
+EOF
+```
+
+```bash
+# w/ dagger (k3s)
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl" \
+--operation apply \
+--state-values "config=k3s,clusterName=cluster1.labul.sva.de,networkDevice=ens192,configureLB=false" \
 --kube-config file://config.yaml \
 --progress plain -vv
 ```
