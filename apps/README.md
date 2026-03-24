@@ -419,6 +419,27 @@ helmfile template -f harbor.yaml # RENDER ONLY
 helmfile apply -f harbor.yaml # APPLY HELMFILE
 ```
 
+### w/ PROJECT PROXY (MIRROR ACCESS)
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl
+    values:
+      - namespace: harbor
+      - hostname: harbor
+      - domain: 172.18.0.2.nip.io
+      - storageClass: standard
+      - adminPassword: <HARBOR_PASSWORD>
+      - deployProjectProxy: true
+EOF
+
+helmfile template -f harbor.yaml # RENDER ONLY
+helmfile apply -f harbor.yaml # APPLY HELMFILE
+# Access mirrors via: docker-hub-mirror.harbor.172.18.0.2.nip.io
+```
+
 ### w/ INGRESS + CERT (INGRESS ANNOTATION - CERT-MANAGER)
 
 ```bash
@@ -427,6 +448,8 @@ export HARBOR_PASSWORD=<REPLACE-ME>
 helmfile apply -f git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl \
 --state-values-set-string "namespace=harbor,domain=idp.kubermatic.sva.dev,issuerName=letsencrypt-prod,storageClass=vsphere-csi,adminPassword=${HARBOR_PASSWORD}"
 ```
+
+</details>
 
 <details><summary>MINIO</summary>
 
