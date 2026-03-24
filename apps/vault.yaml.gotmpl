@@ -2,10 +2,14 @@
 environments:
   default:
     values:
+      - namespace: vault
+      - version: 1.9.0
+      - deployCertificate: false
+      - deployAutounseal: false
       - ingressEnabled: false
       - ingressClassName: nginx
+      - issuerName: selfsigned
       - issuerKind: ClusterIssuer
-      - issuerKindAnnotation: "cluster-issuer"
       - hostname: vault
       - domain: example.com
       - storageClass: standard
@@ -21,17 +25,52 @@ environments:
       - osShellRepository: stuttgart-things/os-shell
       - osShellTag: 12-debian-12-r50
       - osShellPullPolicy: IfNotPresent
+      - autounsealVersion: 0.5.3
+      - autounsealVaultUrl: http://vault-server.vault.svc:8200
+      - autounsealLabelSelector: app.kubernetes.io/component=server
 ---
 releases:
+{{- if .Values.deployCertificate }}
+  - name: vault-certificate-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    values:
+      - "values/vault-certificate.values.yaml.gotmpl"
+{{- end }}
+
   - name: vault
     installed: true
-    namespace: vault
+    namespace: {{ .Values.namespace }}
     chart: stuttgart-things/charts/vault/vault
-    version: 1.9.0
+    version: {{ .Values.version }}
+{{- if .Values.deployCertificate }}
+    needs:
+      - {{ .Values.namespace }}/vault-certificate-configuration
+{{- end }}
     values:
       - "values/vault.values.yaml.gotmpl"
+
+{{- if .Values.deployAutounseal }}
+  - name: vault-autounseal
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: unseal/vault-autounseal
+    version: {{ .Values.autounsealVersion }}
+    needs:
+      - {{ .Values.namespace }}/vault
+    values:
+      - "values/vault-autounseal.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
+{{- if .Values.deployAutounseal }}
+  - name: unseal
+    url: https://pytoshka.github.io/vault-autounseal
+    oci: false
+{{- end }}

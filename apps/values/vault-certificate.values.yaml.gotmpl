@@ -1,0 +1,16 @@
+---
+customresources:
+  ingress-certificate-vault:
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: vault-ingress-tls
+      namespace: {{ .Values.namespace }}
+    spec:
+      commonName: {{ .Values.hostname }}.{{ .Values.domain }}
+      dnsNames:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+      issuerRef:
+        name: {{ .Values.issuerName }}
+        kind: {{ .Values.issuerKind }}
+      secretName: {{ .Values.hostname }}.{{ .Values.domain }}
