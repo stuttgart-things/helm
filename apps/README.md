@@ -103,7 +103,56 @@ EOF
 
 <details><summary>VAULT</summary>
 
-### DEPLOY
+### DEPLOY DEFAULTS (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml.gotmpl" \
+--operation apply \
+--state-values "version=1.9.0,namespace=vault,storageClass=standard" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### DEPLOY w/ CERTIFICATE + INGRESS + AUTOUNSEAL (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml.gotmpl" \
+--operation apply \
+--state-values "version=1.9.0,namespace=vault,storageClass=standard,ingressEnabled=true,deployCertificate=true,deployAutounseal=true,hostname=vault,domain=172.18.0.2.nip.io,issuerName=selfsigned,issuerKind=ClusterIssuer,ingressClassName=nginx" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### DEPLOY w/ CERTIFICATE + INGRESS + AUTOUNSEAL (HELMFILE)
+
+```bash
+cat <<EOF > vault.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/vault.yaml.gotmpl
+    values:
+      - namespace: vault
+      - version: 1.9.0
+      - storageClass: standard
+      - ingressEnabled: true
+      - deployCertificate: true
+      - deployAutounseal: true
+      - hostname: vault
+      - domain: 172.18.0.2.nip.io
+      - issuerName: selfsigned
+      - issuerKind: ClusterIssuer
+      - ingressClassName: nginx
+EOF
+
+helmfile template -f vault.yaml # RENDER ONLY
+helmfile apply -f vault.yaml # APPLY HELMFILE
+```
+
+### DEPLOY DEFAULTS (HELMFILE)
 
 ```bash
 cat <<EOF > vault.yaml
@@ -114,9 +163,12 @@ helmfiles:
       - namespace: vault
       - storageClass: standard
 EOF
+
+helmfile template -f vault.yaml # RENDER ONLY
+helmfile apply -f vault.yaml # APPLY HELMFILE
 ```
 
-### UNSEAL
+### MANUAL UNSEAL
 
 ```bash
 kubectl -n vault exec -it vault-server-0 -- vault operator init

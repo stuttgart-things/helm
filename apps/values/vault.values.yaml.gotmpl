@@ -11,10 +11,12 @@ server:
   ingress:
     enabled: {{ .Values.ingressEnabled }}
     ingressClassName: {{ .Values.ingressClassName }}
-    annotations:
-      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.clusterIssuer }}"
     hostname: {{ .Values.hostname }}.{{ .Values.domain }}
     tls: true
+    extraTls:
+      - hosts:
+        - {{ .Values.hostname }}.{{ .Values.domain }}
+    secretName: {{ .Values.hostname }}.{{ .Values.domain }}
 {{- end }}
 
 global:
