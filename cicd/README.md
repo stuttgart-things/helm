@@ -184,17 +184,28 @@ helmfile-operation \
 --operation template \
 --src "cicd" \
 --helmfile-ref "crossplane.yaml.gotmpl" \
---state-values "version=2.1.3,terraform.configName=terraform-runtime-config,terraform.s3SecretName=terraform-s3,terraform.image=ghcr.io/stuttgart-things/sthings-cptf:1.14.3,terraform.poll=30s,deployTeraformProvider=true,terraform.reconcileRate=10,terraform.package=xxpkg.upbound.io/upbound/provider-terraform,terraform.version=v1.0.5" \
+--state-values "version=2.2.0" \
 --progress plain -vv
 ```
 
 ```bash
-# DEPLOY DEFAULTS + VERSION
+# DEPLOY DEFAULTS (CROSSPLANE ONLY)
 dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
 helmfile-operation \
 --helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml.gotmpl" \
 --operation apply \
---state-values "version=2.1.3" \
+--state-values "version=2.2.0" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+```bash
+# DEPLOY CROSSPLANE + FUNCTIONS + CONFIGURATIONS
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml.gotmpl" \
+--operation apply \
+--state-values "version=2.2.0,deployFunctions=true,deployConfigurations=true" \
 --kube-config file://config.yaml \
 --progress plain -vv
 ```
@@ -206,27 +217,17 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/crossplane.yaml.gotmpl
     values:
       - namespace: crossplane-system
+      - version: 2.2.0
+      - deployFunctions: true
+      - deployConfigurations: true
       - providers:
-          - xpkg.upbound.io/crossplane-contrib/provider-helm:v0.21.0
-          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.18.0
-      - terraform:
-          configName: tf-provider
-          image: ghcr.io/stuttgart-things/images/sthings-cptf:1.12.0
-          package: xpkg.upbound.io/upbound/provider-terraform
-          version: v0.21.0
-          poll: 10m
-          reconcileRate: 10
-          s3SecretName: s3
-      - secrets:
-          s3:
-            namespace: crossplane-system
-            kvs:
-              AWS_ACCESS_KEY_ID: ref+vault://apps/artifacts/accessKey
-              AWS_SECRET_ACCESS_KEY: ref+vault://apps/artifacts/secretKey
+          - xpkg.upbound.io/crossplane-contrib/provider-helm:v1.2.0
+          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v1.2.1
+          - xpkg.upbound.io/upbound/provider-opentofu:v1.1.0
 EOF
 
 helmfile template -f crossplane.yaml # RENDER ONLY
-helmfile apply -f crossplane.yaml # APPLY HELMFILE # APPLY HELMFILE
+helmfile apply -f crossplane.yaml # APPLY HELMFILE
 ```
 
 </details>
