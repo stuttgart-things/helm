@@ -1,5 +1,7 @@
 ---
 server:
+  extraArgs:
+    - '--insecure'
   service:
     type: {{ .Values.serviceType }}
     {{- if hasKey .Values "nodePortHttp" }}
@@ -11,9 +13,6 @@ server:
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      {{- if not .Values.createCertificateResource }}
-      cert-manager.io/{{ .Values.issuerKind }}: "{{ .Values.issuerName }}"
-      {{- end }}
     ingressClassName: {{ .Values.ingressClassName }}
     hostname: {{ .Values.hostname }}.{{ .Values.domain }}
     tls: true
@@ -23,7 +22,7 @@ configs:
   secret:
     argocdServerAdminPassword: {{ .Values.adminPassword }}
     argocdServerAdminPasswordMtime: {{ .Values.adminPasswordMTime }}
-{{- if .Values.enableAvp}}
+{{- if .Values.enableAvp }}
   cmp:
     create: true
     plugins:
@@ -34,7 +33,7 @@ configs:
             command:
               - sh
               - "-c"
-              - find . -name '*.yaml' | xargs -I {} grep "<path\|avp\.kubernetes\.io" {}
+              - "find . -name '*.yaml' | xargs grep -l 'avp.kubernetes.io'"
         generate:
           command:
             - argocd-vault-plugin
@@ -64,60 +63,26 @@ configs:
               - sh
               - "-c"
               - "find . -name 'Chart.yaml' && find . -name 'values.yaml'"
+        init:
+          command:
+            - sh
+            - "-c"
+            - "helm dependency update"
         generate:
           command:
             - sh
             - "-c"
             - |
-              helm template "${ARGOCD_APP_NAME}" -f <(echo "${ARGOCD_ENV_HELM_VALUES}") --include-crds . -n ${ARGOCD_APP_NAMESPACE} | argocd-vault-plugin generate -
-        lockRepo: false
-      helmfile:
-        allowConcurrency: true
-        discover:
-          fileName: helmfile.yaml
-        generate:
-          command:
-            - bash
-            - "-c"
-            - |
-              if [[ -v ENV_NAME ]]; then
-                helmfile -n "$ARGOCD_APP_NAMESPACE" -e $ENV_NAME template --include-crds -q
-              elif [[ -v ARGOCD_ENV_ENV_NAME ]]; then
-                helmfile -n "$ARGOCD_APP_NAMESPACE" -e "$ARGOCD_ENV_ENV_NAME" template --include-crds -q
-              else
-                helmfile -n "$ARGOCD_APP_NAMESPACE" template --include-crds -q
-              fi
+              helm template "${ARGOCD_APP_NAME}" -f <(echo "${ARGOCD_ENV_HELM_VALUES}") --include-crds . -n "${ARGOCD_APP_NAMESPACE}" | argocd-vault-plugin generate -
         lockRepo: false
 repoServer:
   extraContainers:
-    - name: helmfile
-      image: {{ .Values.imageHelfile }}
-      command: ["/var/run/argocd/argocd-cmp-server"]
-      env:
-        - name: HELM_CACHE_HOME
-          value: /tmp/helm/cache
-        - name: HELM_CONFIG_HOME
-          value: /tmp/helm/config
-        - name: HELMFILE_CACHE_HOME
-          value: /tmp/helmfile/cache
-        - name: HELMFILE_TEMPDIR
-          value: /tmp/helmfile/tmp
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-      volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-        - mountPath: /home/argocd/cmp-server/plugins
-          name: plugins
-        - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-          subPath: helmfile.yaml
-          name: argocd-cmp-cm
-        - mountPath: /tmp
-          name: cmp-tmp
     - name: argocd-vault-plugin
       command: [/var/run/argocd/argocd-cmp-server]
       image: {{ .Values.imageAvp }}
+      env:
+        - name: SSL_CERT_DIR
+          value: {{ .Values.avpSslCertDir }}
       envFrom:
         - secretRef:
             name: argocd-vault-plugin-credentials
@@ -134,9 +99,16 @@ repoServer:
         - mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: argocd-vault-plugin.yaml
           name: argocd-cmp-cm
+        - mountPath: {{ .Values.avpSslCertDir }}/{{ .Values.avpTrustBundleKey }}
+          subPath: {{ .Values.avpTrustBundleKey }}
+          name: trust-bundle
+          readOnly: true
     - name: argocd-vault-plugin-helm
       command: [/var/run/argocd/argocd-cmp-server]
       image: {{ .Values.imageAvp }}
+      env:
+        - name: SSL_CERT_DIR
+          value: {{ .Values.avpSslCertDir }}
       envFrom:
         - secretRef:
             name: argocd-vault-plugin-credentials
@@ -153,9 +125,16 @@ repoServer:
         - mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: argocd-vault-plugin-helm.yaml
           name: argocd-cmp-cm
+        - mountPath: {{ .Values.avpSslCertDir }}/{{ .Values.avpTrustBundleKey }}
+          subPath: {{ .Values.avpTrustBundleKey }}
+          name: trust-bundle
+          readOnly: true
     - name: argocd-vault-plugin-kustomize
       command: [/var/run/argocd/argocd-cmp-server]
       image: {{ .Values.imageAvp }}
+      env:
+        - name: SSL_CERT_DIR
+          value: {{ .Values.avpSslCertDir }}
       envFrom:
         - secretRef:
             name: argocd-vault-plugin-credentials
@@ -172,10 +151,18 @@ repoServer:
         - mountPath: /home/argocd/cmp-server/config/plugin.yaml
           subPath: argocd-vault-plugin-kustomize.yaml
           name: argocd-cmp-cm
+        - mountPath: {{ .Values.avpSslCertDir }}/{{ .Values.avpTrustBundleKey }}
+          subPath: {{ .Values.avpTrustBundleKey }}
+          name: trust-bundle
+          readOnly: true
   volumes:
     - name: argocd-cmp-cm
       configMap:
         name: argocd-cmp-cm
+    - name: trust-bundle
+      configMap:
+        name: {{ .Values.avpTrustBundleConfigmap }}
+        optional: true
     - name: helmfile-tmp
       emptyDir: {}
     - name: cmp-tmp

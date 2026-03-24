@@ -33,7 +33,20 @@ adminPassword=$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n' | sed 's/$2y/$2a/
 adminPasswordMTime=$(echo $(date +%FT%T%Z))
 ```
 
-### ARGOCD w/ VAULT PLUGIN
+### ARGOCD w/ VAULT PLUGIN (DAGGER)
+
+```bash
+# DEPLOY w/ AVP + INGRESS
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl" \
+--operation apply \
+--state-values "version=9.4.15,namespace=argocd,enableAvp=true,enableIngress=true,hostname=argocd,domain=172.18.0.2.nip.io,ingressClassName=nginx,issuerName=selfsigned,issuerKind=ClusterIssuer,vaultAddr=https://vault.172.18.0.2.nip.io,vaultNamespace=root,vaultRoleID=<ROLE_ID>,vaultSecretID=<SECRET_ID>,adminPassword=<BCRYPT_HASH>,adminPasswordMTime=2025-03-19T07:39:33UTC" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### ARGOCD w/ VAULT PLUGIN (HELMFILE)
 
 ```bash
 cat <<EOF > argocd.yaml
@@ -42,43 +55,39 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl
     values:
       - namespace: argocd
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
       - hostname: argocd
       - domain: 172.18.0.2.nip.io
       - ingressClassName: nginx
+      - issuerName: selfsigned
+      - issuerKind: ClusterIssuer
       - adminPassword: $2y$10$sX7RPXUpEQKjdi7hjyYI0e0r0dlfaM1JmmVmujd05Lx5CJpEqJomC
       - adminPasswordMTime: 2025-03-19T07:39:33UTC
       - enableAvp: true
+      - enableIngress: true
       - vaultAddr: https://vault.172.18.0.2.nip.io
       - vaultNamespace: root
       - vaultRoleID: 1fa31949-8d0e-c100-c8ae-6eb287f8ea08
       - vaultSecretID: b76ddf4b-ba30-fc01-61fd-9d97588a6c09
-      - imageHelfile: ghcr.io/helmfile/helmfile:v0.171.0
       - imageAvp: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
 EOF
 
 helmfile apply -f argocd.yaml # APPLY HELMFILE
 ```
 
-### ARGOCD w/o VAULT PLUGIN + CERT CREATION OUTSIDE CERT-MANAGER
+### ARGOCD w/o VAULT PLUGIN (DAGGER)
 
 ```bash
-helmfile apply -f git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl \
---state-values-set namespace=argocd \
---state-values-set issuerName=cluster-issuer-approle \
---state-values-set issuerKind=clusterIssuer \
---state-values-set domain=demo-infra.example.com \
---state-values-set ingressClassName=nginx \
---state-values-set adminPassword="$(htpasswd -nbBC 10 "" 'Test2025!' | tr -d ':\n' | sed 's/$2y/$2a/')" \
---state-values-set adminPasswordMTime="$(echo $(date +%FT%T%Z))" \
---state-values-set enableIngress=true \
---state-values-set enableAvp=false \
---state-values-set createCertificateResource=true \
---state-values-set issuerKind=ClusterIssuer
+# DEPLOY DEFAULTS (NO AVP, NO INGRESS)
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl" \
+--operation apply \
+--state-values "version=9.4.15,namespace=argocd" \
+--kube-config file://config.yaml \
+--progress plain -vv
 ```
 
-### ARGOCD w/o VAULT PLUGIN + w/o INGRESS
+### ARGOCD w/o VAULT PLUGIN + w/o INGRESS (HELMFILE)
 
 ```bash
 cat <<EOF > argocd.yaml
@@ -87,11 +96,8 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@cicd/argocd.yaml.gotmpl
     values:
       - namespace: argocd
-      - clusterIssuer: selfsigned
-      - issuerKind: cluster-issuer
       - hostname: argocd
       - domain: 172.18.0.2.nip.io
-      - ingressClassName: nginx
       - adminPassword: ""
       - adminPasswordMTime: ""
       - enableAvp: false
