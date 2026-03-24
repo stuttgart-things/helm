@@ -7,31 +7,28 @@ environments:
       - serviceType: ClusterIP
       - adminPassword: ""
       - adminPasswordMTime: ""
-      - version: 8.2.5
+      - version: 9.4.15
       - namespace: argocd
-      - createCertificateResource: false
       - hostname: argocd
       - domain: example.com
       - ingressClassName: nginx
       - issuerName: selfsigned
       - issuerKind: ClusterIssuer
-      - certificates:
-          argocd:
-            hostname: {{ .Values.hostname }}
-            domain: {{ .Values.domain }}
-            issuerName: {{ .Values.issuerName }}
-            issuerKind: {{ .Values.issuerKind }}
-            namespace: {{ .Values.namespace }}
-            secretName: argocd-server-tls
+      - ingressSecretName: argocd-server-tls
+      - avpSslCertDir: /etc/ssl/custom
+      - avpTrustBundleKey: trust-bundle.pem
+      - avpTrustBundleConfigmap: cluster-trust-bundle
+      - imageAvp: ghcr.io/stuttgart-things/sthings-avp:1.18.1-1.32.3-3.17.2
+      - imageHelmfile: ghcr.io/helmfile/helmfile:v0.171.0
 ---
 releases:
 {{- if .Values.enableAvp }}
-  - name: argocd-avp-configuration
+  - name: argocd-configuration
     disableValidationOnInstall: true
     installed: true
-    namespace: argocd
+    namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
+    version: 0.3.20
     values:
       - "values/argocd-avp-configuration.values.yaml.gotmpl"
 {{- end }}
@@ -43,28 +40,17 @@ releases:
     version: {{ .Values.version }}
 {{- if .Values.enableAvp }}
     needs:
-      - argocd/argocd-avp-configuration
+      - {{ .Values.namespace }}/argocd-configuration
 {{- end }}
     values:
       - "values/argocd.values.yaml.gotmpl"
 
-{{- if .Values.createCertificateResource }}
-  - name: argocd-certs
-    disableValidationOnInstall: true
-    installed: true
-    namespace: {{ .Values.namespace }}
-    chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
-    values:
-      - values/certificate.values.yaml.gotmpl
-{{- end }}
-
 repositories:
-{{- if or .Values.enableAvp .Values.createCertificateResource }}
+{{- if .Values.enableAvp }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
 {{- end }}
   - name: argo
-    url: https://argoproj.github.io/argo-helm
-    oci: false
+    url: oci://ghcr.io/argoproj/argo-helm
+    oci: true
