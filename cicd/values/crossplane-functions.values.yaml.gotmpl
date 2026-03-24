@@ -1,8 +1,9 @@
 ---
+installCRDs: true
 customresources:
 {{- range $key, $fn := .Values.functions }}
   {{ $key }}:
-    apiVersion: pkg.crossplane.io/v1beta1
+    apiVersion: {{ $fn.apiVersion | default "pkg.crossplane.io/v1beta1" }}
     kind: Function
     metadata:
       name: {{ $fn.name | required (printf "functions.%s.name is required" $key) }}
