@@ -385,6 +385,40 @@ EOF
 
 <details><summary>HARBOR</summary>
 
+### w/ INGRESS (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl" \
+--operation apply \
+--state-values "namespace=harbor,domain=idp.kubermatic.sva.dev,issuerName=letsencrypt-prod,storageClass=vsphere-csi,adminPassword=<HARBOR_PASSWORD>" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### w/ HTTPROUTE (GATEWAY API)
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl
+    values:
+      - namespace: harbor
+      - hostname: harbor
+      - domain: 172.18.0.2.nip.io
+      - storageClass: standard
+      - adminPassword: <HARBOR_PASSWORD>
+      - deployHttpRoute: true
+      - gatewayName: cilium-gateway
+      - gatewayNamespace: default
+EOF
+
+helmfile template -f harbor.yaml # RENDER ONLY
+helmfile apply -f harbor.yaml # APPLY HELMFILE
+```
+
 ### w/ INGRESS + CERT (INGRESS ANNOTATION - CERT-MANAGER)
 
 ```bash

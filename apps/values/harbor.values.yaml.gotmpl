@@ -44,7 +44,11 @@ volumePermissions:
 
 
 
+{{- if .Values.deployHttpRoute }}
+exposureType: clusterIP
+{{- else }}
 exposureType: ingress
+{{- end }}
 service:
   type: ClusterIP
 
@@ -54,6 +58,7 @@ ipFamily:
   ipv4:
     enabled: true
 
+{{- if not .Values.deployHttpRoute }}
 ingress:
   core:
     ingressClassName: {{ .Values.ingressClassName }}
@@ -71,6 +76,7 @@ ingress:
       ingress.kubernetes.io/proxy-body-size: "0"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
+{{- end }}
 
 {{- if .Values.enablePersistence }}
 global:
