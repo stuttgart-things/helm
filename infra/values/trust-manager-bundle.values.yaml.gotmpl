@@ -1,0 +1,19 @@
+---
+customresources:
+  cluster-trust-bundle:
+    apiVersion: trust.cert-manager.io/v1alpha1
+    kind: Bundle
+    metadata:
+      name: {{ .Values.bundleName }}
+    spec:
+      sources:
+        - useDefaultCAs: true
+        - secret:
+            name: {{ .Values.caSecret }}
+            key: {{ .Values.caKey }}
+        - secret:
+            name: {{ .Values.vaultCaSecret }}
+            key: {{ .Values.vaultCaKey }}
+      target:
+        configMap:
+          key: {{ .Values.trustBundleTargetKey }}

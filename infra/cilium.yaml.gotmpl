@@ -5,9 +5,14 @@ environments:
       - namespace: kube-system
       - version: 1.18.5
       - configureLB: false
+      - deployGateway: false
       - config: kind
       - clusterName: kind
       - networkDevice: eth0
+      - gatewayName: cilium-gateway
+      - gatewayNamespace: default
+      - gatewayDomain: example.com
+      - gatewayTlsSecret: wildcard-tls
 ---
 releases:
   - name: cilium
@@ -21,13 +26,26 @@ releases:
   - name: cilium-configuration
     disableValidationOnInstall: true
     needs:
-      - kube-system/cilium
+      - {{ .Values.namespace }}/cilium
     installed: {{ .Values.configureLB }}
-    namespace: kube-system
+    namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
+    version: 0.3.20
     values:
       - "values/cilium-lb-config.values.yaml.gotmpl"
+
+{{- if .Values.deployGateway }}
+  - name: cilium-gateway
+    disableValidationOnInstall: true
+    needs:
+      - {{ .Values.namespace }}/cilium
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    values:
+      - "values/cilium-gateway.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
   - name: cilium

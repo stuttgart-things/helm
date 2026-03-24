@@ -1,0 +1,46 @@
+---
+environments:
+  default:
+    values:
+      - namespace: cert-manager
+      - version: 0.22.0
+      - trustNamespace: cert-manager
+      - deployBundle: false
+      - bundleName: cluster-trust-bundle
+      - caSecret: cluster-ca-secret
+      - caKey: ca.crt
+      - vaultCaSecret: vault-pki-ca
+      - vaultCaKey: ca.crt
+      - trustBundleTargetKey: trust-bundle.pem
+---
+releases:
+  - name: trust-manager
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: jetstack/trust-manager
+    version: {{ .Values.version }}
+    values:
+      - "values/trust-manager.values.yaml.gotmpl"
+
+{{- if .Values.deployBundle }}
+  - name: trust-manager-configuration
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    needs:
+      - {{ .Values.namespace }}/trust-manager
+    values:
+      - "values/trust-manager-bundle.values.yaml.gotmpl"
+{{- end }}
+
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+    oci: false
+{{- if .Values.deployBundle }}
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
+{{- end }}

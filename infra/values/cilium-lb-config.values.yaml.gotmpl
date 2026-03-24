@@ -16,11 +16,5 @@ customresources:
       name: default-l2-announcement-policy
       namespace: {{ .Release.Namespace }}
     spec:
-      externalIPs: false
+      externalIPs: true
       loadBalancerIPs: true
-      interfaces:
-        - ^eth[0-9]+
-      nodeSelector:
-        matchExpressions:
-        - key: node-role.kubernetes.io/control-plane
-          operator: DoesNotExist
