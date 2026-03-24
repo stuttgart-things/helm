@@ -419,7 +419,44 @@ helmfile template -f harbor.yaml # RENDER ONLY
 helmfile apply -f harbor.yaml # APPLY HELMFILE
 ```
 
-### w/ PROJECT PROXY (MIRROR ACCESS)
+### w/ INGRESS + PROJECT PROXY + CERTIFICATE
+
+```bash
+cat <<EOF > harbor.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@apps/harbor.yaml.gotmpl
+    values:
+      - namespace: harbor
+      - hostname: harbor
+      - domain: demo-infra.sthings-vsphere.labul.example.com
+      - storageClass: nfs4-csi
+      - ingressClassName: nginx
+      - adminPassword: <HARBOR_PASSWORD>
+      - issuerName: cluster-issuer-approle
+      - issuerKind: ClusterIssuer
+      - createCertificateResource: true
+      - deployProjectProxy: true
+      - certificates:
+          harbor:
+            hostname: harbor
+            domain: demo-infra.sthings-vsphere.labul.example.com
+            issuerName: cluster-issuer-approle
+            issuerKind: ClusterIssuer
+            namespace: harbor
+            secretName: harbor.demo-infra.sthings-vsphere.labul.example.com-tls
+EOF
+
+helmfile template -f harbor.yaml # RENDER ONLY
+helmfile apply -f harbor.yaml # APPLY HELMFILE
+
+# Harbor UI: https://harbor.demo-infra.sthings-vsphere.labul.example.com
+# Default credentials: admin / <HARBOR_PASSWORD>
+# Pull via proxy: docker pull <project>.harbor.demo-infra.sthings-vsphere.labul.example.com/library/nginx:latest
+# NOTE: Wildcard DNS *.harbor.<domain> must resolve to the ingress LB IP
+```
+
+### w/ PROJECT PROXY (MIRROR ACCESS ONLY)
 
 ```bash
 cat <<EOF > harbor.yaml
@@ -437,7 +474,7 @@ EOF
 
 helmfile template -f harbor.yaml # RENDER ONLY
 helmfile apply -f harbor.yaml # APPLY HELMFILE
-# Access mirrors via: docker-hub-mirror.harbor.172.18.0.2.nip.io
+# Access mirrors via: <project>.harbor.172.18.0.2.nip.io
 ```
 
 ### w/ INGRESS + CERT (INGRESS ANNOTATION - CERT-MANAGER)
