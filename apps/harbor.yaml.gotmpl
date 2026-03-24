@@ -17,6 +17,9 @@ environments:
       - issuerKind: ClusterIssuer
       - issuerKindAnnotation: cluster-issuer
       - createCertificateResource: false
+      - deployHttpRoute: false
+      - gatewayName: cilium-gateway
+      - gatewayNamespace: default
       - certificates:
           harbor:
             hostname: {{ .Values.hostname }}
@@ -48,6 +51,19 @@ releases:
 {{- end }}
     values:
       - "values/harbor.values.yaml.gotmpl"
+
+{{- if .Values.deployHttpRoute }}
+  - name: harbor-httproute
+    disableValidationOnInstall: true
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    needs:
+      - {{ .Values.namespace }}/harbor
+    values:
+      - "values/harbor-httproute.values.yaml.gotmpl"
+{{- end }}
 
 repositories:
   - name: bitnami
