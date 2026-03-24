@@ -14,3 +14,5 @@ feature:
 kubeletDir: {{ .Values.nfsKubeletDir }}
 externalSnapshotter:
   enabled: {{ .Values.nfsExternalSnapshotterEnabled }}
+  customResourceDefinitions:
+    enabled: {{ .Values.nfsExternalSnapshotterCrdsEnabled }}

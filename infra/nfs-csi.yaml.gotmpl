@@ -3,7 +3,7 @@ environments:
   default:
     values:
       - namespace: kube-system
-      - version: v4.11.0
+      - version: v4.13.1
       - nfsProvisioner: true
       - storageClass: nfs-client
       - reclaimPolicy: Delete
@@ -16,7 +16,8 @@ environments:
       - nfsFeatureEnableInlineVolume: false
       - nfsKubeletDir: /var/lib/kubelet
       - nfsDriverMountPermissions: 0
-      - nfsExternalSnapshotterEnabled: false
+      - nfsExternalSnapshotterEnabled: true
+      - nfsExternalSnapshotterCrdsEnabled: false
       - nfsServiceAccountController: csi-nfs-controller-sa
       - mountOptionsNFS3:
           - nfsvers=3
@@ -43,7 +44,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
+    version: 0.3.20
     values:
       - "values/nfs-csi-configuration.yaml.gotmpl"
 

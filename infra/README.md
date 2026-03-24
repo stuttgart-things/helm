@@ -11,29 +11,27 @@ Infrastructure Helmfile templates for deploying common Kubernetes components.
 ```bash
 # DEPLOY w/ DAGGER
 dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
-  helmfile-operation \
-  --helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml.gotmpl" \
-  --operation apply \
-  --state-values "namespace=openebs-system,profile=localpv,openebs_volumesnapshots_enabled=false,openebs_csi_node_init_containers_enabled=false,openebs_local_lvm_enabled=false,openebs_local_zfs_enabled=false,openebs_replicated_mayastor_enabled=false" \
-  --kube-config file://~/.kube/config \
-  --progress plain -vv
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml.gotmpl" \
+--operation apply \
+--state-values "namespace=openebs,profile=localpv" \
+--kube-config file://config.yaml \
+--progress plain -vv
 ```
 
 ```bash
-# DEPLOY w/ INCLUDE-FILE + HELMFILE BIN
+# DEPLOY w/ HELMFILE
 cat <<EOF > openebs.yaml
 ---
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/openebs.yaml.gotmpl
     values:
-      - namespace: openebs-system
+      - namespace: openebs
       - profile: localpv
-      - openebs_volumesnapshots_enabled: false
-      - openebs_csi_node_init_containers_enabled: false
-      - openebs_local_lvm_enabled: false
-      - openebs_local_zfs_enabled: false
-      - openebs_replicated_mayastor_enabled: false
 EOF
+
+helmfile template -f openebs.yaml # RENDER ONLY
+helmfile apply -f openebs.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -108,6 +106,17 @@ dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 helmfile-operatio
 --progress plain -vv
 ```
 
+### DEPLOY w/ GATEWAY (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/cilium.yaml.gotmpl" \
+--operation apply \
+--state-values "config=kind,clusterName=dev,configureLB=true,deployGateway=true,gatewayDomain=172.18.0.2.nip.io,gatewayTlsSecret=wildcard-tls,ipRangeStart=172.18.250.0,ipRangeEnd=172.18.250.50" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
 </details>
 
 <details><summary>INGRESS-NGINX</summary>
@@ -126,13 +135,19 @@ EOF
 
 <details><summary>CERT-MANAGER</summary>
 
-### w/ SELF-SIGNED
+### w/ SELF-SIGNED (DAGGER)
 
 ```bash
-kubectl apply -k https://github.com/stuttgart-things/helm/infra/crds/cert-manager
-
-helmfile apply -f git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl --state-values-set installCrds=false
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl" \
+--operation apply \
+--state-values "version=v1.19.2,config=selfsigned" \
+--kube-config file://config.yaml \
+--progress plain -vv
 ```
+
+### w/ SELF-SIGNED (HELMFILE)
 
 ```bash
 cat <<EOF > cert-manager-selfsigned.yaml
@@ -140,12 +155,15 @@ cat <<EOF > cert-manager-selfsigned.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
     values:
-      - version: v1.17.1
+      - version: v1.19.2
       - config: selfsigned
 EOF
+
+helmfile template -f cert-manager-selfsigned.yaml # RENDER ONLY
+helmfile apply -f cert-manager-selfsigned.yaml # APPLY HELMFILE
 ```
 
-### w/ VAULT-APPROLE
+### w/ VAULT-APPROLE (HELMFILE)
 
 ```bash
 cat <<EOF > cert-manager-vault.yaml
@@ -153,15 +171,56 @@ cat <<EOF > cert-manager-vault.yaml
 helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@infra/cert-manager.yaml.gotmpl
     values:
-      - version: v1.17.1
+      - version: v1.19.2
       - config: vault-approle
-      - approleID: 6b701b9b-33ed-3aca-4197-52fbf6fa44a3
+      - approleID: <APPROLE_ID>
       - approleSecret: {{ env "VAULT_SECRET_ID" }}
       - issuer: 4sthings
       - pkiPath: pki/sign/4sthings.example.com
       - pkiServer: https://vault-vsphere.example.com:8200
-      - pkiCA: "LS0tLS1CRU" # INCOMPLETE
+      - pkiCA: "LS0tLS1CRU..." # BASE64 CA CERT
 EOF
+
+helmfile apply -f cert-manager-vault.yaml # APPLY HELMFILE
+```
+
+</details>
+
+<details><summary>TRUST-MANAGER</summary>
+
+### DEPLOY (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/trust-manager.yaml.gotmpl" \
+--operation apply \
+--state-values "version=0.22.0,namespace=cert-manager" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### DEPLOY w/ TRUST BUNDLE (HELMFILE)
+
+```bash
+cat <<EOF > trust-manager.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/trust-manager.yaml.gotmpl
+    values:
+      - namespace: cert-manager
+      - version: 0.22.0
+      - deployBundle: true
+      - bundleName: cluster-trust-bundle
+      - caSecret: cluster-ca-secret
+      - caKey: ca.crt
+      - vaultCaSecret: vault-pki-ca
+      - vaultCaKey: ca.crt
+      - trustBundleTargetKey: trust-bundle.pem
+EOF
+
+helmfile template -f trust-manager.yaml # RENDER ONLY
+helmfile apply -f trust-manager.yaml # APPLY HELMFILE
 ```
 
 </details>
@@ -224,6 +283,35 @@ EOF
 
 <details><summary>NFS-CSI</summary>
 
+### DEPLOY (DAGGER)
+
+```bash
+dagger call -m github.com/stuttgart-things/dagger/helm@v0.57.0 \
+helmfile-operation \
+--helmfile-ref "git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml.gotmpl" \
+--operation apply \
+--state-values "version=v4.13.1,nfsServerFQDN=10.31.101.26,nfsSharePath=/data/k8s/sthings,clusterName=app1" \
+--kube-config file://config.yaml \
+--progress plain -vv
+```
+
+### DEPLOY (HELMFILE)
+
+```bash
+cat <<EOF > nfs-csi.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml.gotmpl
+    values:
+      - nfsServerFQDN: 10.31.101.26
+      - nfsSharePath: /data/k8s/sthings
+      - clusterName: app1
+EOF
+
+helmfile template -f nfs-csi.yaml # RENDER ONLY
+helmfile apply -f nfs-csi.yaml # APPLY HELMFILE
+```
+
 ### OPTIONAL: CREATE NFS SERVER
 
 ```bash
@@ -247,31 +335,6 @@ sudo exportfs -rav
 # INSTALL NFS-SERVER
 sudo apt update -y
 sudo apt install nfs-kernel-server -y
-```
-
-```bash
-# Allow NFS ports from anywhere
-sudo ufw allow 2049/tcp    # NFS
-sudo ufw allow 111/tcp     # rpcbind
-sudo ufw allow 111/udp
-sudo ufw allow 32765:32767/tcp   # NFS high ports
-sudo ufw allow 32765:32767/udp
-sudo ufw reload
-```
-
-### OPTIONAL: DEPLOY NFS-CSI
-
-```bash
-cat <<EOF > nfs-csi.yaml
----
-helmfiles:
-  - path: git::https://github.com/stuttgart-things/helm.git@infra/nfs-csi.yaml.gotmpl
-    values:
-      - nfsServerFQDN: 10.31.101.26
-      - nfsSharePath: /data/k8s/sthings
-      - clusterName: app1
-      - nfsSharePath: /data/k8s/sthings
-EOF
 ```
 
 </details>

@@ -1,0 +1,31 @@
+---
+customresources:
+  cilium-gateway:
+    apiVersion: gateway.networking.k8s.io/v1
+    kind: Gateway
+    metadata:
+      name: {{ .Values.gatewayName }}
+      namespace: {{ .Values.gatewayNamespace }}
+    spec:
+      gatewayClassName: cilium
+      listeners:
+        - name: https
+          hostname: "*.{{ .Values.gatewayDomain }}"
+          port: 443
+          protocol: HTTPS
+          allowedRoutes:
+            namespaces:
+              from: All
+          tls:
+            mode: Terminate
+            certificateRefs:
+              - kind: Secret
+                group: ""
+                name: {{ .Values.gatewayTlsSecret }}
+        - name: http
+          hostname: "*.{{ .Values.gatewayDomain }}"
+          port: 80
+          protocol: HTTP
+          allowedRoutes:
+            namespaces:
+              from: All
