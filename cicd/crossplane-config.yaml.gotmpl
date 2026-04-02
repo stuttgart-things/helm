@@ -6,10 +6,12 @@ environments:
       - functions:
           autoReady:
             name: function-auto-ready
+            apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.crossplane.io/crossplane-contrib/function-auto-ready
             tag: v0.6.0
           functionGo:
             name: function-go-templating
+            apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.crossplane.io/crossplane-contrib/function-go-templating
             tag: v0.11.3
           kcl:
@@ -19,6 +21,7 @@ environments:
             tag: v0.12.0
           patchAndTransform:
             name: function-patch-and-transform
+            apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
             tag: v0.9.3
       - configurations:
