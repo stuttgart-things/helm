@@ -1,0 +1,6 @@
+---
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - https://raw.githubusercontent.com/crossplane/crossplane/v2.2.0/cluster/crds/pkg.crossplane.io_deploymentruntimeconfigs.yaml
+  - https://raw.githubusercontent.com/crossplane/crossplane/v2.2.0/cluster/crds/pkg.crossplane.io_providers.yaml

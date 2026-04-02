@@ -1,0 +1,72 @@
+---
+environments:
+  default:
+    values:
+      - namespace: crossplane-system
+      - functions:
+          autoReady:
+            name: function-auto-ready
+            image: xpkg.crossplane.io/crossplane-contrib/function-auto-ready
+            tag: v0.6.0
+          functionGo:
+            name: function-go-templating
+            image: xpkg.crossplane.io/crossplane-contrib/function-go-templating
+            tag: v0.11.3
+          kcl:
+            name: function-kcl
+            apiVersion: pkg.crossplane.io/v1
+            image: xpkg.upbound.io/crossplane-contrib/function-kcl
+            tag: v0.12.0
+          patchAndTransform:
+            name: function-patch-and-transform
+            image: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
+            tag: v0.9.3
+      - configurations:
+          cloudConfig:
+            name: cloud-config
+            image: ghcr.io/stuttgart-things/crossplane/cloud-config
+            tag: v0.5.1
+          volumeClaim:
+            name: volume-claim
+            image: ghcr.io/stuttgart-things/crossplane/volume-claim
+            tag: v0.1.1
+          storagePlatform:
+            name: storage-platform
+            image: ghcr.io/stuttgart-things/crossplane/storage-platform
+            tag: v0.6.0
+          ansibleRun:
+            name: ansible-run
+            image: ghcr.io/stuttgart-things/crossplane/ansible-run
+            tag: v12.0.0
+          pipelineIntegration:
+            name: pipeline-integration
+            image: ghcr.io/stuttgart-things/crossplane/pipeline-integration
+            tag: v0.1.2
+          harvesterVM:
+            name: harvester-vm
+            image: ghcr.io/stuttgart-things/crossplane/harvester-vm
+            tag: v0.3.3
+---
+releases:
+  - name: crossplane-functions
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    disableValidationOnInstall: true
+    values:
+      - "values/crossplane-functions.values.yaml.gotmpl"
+
+  - name: crossplane-configurations
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    disableValidationOnInstall: true
+    values:
+      - "values/crossplane-configurations.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
