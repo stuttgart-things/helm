@@ -8,47 +8,40 @@ environments:
             name: function-auto-ready
             apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.crossplane.io/crossplane-contrib/function-auto-ready
-            tag: v0.6.0
+            tag: v0.6.5
           functionGo:
             name: function-go-templating
             apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.crossplane.io/crossplane-contrib/function-go-templating
-            tag: v0.11.3
+            tag: v0.12.1
           kcl:
             name: function-kcl
             apiVersion: pkg.crossplane.io/v1
             image: xpkg.upbound.io/crossplane-contrib/function-kcl
-            tag: v0.12.0
+            tag: v0.12.1
           patchAndTransform:
             name: function-patch-and-transform
             apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
-            tag: v0.9.3
+            tag: v0.10.6
+          environmentConfigs:
+            name: function-environment-configs
+            apiVersion: pkg.crossplane.io/v1
+            image: xpkg.crossplane.io/crossplane-contrib/function-environment-configs
+            tag: v0.7.1
+      # Migrated from the decommissioned ghcr.io/stuttgart-things/crossplane/...
+      # registry to ghcr.io/stuttgart-things/crossplane-configurations/...
+      # (Crossplane v2, namespaced XRs). Entries are re-added one at a time as
+      # their replacements are pushed to the new registry.
       - configurations:
-          cloudConfig:
-            name: cloud-config
-            image: ghcr.io/stuttgart-things/crossplane/cloud-config
-            tag: v0.5.1
+          namespace:
+            name: namespace
+            image: ghcr.io/stuttgart-things/crossplane-configurations/namespace
+            tag: v0.1.2
           volumeClaim:
             name: volume-claim
-            image: ghcr.io/stuttgart-things/crossplane/volume-claim
-            tag: v0.1.1
-          storagePlatform:
-            name: storage-platform
-            image: ghcr.io/stuttgart-things/crossplane/storage-platform
-            tag: v0.6.0
-          ansibleRun:
-            name: ansible-run
-            image: ghcr.io/stuttgart-things/crossplane/ansible-run
-            tag: v12.0.0
-          pipelineIntegration:
-            name: pipeline-integration
-            image: ghcr.io/stuttgart-things/crossplane/pipeline-integration
-            tag: v0.1.2
-          harvesterVM:
-            name: harvester-vm
-            image: ghcr.io/stuttgart-things/crossplane/harvester-vm
-            tag: v0.3.3
+            image: ghcr.io/stuttgart-things/crossplane-configurations/volume-claim
+            tag: v0.1.0
 ---
 releases:
   - name: crossplane-functions

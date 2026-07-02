@@ -3,11 +3,12 @@ environments:
   default:
     values:
       - namespace: crossplane-system
-      - version: 2.2.0
-      - providers:
-          - xpkg.upbound.io/crossplane-contrib/provider-helm:v1.2.0
-          - xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v1.2.1
-          - xpkg.upbound.io/upbound/provider-opentofu:v1.1.0
+      - version: 2.2.1
+      # Providers are installed as Provider CRs (with RBAC) by
+      # crossplane-providers.yaml.gotmpl, not via the upstream chart's
+      # provider.packages — a passed-through package gets a generated
+      # ServiceAccount name, so a fixed ClusterRoleBinding can't attach to it.
+      - providers: []
 ---
 releases:
   - name: crossplane-deployment
