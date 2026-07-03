@@ -16,18 +16,29 @@ jobs:
     container:
       image: ghcr.io/stuttgart-things/machineshop/machineshop-9c3178088556daa12a17db5edcc6b5b7:latest
     environment: k8s
+    permissions:
+      contents: read
+      pull-requests: read
     #outputs:
       #collection_folders: ${{ steps.changed-files.outputs.collection_folders }}
     runs-on: kind-testing-runner-1
     steps:
       - name: Get Modified Files by PullRequest
         id: changed-files
+        if: github.event_name == 'pull_request'
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # Use the auto-provided workflow token; secrets.GH_TOKEN was empty for
+          # this environment, leaving the API call unauthenticated.
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          FILES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "${{ github.event.pull_request.url }}/files" | \
-          jq -r '.[].filename')
+          # Guard jq against non-array responses (e.g. an API error object),
+          # which previously crashed the step with "Cannot index string".
+          FILES=$(curl -sf -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "${{ github.event.pull_request.url }}/files" \
+            | jq -r 'if type == "array" then .[].filename else empty end')
+          echo "Changed files:"
+          echo "${FILES}"
 
   yaml-lint:
     name: Lint yaml files
