@@ -387,6 +387,51 @@ tasks:
         exit 0
     silent: false
 
+  deploy-tekton:
+    desc: Deploy Tekton (operator + pipeline component) via dagger helmfile-operation
+    vars:
+      DAGGER_HELM_MODULE: github.com/stuttgart-things/dagger/helm
+      DAGGER_HELM_MODULE_VERSION: v0.57.0
+      HELM_GIT_REPO: git::https://github.com/stuttgart-things/helm.git
+      KUBECONFIG_FOLDER: ~/.kube
+      ALL_KUBECONFIGS:
+        sh: ls {{ .KUBECONFIG_FOLDER }} | grep -v "^cache$" | xargs -n1 printf '"%s" '
+    cmds:
+      - |
+        set -e
+
+        # SELECT KUBECONFIG
+        SELECTED_KUBECONFIG=$(gum choose {{ .ALL_KUBECONFIGS }})
+        export KUBECONFIG={{ .KUBECONFIG_FOLDER }}/${SELECTED_KUBECONFIG//\"/}
+        echo "SWITCHING TO ${KUBECONFIG}"
+        kubectl get nodes
+
+        gum confirm "Deploy Tekton to ${KUBECONFIG}?" || exit 0
+
+        # APPLY — installs the Tekton Operator; with autoInstallComponents=false
+        # + enableTektonPipeline=true the chart renders a TektonPipeline CR
+        # (Pipelines only, no Dashboard/Triggers/Chains).
+        echo "▶ APPLYING: cicd/tekton.yaml.gotmpl"
+        dagger call -m {{ .DAGGER_HELM_MODULE }}@{{ .DAGGER_HELM_MODULE_VERSION }} \
+          helmfile-operation \
+          --operation apply \
+          --helmfile-ref "{{ .HELM_GIT_REPO }}@cicd/tekton.yaml.gotmpl" \
+          --kube-config file://${KUBECONFIG} \
+          --progress plain -vv
+
+        # WAIT for operator + the pipeline component to be ready
+        kubectl -n tekton-operator rollout status deploy/tekton-operator --timeout=180s
+        echo "Waiting for TektonPipeline CR to be created by the operator..."
+        for i in $(seq 1 60); do
+          kubectl get tektonpipeline pipeline >/dev/null 2>&1 && break
+          sleep 5
+        done
+        kubectl wait tektonpipeline --all --for=condition=Ready --timeout=300s
+
+        echo "✅ TEKTON DEPLOYED"
+        kubectl get tektonpipeline
+        kubectl -n tekton-pipelines get pods
+
   deploy-crossplane:
     desc: Deploy Crossplane (core, providers, functions/configs, provider-configs) via dagger helmfile-operation
     vars:
