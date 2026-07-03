@@ -1,0 +1,62 @@
+---
+environments:
+  default:
+    values:
+      - namespace: crossplane-system
+      # ClusterProviderConfig resources (v2 namespaced *.m.* API surface), all
+      # targeting the local cluster via InjectedIdentity — zero secrets.
+      #
+      # Split out from crossplane-providers.yaml.gotmpl on purpose: these
+      # reference ProviderConfig CRDs that only register once the providers
+      # (and the transitive provider-kubernetes pulled by the Configurations)
+      # are Healthy. Applying them separately — after the providers/config
+      # helmfiles — keeps a single `helmfile apply` of each other helmfile
+      # clean (e.g. when composed in a bundle). The deploy-crossplane task
+      # applies this last.
+      - providerConfigs:
+          helmInCluster:
+            name: in-cluster
+            apiVersion: helm.m.crossplane.io/v1beta1
+            kind: ClusterProviderConfig
+            spec:
+              credentials:
+                source: InjectedIdentity
+          kubernetesInCluster:
+            name: in-cluster
+            apiVersion: kubernetes.m.crossplane.io/v1alpha1
+            kind: ClusterProviderConfig
+            spec:
+              credentials:
+                source: InjectedIdentity
+          # provider-opentofu has no InjectedIdentity mode — every config needs
+          # a configuration block. This ships an empty credentials list + a
+          # kubernetes backend storing state in-cluster (no cloud creds wired).
+          opentofuInCluster:
+            name: in-cluster
+            apiVersion: opentofu.m.upbound.io/v1beta1
+            kind: ClusterProviderConfig
+            spec:
+              credentials: []
+              configuration: |
+                terraform {
+                  backend "kubernetes" {
+                    secret_suffix     = "clusterproviderconfig-in-cluster"
+                    namespace         = "crossplane-system"
+                    in_cluster_config = true
+                  }
+                }
+---
+releases:
+  - name: crossplane-provider-configs
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    disableValidationOnInstall: true
+    values:
+      - "values/crossplane-provider-configs.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true
