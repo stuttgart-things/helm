@@ -467,10 +467,9 @@ tasks:
         apply cicd/crossplane.yaml.gotmpl
         kubectl -n crossplane-system rollout status deploy/crossplane --timeout=180s
 
-        # 2) PROVIDERS — the crossplane-provider-configs release fails on this
-        #    first pass (its ProviderConfig CRDs don't exist until the providers
-        #    are healthy). Expected — reapplied in step 4.
-        apply cicd/crossplane-providers.yaml.gotmpl || echo "⚠ provider-configs expected to fail before CRDs exist — continuing"
+        # 2) PROVIDERS — Provider CRs + RBAC only (ProviderConfigs are a
+        #    separate helmfile, applied in step 4 once the CRDs exist).
+        apply cicd/crossplane-providers.yaml.gotmpl
         kubectl wait provider.pkg.crossplane.io --all --for=condition=Healthy --timeout=300s
 
         # 3) FUNCTIONS + CONFIGURATIONS — Configurations pull provider-kubernetes
@@ -478,7 +477,7 @@ tasks:
         apply cicd/crossplane-config.yaml.gotmpl
         kubectl wait configuration.pkg.crossplane.io --all --for=condition=Healthy --timeout=300s
 
-        # wait for the transitive provider-kubernetes CRD before reapplying provider-configs
+        # wait for the transitive provider-kubernetes CRD before applying provider-configs
         echo "Waiting for kubernetes.m.crossplane.io CRD (transitive provider-kubernetes)..."
         for i in $(seq 1 60); do
           kubectl get crd clusterproviderconfigs.kubernetes.m.crossplane.io >/dev/null 2>&1 && break
@@ -487,8 +486,8 @@ tasks:
         kubectl wait provider.pkg.crossplane.io --all --for=condition=Healthy --timeout=300s
         kubectl wait function.pkg.crossplane.io --all --for=condition=Healthy --timeout=300s
 
-        # 4) PROVIDER-CONFIGS — reapply; all ProviderConfig CRDs now exist
-        apply cicd/crossplane-providers.yaml.gotmpl
+        # 4) PROVIDER-CONFIGS — separate helmfile; all ProviderConfig CRDs now exist
+        apply cicd/crossplane-provider-configs.yaml.gotmpl
 
         echo "✅ CROSSPLANE DEPLOYED"
         kubectl get provider.pkg.crossplane.io,function.pkg.crossplane.io,configuration.pkg.crossplane.io
