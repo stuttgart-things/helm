@@ -1,0 +1,88 @@
+---
+environments:
+  default:
+    values:
+      - namespace: crossplane-system
+      # Provider CRs (installed here rather than via the upstream crossplane
+      # chart's provider.packages so they can carry a runtimeConfigRef).
+      #   rbac: optional. When set, additionally emits a DeploymentRuntimeConfig
+      #   pinning the provider Pod to a stable ServiceAccount name (= provider
+      #   name) plus a ClusterRoleBinding granting rbac.clusterRole to that SA.
+      #   Needed for providers talking to the local API via InjectedIdentity
+      #   (helm/opentofu). provider-kubeconfig declares its own permissions via
+      #   package metadata, so it needs no binding. provider-kubernetes is not
+      #   listed: it is pulled transitively via each Configuration's dependsOn.
+      - providers:
+          providerHelm:
+            name: provider-helm
+            package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.2.0
+            rbac:
+              clusterRole: cluster-admin
+          providerOpentofu:
+            name: provider-opentofu
+            package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.2
+            rbac:
+              clusterRole: cluster-admin
+          providerKubeconfig:
+            name: provider-kubeconfig
+            package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.0
+      # ClusterProviderConfig resources (v2 namespaced *.m.* API surface), all
+      # targeting the local cluster via InjectedIdentity — zero secrets.
+      - providerConfigs:
+          helmInCluster:
+            name: in-cluster
+            apiVersion: helm.m.crossplane.io/v1beta1
+            kind: ClusterProviderConfig
+            spec:
+              credentials:
+                source: InjectedIdentity
+          kubernetesInCluster:
+            name: in-cluster
+            apiVersion: kubernetes.m.crossplane.io/v1alpha1
+            kind: ClusterProviderConfig
+            spec:
+              credentials:
+                source: InjectedIdentity
+          # provider-opentofu has no InjectedIdentity mode — every config needs
+          # a configuration block. This ships an empty credentials list + a
+          # kubernetes backend storing state in-cluster (no cloud creds wired).
+          opentofuInCluster:
+            name: in-cluster
+            apiVersion: opentofu.m.upbound.io/v1beta1
+            kind: ClusterProviderConfig
+            spec:
+              credentials: []
+              configuration: |
+                terraform {
+                  backend "kubernetes" {
+                    secret_suffix     = "clusterproviderconfig-in-cluster"
+                    namespace         = "crossplane-system"
+                    in_cluster_config = true
+                  }
+                }
+---
+releases:
+  - name: crossplane-providers
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    disableValidationOnInstall: true
+    values:
+      - "values/crossplane-providers.values.yaml.gotmpl"
+
+  - name: crossplane-provider-configs
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: stuttgart-things/sthings-cluster
+    version: 0.3.20
+    disableValidationOnInstall: true
+    needs:
+      - crossplane-system/crossplane-providers
+    values:
+      - "values/crossplane-provider-configs.values.yaml.gotmpl"
+
+repositories:
+  - name: stuttgart-things
+    url: ghcr.io/stuttgart-things
+    oci: true

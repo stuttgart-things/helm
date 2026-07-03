@@ -1,0 +1,11 @@
+---
+customresources:
+{{- range $key, $pc := .Values.providerConfigs }}
+  {{ $key }}:
+    apiVersion: {{ $pc.apiVersion | required (printf "providerConfigs.%s.apiVersion is required" $key) }}
+    kind: {{ $pc.kind | default "ClusterProviderConfig" }}
+    metadata:
+      name: {{ $pc.name | required (printf "providerConfigs.%s.name is required" $key) }}
+    spec:
+      {{- toYaml $pc.spec | nindent 6 }}
+{{- end }}

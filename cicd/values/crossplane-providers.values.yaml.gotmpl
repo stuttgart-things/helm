@@ -1,0 +1,43 @@
+---
+customresources:
+{{- range $key, $p := .Values.providers }}
+  {{ $key }}:
+    apiVersion: {{ dig "apiVersion" "pkg.crossplane.io/v1" $p }}
+    kind: Provider
+    metadata:
+      name: {{ $p.name | required (printf "providers.%s.name is required" $key) }}
+    spec:
+      package: {{ $p.package | required (printf "providers.%s.package is required" $key) }}
+      {{- if hasKey $p "rbac" }}
+      runtimeConfigRef:
+        apiVersion: pkg.crossplane.io/v1beta1
+        kind: DeploymentRuntimeConfig
+        name: {{ $p.name }}
+      {{- end }}
+  {{- if hasKey $p "rbac" }}
+  {{ $key }}Runtimeconfig:
+    apiVersion: pkg.crossplane.io/v1beta1
+    kind: DeploymentRuntimeConfig
+    metadata:
+      name: {{ $p.name }}
+    spec:
+      serviceAccountTemplate:
+        metadata:
+          name: {{ $p.name }}
+  {{- end }}
+{{- end }}
+
+clusterRoleBindings:
+{{- range $key, $p := .Values.providers }}
+  {{- if hasKey $p "rbac" }}
+  crossplane-{{ $p.name }}:
+    roleRef:
+      kind: ClusterRole
+      name: {{ $p.rbac.clusterRole }}
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: {{ $p.name }}
+        namespace: {{ $.Values.namespace }}
+  {{- end }}
+{{- end }}

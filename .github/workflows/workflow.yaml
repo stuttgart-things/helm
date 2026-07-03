@@ -18,7 +18,7 @@ jobs:
     environment: k8s
     #outputs:
       #collection_folders: ${{ steps.changed-files.outputs.collection_folders }}
-    runs-on: ghr-helm-skyami-cicd
+    runs-on: kind-testing-runner-1
     steps:
       - name: Get Modified Files by PullRequest
         id: changed-files
@@ -34,7 +34,7 @@ jobs:
     uses: stuttgart-things/github-workflow-templates/.github/workflows/call-yaml-lint.yaml@main
     with:
       environment-name: k8s
-      runs-on: ghr-helm-skyami-cicd
+      runs-on: kind-testing-runner-1
       continue-error: true
       yamllint-version: 1
       lintprofile-path: .yamllint
