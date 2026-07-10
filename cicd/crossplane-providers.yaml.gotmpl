@@ -15,17 +15,17 @@ environments:
       - providers:
           providerHelm:
             name: provider-helm
-            package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.2.0
+            package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.3.0
             rbac:
               clusterRole: cluster-admin
           providerOpentofu:
             name: provider-opentofu
-            package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.2
+            package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.4
             rbac:
               clusterRole: cluster-admin
           providerKubeconfig:
             name: provider-kubeconfig
-            package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.0
+            package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.1
       # NOTE: the ClusterProviderConfig resources live in the separate
       # crossplane-provider-configs.yaml.gotmpl — they reference ProviderConfig
       # CRDs that only register once these providers are Healthy, so keeping
