@@ -8,7 +8,12 @@ environments:
             name: function-auto-ready
             apiVersion: pkg.crossplane.io/v1beta1
             image: xpkg.crossplane.io/crossplane-contrib/function-auto-ready
-            tag: v0.7.0
+            # Pinned <v0.7.0: the stuttgart-things Configuration packages (namespace,
+            # volume-claim, vspherevm, …) declare dependsOn function-auto-ready
+            # >=v0.6.5,<v0.7.0. Installing v0.7.0 makes those Configurations'
+            # package revisions Unhealthy ("incompatible dependencies"). Bump only
+            # once the Configuration packages widen the constraint.
+            tag: v0.6.5
           functionGo:
             name: function-go-templating
             apiVersion: pkg.crossplane.io/v1beta1
