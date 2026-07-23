@@ -13,9 +13,23 @@ environments:
       #   package metadata, so it needs no binding. provider-kubernetes is not
       #   listed: it is pulled transitively via each Configuration's dependsOn.
       - providers:
+          # provider-helm: name + package deliberately MATCH what the package
+          # manager derives from a Configuration's dependsOn
+          # (xpkg.crossplane.io/crossplane-contrib/provider-helm -> CR name
+          # crossplane-contrib-provider-helm). Configurations here declare that
+          # dependsOn (bootstrap/{platform,flux-init,cni,vault-config}); if this
+          # install used the short name `provider-helm` on xpkg.upbound.io, the
+          # dependsOn would create a SECOND Provider CR and the two would fight
+          # over the releases.helm.m.crossplane.io CRD (the loser stuck
+          # UnhealthyPackageRevision) — verified on a fresh machinery cluster.
+          # Unlike the function-kcl mirror split (functions own no CRDs, so the
+          # pair is benign), providers own CRDs, so there must be exactly ONE
+          # provider-helm CR. Matching the derived name makes the dependsOn find
+          # this CR (which carries the runtimeConfigRef/rbac) instead of adding
+          # its own. See crossplane-configurations#147.
           providerHelm:
-            name: provider-helm
-            package: xpkg.upbound.io/crossplane-contrib/provider-helm:v1.3.0
+            name: crossplane-contrib-provider-helm
+            package: xpkg.crossplane.io/crossplane-contrib/provider-helm:v1.3.0
             rbac:
               clusterRole: cluster-admin
           providerOpentofu:
