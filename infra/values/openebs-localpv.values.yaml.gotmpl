@@ -19,3 +19,15 @@ engines:
   replicated:
     mayastor:
       enabled: {{ .Values.openebs_replicated_mayastor_enabled }}
+
+# Observability. `loki.enabled: false` drops BOTH the Loki and the MinIO
+# StatefulSets — MinIO is Loki's object store, a sub-dependency with no toggle
+# of its own — plus the openebs-loki-localpv / openebs-minio-localpv
+# StorageClasses that loki.localpvScConfig emits. `alloy.enabled: false` drops
+# the log-shipper DaemonSet that feeds it; leaving Alloy on with Loki off would
+# ship logs at nothing.
+loki:
+  enabled: {{ .Values.openebs_loki_enabled }}
+
+alloy:
+  enabled: {{ .Values.openebs_alloy_enabled }}

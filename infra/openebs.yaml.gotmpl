@@ -9,6 +9,21 @@ environments:
       - openebs_local_lvm_enabled: false
       - openebs_local_zfs_enabled: false
       - openebs_replicated_mayastor_enabled: false
+      # The chart ships an observability stack on by default: a Loki
+      # StatefulSet, the MinIO StatefulSet backing it, an Alloy DaemonSet, and
+      # two extra StorageClasses (openebs-loki-localpv, openebs-minio-localpv).
+      # Left ON here so this file changes nothing for existing consumers — it is
+      # unpinned (`git::...helm.git`, no ref), so a default flip would reach
+      # every cluster on its next apply.
+      #
+      # Turn both off on small clusters. On a 1+2 kind cluster the Loki
+      # StatefulSet cannot even schedule: it wants 3 replicas with pod
+      # anti-affinity, the two workers take replicas 1 and 2 and the
+      # control-plane node is tainted, so replica 0 sits Pending forever.
+      # openebs-hostpath — the StorageClass the fleet actually uses — is
+      # unaffected by either toggle.
+      - openebs_loki_enabled: true
+      - openebs_alloy_enabled: true
       - version: 4.5.1
 ---
 releases:
