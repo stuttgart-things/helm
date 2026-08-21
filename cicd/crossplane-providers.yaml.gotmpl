@@ -29,17 +29,24 @@ environments:
           # its own. See crossplane-configurations#147.
           providerHelm:
             name: crossplane-contrib-provider-helm
-            package: xpkg.crossplane.io/crossplane-contrib/provider-helm:v1.3.0
+            # v1.4.0 (2026-08-21): eingebettetes Helm-SDK v3 -> v4. Die
+            # Release-API bleibt gleich, das Laufzeitverhalten nicht —
+            # Server-Side-Apply ist fuer NEU installierte Releases der Default
+            # und `wait` haengt an kstatus statt an der alten Ready-Logik.
+            # Bestehende Releases behalten ihre Apply-Methode. Weil hier jede
+            # Platform-App durchlaeuft (cert-manager, openebs, cni, flux-init),
+            # gehoert dieser Bump nie in dieselbe Runde wie reine CVE-Updates.
+            package: xpkg.crossplane.io/crossplane-contrib/provider-helm:v1.4.0
             rbac:
               clusterRole: cluster-admin
           providerOpentofu:
             name: provider-opentofu
-            package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.4
+            package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.6
             rbac:
               clusterRole: cluster-admin
           providerKubeconfig:
             name: provider-kubeconfig
-            package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.1
+            package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.2
       # NOTE: the ClusterProviderConfig resources live in the separate
       # crossplane-provider-configs.yaml.gotmpl — they reference ProviderConfig
       # CRDs that only register once these providers are Healthy, so keeping
