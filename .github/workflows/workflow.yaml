@@ -21,7 +21,22 @@ jobs:
       pull-requests: read
     #outputs:
       #collection_folders: ${{ steps.changed-files.outputs.collection_folders }}
-    runs-on: kind-testing-runner-1
+    # GRUPPENLABEL, NICHT EIN RUNNER-NAME.
+    #
+    # Hier stand kind-testing-runner-1 — ein einzelner Rechner, adressiert
+    # ueber sein runner-eigenes Label. Das war seinerseits schon der Fix fuer
+    # ein Queueing-Problem (b5aaf91, 2026-07-03: ghr-helm-skyami-cicd war
+    # offline), hat aber nur einen Einzel-Runner gegen einen anderen getauscht
+    # und damit denselben Ausfallmodus wieder eingebaut.
+    #
+    # Am 2026-08-21 erneut zugeschlagen: der taegliche content-gaps-Cron in
+    # stuttgart-things/rank5 fragte nach kind-testing-labda, der Scheduler
+    # legte ihn auf runner-1, und jeder Check hier wartete — waehrend
+    # kind-testing-runner-2 mit identischen Labels danebenstand und idle war.
+    #
+    # kind-testing-labda tragen beide Runner. Damit nimmt der Job, wer frei
+    # ist, und ein einzelner offline gegangener Runner blockiert nichts mehr.
+    runs-on: kind-testing-labda
     steps:
       - name: Get Modified Files by PullRequest
         id: changed-files
@@ -45,7 +60,8 @@ jobs:
     uses: stuttgart-things/github-workflow-templates/.github/workflows/call-yaml-lint.yaml@main
     with:
       environment-name: k8s
-      runs-on: kind-testing-runner-1
+      # Gruppenlabel wie oben — siehe die Begruendung bei Analyze-Changed-Charts.
+      runs-on: kind-testing-labda
       continue-error: true
       yamllint-version: 1
       lintprofile-path: .yamllint
