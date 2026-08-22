@@ -11,6 +11,7 @@ environments:
       - issuerKind: ClusterIssuer
       - enablePersistence: true
       - namespace: observability
+      # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts/
       - version: 9.3.2
       - issuerKindAnnotation: "cluster-issuer"
       - createCertificateResource: false

@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: postgres
+      # renovate: datasource=docker depName=ghcr.io/stuttgart-things/charts/postgresql/postgresql
       - version: 16.7.26
       - postgresPassword: "platformEngineer" # pragma: allowlist secret
       - username: "dev"

@@ -545,3 +545,18 @@ tasks:
           --src "$SRC" \
           --helmfile-ref "$HELMFILE_NAME" \
           --progress plain -vv
+
+  check-renovate:
+    desc: Fail if a templated chart version lacks its "# renovate:" annotation
+    cmds:
+      - ./hack/check-chart-annotations.sh
+
+  lint-renovate:
+    desc: Validate renovate.json against the current Renovate schema
+    cmds:
+      - npx --yes --package renovate renovate-config-validator
+
+  preview-renovate:
+    desc: Dry-run Renovate locally and list the updates it would propose
+    cmds:
+      - LOG_LEVEL={{ .LOG_LEVEL | default "info" }} npx --yes --package renovate renovate --platform=local --dry-run=full

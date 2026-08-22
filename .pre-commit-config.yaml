@@ -42,3 +42,12 @@ repos:
         language: python
         # for backward compatibility
         files: .*  # all files
+
+  - repo: local
+    hooks:
+      - id: check-chart-annotations
+        name: Templated chart versions carry a renovate annotation
+        entry: hack/check-chart-annotations.sh
+        language: script
+        pass_filenames: false
+        files: ^(apps|cicd|database|infra|monitoring)/.*\.ya?ml(\.gotmpl)?$

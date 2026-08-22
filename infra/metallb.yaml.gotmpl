@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: metallb-system
+      # renovate: datasource=docker depName=ghcr.io/stuttgart-things/charts/metallb/metallb
       - version: 6.4.22
       - ipRange: 0.0.0.0-0.0.0.10 # DUMMY RANGE
       - imageRegistry: ghcr.io

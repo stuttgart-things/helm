@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: minio
+      # renovate: datasource=docker depName=ghcr.io/stuttgart-things/charts/minio/minio
       - version: 16.0.10
       - clusterIssuer: selfsigned
       - issuerKind: cluster-issuer

@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: longhorn-system
+      # renovate: datasource=helm depName=longhorn registryUrl=https://charts.longhorn.io
       - version: 1.9.1
       - longhornDefaultClass: true
       - longhornDefaultFsType: ext4

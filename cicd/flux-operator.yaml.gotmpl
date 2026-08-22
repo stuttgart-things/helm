@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: flux-system
+      # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/charts/flux-operator
       - version: 0.28.0
       - installOperator: true
 ---

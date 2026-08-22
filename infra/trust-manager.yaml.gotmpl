@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: cert-manager
+      # renovate: datasource=helm depName=trust-manager registryUrl=https://charts.jetstack.io
       - version: 0.22.0
       - trustNamespace: cert-manager
       - deployBundle: false

@@ -69,8 +69,74 @@ helmfile -f apps/grafana.yaml template \
 - **Commit messages**: Follow [Angular commit convention](https://www.conventionalcommits.org/) — semantic-release uses `@semantic-release/commit-analyzer` with Angular preset (`.releaserc`)
 - **Branch naming**: `feature/**`, `feat/**`, `fix/**`, `renovate/**`
 - **Releases**: Automated via `npx semantic-release` on `main` branch with tag format `v${version}`
-- **Dependency updates**: Renovate bot manages Helm chart version updates across all `.yaml` and `.yaml.gotmpl` files (`renovate.json`)
+- **Dependency updates**: Renovate manages Helm chart version updates (`renovate.json`) — see [Dependency Management](#dependency-management) for the annotation every templated chart version needs
 - **Domain sanitization**: A pre-commit hook replaces `.sva.de` domains with `.example.com` in committed files
+
+## Dependency Management
+
+Renovate is configured in `renovate.json` with the `helmfile` manager matching every
+`.yaml` / `.yaml.gotmpl` file, plus two `customManagers` for the templated versions
+described below. `.k2n/**` and `tests/**` are in `ignorePaths` — the k2n examples are
+generation input, not deployed state.
+
+### Templated chart versions need a `# renovate:` annotation
+
+Renovate's `helmfile` manager reads `releases[].version`. It cannot resolve Go
+templates — `version: {{ .Values.version }}` is skipped with
+`skipReason: contains-variable` and produces **no PR, no warning, no log entry**.
+
+Since the helmfiles keep their versions in `environments.default.values`, that hid
+every chart in this repo from Renovate. Each such value therefore carries a comment
+naming the datasource, and a `customManager` updates the default in place:
+
+```yaml
+environments:
+  default:
+    values:
+      # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
+      - version: v1.21.0
+```
+
+Derive the annotation from the `repositories` entry the release's `chart:` points at:
+
+| repositories entry | Annotation |
+|---|---|
+| `oci: true`, `url: ghcr.io/<path>` | `datasource=docker depName=ghcr.io/<path>/<chart>` |
+| plain HTTPS repo | `datasource=helm depName=<chart> registryUrl=<url>` |
+
+A `chart:` that is itself a full `oci://` URL (e.g. the gha-runner helmfiles) uses that
+URL verbatim as `depName`.
+
+**When adding a release, add the annotation too** — without it the chart is silently
+invisible to Renovate and will never be updated. `task check-renovate` (also wired into
+pre-commit and the CI workflow) fails on any templated chart version that is missing one.
+
+```bash
+task check-renovate      # fail on a missing annotation
+task lint-renovate       # validate renovate.json against the Renovate schema
+task preview-renovate    # dry-run Renovate against the working tree, writing nothing
+```
+
+### Never set `extractVersion` / `extractVersionTemplate`
+
+`extractVersion` does not only normalise the version for comparison — Renovate writes
+the **extracted** value back. With `^v?(?<version>.*)$` a registry tag of `v0.2.2` is
+written as `0.2.2`, and `ghcr.io/stuttgart-things/homerun`, `cert-manager` and
+`vcluster` are all tagged **with** the `v`, so the default would resolve to no chart at
+all. Leave the field off and each datasource's own versioning writes the tag back
+exactly as published.
+
+### Known lookup failure
+
+`docker-registry` (`database/registry.yaml.gotmpl`, `twuni` → https://helm.twun.io) is
+reported on the Dependency Dashboard as `Failed to look up helm package
+docker-registry: no-result`. Its version is hard-coded, so this is unrelated to the
+annotations — fixing it means repointing the helmfile at a repository that resolves.
+
+Worth re-checking with `task preview-renovate` after any change: `harbor` points at
+https://charts.bitnami.com/bitnami, which Bitnami has been winding down in favour of
+`oci://registry-1.docker.io/bitnamicharts`. If the lookup comes back empty, the
+helmfile's `repositories` entry needs repointing, not the annotation.
 
 ## Key Tools
 

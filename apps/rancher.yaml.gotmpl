@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: cattle-system
+      # renovate: datasource=helm depName=rancher registryUrl=https://releases.rancher.com/server-charts/latest
       - version: 2.13.0
       - hostname: rancher-things
       - domain: example.com

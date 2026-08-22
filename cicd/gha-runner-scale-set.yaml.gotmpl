@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: arc-runner
+      # renovate: datasource=docker depName=ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
       - version: 0.12.1
       - repoName: ansible
       - ghaControllerNamespace: arc-systems

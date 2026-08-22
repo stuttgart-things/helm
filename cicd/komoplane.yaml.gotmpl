@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: crossplane-system
+      # renovate: datasource=helm depName=komoplane registryUrl=https://helm-charts.komodor.io
       - version: 0.1.6
       - enableIngress: true
       - clusterIssuer: selfsigned
