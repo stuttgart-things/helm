@@ -57,12 +57,18 @@ jobs:
 
   renovate-annotations:
     name: Templated chart versions are visible to Renovate
-    # Gruppenlabel wie bei den anderen Jobs — siehe Analyze-Changed-Charts.
-    runs-on: kind-testing-labda
+    # GitHub-hosted, nicht kind-testing-labda: der Job braucht weder Cluster
+    # noch machineshop, und auf den self-hosted Runnern scheitert
+    # actions/checkout beim Aufraeumen des Workspace an
+    # .claude/skills — das Verzeichnis ist im Repo getrackt und liegt dort
+    # aus einem frueheren Container-Job root:root, waehrend checkout als
+    # gh-runner laeuft (EACCES beim rmdir). Gleiche Konvention wie der
+    # validate-Gate in stuttgart-things/flux.
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check "# renovate:" annotations
         run: ./hack/check-chart-annotations.sh
 
