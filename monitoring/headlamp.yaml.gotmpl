@@ -11,6 +11,7 @@ environments:
       - clusterIssuer: cluster-issuer-approle
       - issuerKind: ClusterIssuer
       - storageSize: 1Gi
+      # renovate: datasource=helm depName=headlamp registryUrl=https://kubernetes-sigs.github.io/headlamp/
       - version: 0.33.0
       - issuerKindAnnotation: "cluster-issuer"
       - createCertificateResource: false

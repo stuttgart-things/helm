@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: vault
+      # renovate: datasource=docker depName=ghcr.io/stuttgart-things/charts/vault/vault
       - version: 1.9.0
       - deployCertificate: false
       - deployAutounseal: false
@@ -25,6 +26,7 @@ environments:
       - osShellRepository: stuttgart-things/os-shell
       - osShellTag: 12-debian-12-r50
       - osShellPullPolicy: IfNotPresent
+      # renovate: datasource=helm depName=vault-autounseal registryUrl=https://pytoshka.github.io/vault-autounseal
       - autounsealVersion: 0.5.3
       - autounsealVaultUrl: http://vault-server.vault.svc:8200
       - autounsealLabelSelector: app.kubernetes.io/component=server

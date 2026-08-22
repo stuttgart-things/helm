@@ -2,6 +2,7 @@
 environments:
   default:
     values:
+      # renovate: datasource=helm depName=awx-operator registryUrl=https://ansible-community.github.io/awx-operator-helm/
       - version: 3.2.0
       - namespace: awx
       - installOperator: true

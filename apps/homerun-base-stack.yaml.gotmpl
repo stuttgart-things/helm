@@ -2,6 +2,7 @@
 environments:
   default:
     values:
+      # renovate: datasource=docker depName=ghcr.io/stuttgart-things/homerun
       - version: {{ .Values.version | default "v0.2.1" }}
       - namespace: {{ .Values.namespace | default "homerun" }}
       - redisStackEnabled: {{ .Values.redisStackEnabled | default true }}

@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: kube-system
+      # renovate: datasource=helm depName=csi-driver-nfs registryUrl=https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
       - version: v4.13.1
       - nfsProvisioner: true
       - storageClass: nfs-client

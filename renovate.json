@@ -3,18 +3,41 @@
   "extends": [
     "config:recommended"
   ],
-  "registryAliases": {
-    "stable": "https://charts.helm.sh/stable"
-  },
   "commitMessageTopic": "helm chart {{depName}}",
+  "ignorePaths": [
+    ".k2n/**",
+    "tests/**"
+  ],
   "helmfile": {
-    "fileMatch": [
-      "(^|/).*\\.ya?ml(?:\\.gotmpl)?$"
+    "managerFilePatterns": [
+      "/(^|/).*\\.ya?ml(?:\\.gotmpl)?$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "(^|/)values\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)values\\.ya?ml$/"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      "description": "Chart versions parameterized through helmfile environment values (invisible to the helmfile manager)",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^(apps|cicd|database|infra|monitoring)/.*\\.ya?ml(?:\\.gotmpl)?$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+?)(?:\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n\\s*- \\w+: \"?(?<currentValue>[^\"{\\s][^\"\\s]*)\"?"
+      ]
+    },
+    {
+      "description": "Same, but where the environment value itself carries a Go template default",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^(apps|cicd|database|infra|monitoring)/.*\\.ya?ml(?:\\.gotmpl)?$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+?)(?:\\s+registryUrl=(?<registryUrl>\\S+))?\\s*\\n\\s*- \\w+: \\{\\{[^\\n]*default \"(?<currentValue>[^\"]+)\"[^\\n]*\\}\\}"
+      ]
+    }
+  ]
 }

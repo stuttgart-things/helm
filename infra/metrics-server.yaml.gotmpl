@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: kube-system
+      # renovate: datasource=helm depName=metrics-server registryUrl=https://kubernetes-sigs.github.io/metrics-server
       - version: 3.13.0
 ---
 releases:

@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: observability
+      # renovate: datasource=helm depName=promtail registryUrl=https://grafana.github.io/helm-charts
       - version: 6.17.0
       - lokiServiceName: openldap-loki
       - lokiNamespace: observability

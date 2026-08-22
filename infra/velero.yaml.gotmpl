@@ -3,6 +3,7 @@ environments:
   default:
     values:
       - namespace: velero
+      # renovate: datasource=helm depName=velero registryUrl=https://vmware-tanzu.github.io/helm-charts/
       - version: 10.1.0
       - backupsEnabled: true
       - snapshotsEnabled: true

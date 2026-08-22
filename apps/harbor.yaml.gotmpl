@@ -2,6 +2,7 @@
 environments:
   default:
     values:
+      # renovate: datasource=helm depName=harbor registryUrl=https://charts.bitnami.com/bitnami
       - version: 27.0.3
       - namespace: harbor
       - enablePersistence: true
@@ -19,6 +20,7 @@ environments:
       - createCertificateResource: false
       - deployHttpRoute: false
       - deployProjectProxy: false
+      # renovate: datasource=docker depName=ghcr.io/hiddenmarten/harbor-project-proxy
       - projectProxyVersion: 0.0.1
       - gatewayName: cilium-gateway
       - gatewayNamespace: default

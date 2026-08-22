@@ -55,6 +55,17 @@ jobs:
           echo "Changed files:"
           echo "${FILES}"
 
+  renovate-annotations:
+    name: Templated chart versions are visible to Renovate
+    # Gruppenlabel wie bei den anderen Jobs — siehe Analyze-Changed-Charts.
+    runs-on: kind-testing-labda
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check "# renovate:" annotations
+        run: ./hack/check-chart-annotations.sh
+
   yaml-lint:
     name: Lint yaml files
     uses: stuttgart-things/github-workflow-templates/.github/workflows/call-yaml-lint.yaml@main
