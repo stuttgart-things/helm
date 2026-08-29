@@ -181,9 +181,30 @@ helmfiles:
   - path: git::https://github.com/stuttgart-things/helm.git@database/postgres.yaml.gotmpl
     values:
       - namespace: postgres
-      - version: 0.24.0
+      - version: 0.29.0
 EOF
 ```
+
+### DEPLOY CLUSTER
+
+```bash
+cat <<EOF > postgres-cluster.yaml
+---
+helmfiles:
+  - path: git::https://github.com/stuttgart-things/helm.git@database/postgres-cluster.yaml.gotmpl
+    values:
+      - namespace: postgres
+      - clusterName: postgres-cluster
+      - instances: 1
+      - database: app
+      - owner: app
+      - storageSize: 8Gi
+      - storageClass: openebs-hostpath
+EOF
+```
+
+Connect through the `<clusterName>-rw` (primary), `-ro` (replicas) or `-r` (any) service;
+the owner credentials land in the generated `<clusterName>-app` secret.
 
 ### CONFIGURE INSTANCE (EXAMPLE)
 
