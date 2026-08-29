@@ -1,0 +1,40 @@
+---
+environments:
+  default:
+    values:
+      - namespace: postgres
+      # renovate: datasource=helm depName=cluster registryUrl=https://cloudnative-pg.github.io/charts
+      - version: 0.8.1
+      - clusterName: postgres-cluster
+      - type: postgresql
+      - postgresqlVersion: "17"
+      - mode: standalone
+      - instances: 1
+      - storageSize: 8Gi
+      - storageClass: ""
+      - walStorageEnabled: false
+      - walStorageSize: 1Gi
+      - database: app
+      - owner: app
+      # existing basic-auth secret holding the owner credentials; empty = let cnpg generate one
+      - appSecretName: ""
+      - enableSuperuserAccess: false
+      - enablePDB: false
+      - monitoringEnabled: false
+      - podMonitorEnabled: false
+      - prometheusRuleEnabled: false
+      - backupsEnabled: false
+---
+repositories:
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+    oci: false
+
+releases:
+  - name: {{ .Values.clusterName }}
+    installed: true
+    namespace: {{ .Values.namespace }}
+    chart: cnpg/cluster
+    version: {{ .Values.version }}
+    values:
+      - "values/postgres-cluster.values.yaml.gotmpl"

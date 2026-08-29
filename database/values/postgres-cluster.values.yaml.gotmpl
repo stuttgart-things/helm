@@ -1,0 +1,42 @@
+---
+nameOverride: {{ .Values.clusterName }}
+fullnameOverride: {{ .Values.clusterName }}
+
+type: {{ .Values.type }}
+mode: {{ .Values.mode }}
+
+version:
+  postgresql: "{{ .Values.postgresqlVersion }}"
+
+cluster:
+  instances: {{ .Values.instances }}
+
+  storage:
+    size: {{ .Values.storageSize }}
+    storageClass: "{{ .Values.storageClass }}"
+
+  walStorage:
+    enabled: {{ .Values.walStorageEnabled }}
+    size: {{ .Values.walStorageSize }}
+    storageClass: "{{ .Values.storageClass }}"
+
+  enableSuperuserAccess: {{ .Values.enableSuperuserAccess }}
+  enablePDB: {{ .Values.enablePDB }}
+
+  initdb:
+    database: {{ .Values.database }}
+    owner: {{ .Values.owner }}
+    {{- if .Values.appSecretName }}
+    secret:
+      name: {{ .Values.appSecretName }}
+    {{- end }}
+
+  monitoring:
+    enabled: {{ .Values.monitoringEnabled }}
+    podMonitor:
+      enabled: {{ .Values.podMonitorEnabled }}
+    prometheusRule:
+      enabled: {{ .Values.prometheusRuleEnabled }}
+
+backups:
+  enabled: {{ .Values.backupsEnabled }}
