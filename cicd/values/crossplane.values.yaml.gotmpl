@@ -3,6 +3,21 @@ args:
   - '--debug'
   - '--enable-usages'
   - '--enable-operations'
+  # Without it, upgrading a dependency that is installed under its own short
+  # name (function-auto-ready, provider-opentofu, …, as the crossplane-config
+  # and crossplane-providers helmfiles do) puts that package into the Lock
+  # twice: the dependency manager sees it missing during the revision swap and
+  # installs a second copy under the derived name
+  # (crossplane-contrib-function-auto-ready). After that no package resolves
+  # ("node … already exists") until the copy is deleted by hand. Seen on
+  # u26-kind3 for provider-opentofu and three functions; reproduced on a
+  # throwaway kind cluster (Crossplane 2.3.3) for functions and providers,
+  # and gone with this flag, also when it is turned on for an existing cluster.
+  # Alpha. Side effect: when a Configuration is updated and needs a HIGHER
+  # version of a dependency, Crossplane now upgrades the installed dependency
+  # in place instead of failing. The short names have to stay: every
+  # Composition calls its functions by name (functionRef.name).
+  - '--enable-dependency-version-upgrades'
 
 {{- if .Values.providers }}
 provider:
