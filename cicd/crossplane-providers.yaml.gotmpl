@@ -10,8 +10,8 @@ environments:
       #   name) plus a ClusterRoleBinding granting rbac.clusterRole to that SA.
       #   Needed for providers talking to the local API via InjectedIdentity
       #   (helm/opentofu). provider-kubeconfig declares its own permissions via
-      #   package metadata, so it needs no binding. provider-kubernetes is not
-      #   listed: it is pulled transitively via each Configuration's dependsOn.
+      #   package metadata, so it needs no binding. provider-kubernetes is
+      #   listed under its dependsOn-derived name (see below).
       - providers:
           # provider-helm: name + package deliberately MATCH what the package
           # manager derives from a Configuration's dependsOn
@@ -47,6 +47,21 @@ environments:
           providerKubeconfig:
             name: provider-kubeconfig
             package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.2
+          # provider-kubernetes and provider-proxmox-bpg come in only through
+          # Configurations' dependsOn. Not pinned, a fresh cluster got whatever
+          # the constraint allowed that day: u26-kindtest (2026-09-19) came up
+          # with provider-kubernetes 1.3.1 and proxmox-bpg 1.19.3 next to
+          # kind3's 1.2.1 / 1.18.0. Pinned here under the exact name and source
+          # the package manager derives from the dependsOn, same as
+          # provider-helm above, so the dependency finds THIS object instead
+          # of adding its own. No rbac: both run with the default runtime
+          # config, as they always have.
+          providerKubernetes:
+            name: crossplane-contrib-provider-kubernetes
+            package: xpkg.crossplane.io/crossplane-contrib/provider-kubernetes:v1.2.1
+          providerProxmoxBpg:
+            name: valkiriaaquaticamendi-provider-proxmox-bpg
+            package: xpkg.upbound.io/valkiriaaquaticamendi/provider-proxmox-bpg:v1.18.0
       # NOTE: the ClusterProviderConfig resources live in the separate
       # crossplane-provider-configs.yaml.gotmpl — they reference ProviderConfig
       # CRDs that only register once these providers are Healthy, so keeping

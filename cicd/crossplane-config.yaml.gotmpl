@@ -39,6 +39,25 @@ environments:
             apiVersion: pkg.crossplane.io/v1
             image: xpkg.crossplane.io/crossplane-contrib/function-environment-configs
             tag: v0.7.3
+          # The dependsOn-derived twins of function-kcl and
+          # function-patch-and-transform. The short names above stay on
+          # xpkg.upbound.io (Compositions call functions by those names, and
+          # the differing mirror keeps the two Lock nodes distinct). Every
+          # Configuration dependsOn the xpkg.crossplane.io source, so the
+          # package manager installs these anyway, under exactly these names,
+          # at the newest version the constraint allows. Pinned here so a fresh
+          # cluster matches: u26-kindtest (2026-09-19) got kcl 0.12.3 and
+          # p&t 0.10.11 next to kind3's 0.12.2 / 0.10.8.
+          kclDependency:
+            name: crossplane-contrib-function-kcl
+            apiVersion: pkg.crossplane.io/v1
+            image: xpkg.crossplane.io/crossplane-contrib/function-kcl
+            tag: v0.12.2
+          patchAndTransformDependency:
+            name: crossplane-contrib-function-patch-and-transform
+            apiVersion: pkg.crossplane.io/v1
+            image: xpkg.crossplane.io/crossplane-contrib/function-patch-and-transform
+            tag: v0.10.8
       # Migrated from the decommissioned ghcr.io/stuttgart-things/crossplane/...
       # registry to ghcr.io/stuttgart-things/crossplane-configurations/...
       # (Crossplane v2, namespaced XRs). Entries are re-added one at a time as
