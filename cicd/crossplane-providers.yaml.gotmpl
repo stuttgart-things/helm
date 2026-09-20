@@ -44,6 +44,27 @@ environments:
             package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.6
             rbac:
               clusterRole: cluster-admin
+            # Every reconcile of a Workspace is a full `tofu init/plan/apply`.
+            # At the image defaults (poll 10m per resource, sync 1h across all
+            # of them) six Workspaces held u26-kind3 at load 8 on 8 cores, with
+            # tofu and the Proxmox provider binary together around 400% CPU,
+            # for state that does not change. The cluster paid for that in
+            # leader elections: kube-controller-manager, kube-scheduler,
+            # crossplane-rbac-manager and openebs each restarted ~3950 times in
+            # 39 days, because a saturated API server misses lease renewals.
+            #
+            # Drift here is Vault configuration nobody edits by hand, so an
+            # hour between checks costs nothing.
+            env:
+              CROSSPLANE_OPENTOFU_PROVIDER_POLL: 1h
+              CROSSPLANE_OPENTOFU_PROVIDER_SYNC: 6h
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: "2"
+                memory: 2Gi
           providerKubeconfig:
             name: provider-kubeconfig
             package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.2
@@ -62,6 +83,22 @@ environments:
           providerProxmoxBpg:
             name: valkiriaaquaticamendi-provider-proxmox-bpg
             package: xpkg.upbound.io/valkiriaaquaticamendi/provider-proxmox-bpg:v1.18.0
+            # An upjet provider: every reconcile of a managed resource shells out
+            # to terraform with the bpg/proxmox provider binary. At the default
+            # poll of 10m and nine Proxmox resources on u26-kind3 that is a
+            # terraform run roughly every 70 seconds, and it was the largest
+            # single CPU consumer on that VM - larger than provider-opentofu.
+            # A VM that Crossplane itself manages does not drift between polls.
+            env:
+              PROVIDER_POLL: 1h
+              PROVIDER_SYNC: 6h
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: "2"
+                memory: 2Gi
       # NOTE: the ClusterProviderConfig resources live in the separate
       # crossplane-provider-configs.yaml.gotmpl — they reference ProviderConfig
       # CRDs that only register once these providers are Healthy, so keeping
