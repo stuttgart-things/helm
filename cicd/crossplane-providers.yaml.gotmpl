@@ -83,6 +83,22 @@ environments:
           providerProxmoxBpg:
             name: valkiriaaquaticamendi-provider-proxmox-bpg
             package: xpkg.upbound.io/valkiriaaquaticamendi/provider-proxmox-bpg:v1.18.0
+            # An upjet provider: every reconcile of a managed resource shells out
+            # to terraform with the bpg/proxmox provider binary. At the default
+            # poll of 10m and nine Proxmox resources on u26-kind3 that is a
+            # terraform run roughly every 70 seconds, and it was the largest
+            # single CPU consumer on that VM - larger than provider-opentofu.
+            # A VM that Crossplane itself manages does not drift between polls.
+            env:
+              PROVIDER_POLL: 1h
+              PROVIDER_SYNC: 6h
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: "2"
+                memory: 2Gi
       # NOTE: the ClusterProviderConfig resources live in the separate
       # crossplane-provider-configs.yaml.gotmpl — they reference ProviderConfig
       # CRDs that only register once these providers are Healthy, so keeping
