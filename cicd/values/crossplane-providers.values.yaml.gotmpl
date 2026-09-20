@@ -8,22 +8,47 @@ customresources:
       name: {{ $p.name | required (printf "providers.%s.name is required" $key) }}
     spec:
       package: {{ $p.package | required (printf "providers.%s.package is required" $key) }}
-      {{- if hasKey $p "rbac" }}
+      {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
       runtimeConfigRef:
         apiVersion: pkg.crossplane.io/v1beta1
         kind: DeploymentRuntimeConfig
         name: {{ $p.name }}
       {{- end }}
-  {{- if hasKey $p "rbac" }}
+  {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
   {{ $key }}Runtimeconfig:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
     metadata:
       name: {{ $p.name }}
     spec:
+      {{- if hasKey $p "rbac" }}
       serviceAccountTemplate:
         metadata:
           name: {{ $p.name }}
+      {{- end }}
+      {{- if or (hasKey $p "env") (hasKey $p "resources") }}
+      # env, not args: every provider flag also has an environment variable,
+      # and args in a DeploymentRuntimeConfig REPLACE the image defaults
+      # instead of adding to them.
+      deploymentTemplate:
+        spec:
+          selector: {}
+          template:
+            spec:
+              containers:
+                - name: package-runtime
+                  {{- with $p.env }}
+                  env:
+                    {{- range $name, $value := . }}
+                    - name: {{ $name }}
+                      value: {{ $value | quote }}
+                    {{- end }}
+                  {{- end }}
+                  {{- with $p.resources }}
+                  resources:
+                    {{- toYaml . | nindent 20 }}
+                  {{- end }}
+      {{- end }}
   {{- end }}
 {{- end }}
 
