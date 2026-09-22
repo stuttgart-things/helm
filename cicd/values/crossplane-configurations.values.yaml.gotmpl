@@ -1,10 +1,14 @@
 customresources:
 {{- range $key, $fn := .Values.configurations }}
+  {{- $crName := $fn.name | required (printf "configurations.%s.name is required" $key) }}
+  {{- if and (eq (toString (dig "derivedNames" false $.Values)) "true") (hasKey $fn "derivedName") }}
+  {{- $crName = $fn.derivedName }}
+  {{- end }}
   {{ $key }}:
     apiVersion: pkg.crossplane.io/v1
     kind: Configuration
     metadata:
-      name: {{ $fn.name | required (printf "functions.%s.name is required" $key) }}
+      name: {{ $crName }}
     spec:
       package: {{ printf "%s:%s" $fn.image $fn.tag | required (printf "functions.%s.image and tag are required" $key) }}
 {{- end }}

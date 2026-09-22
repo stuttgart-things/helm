@@ -1,30 +1,35 @@
 ---
 customresources:
 {{- range $key, $p := .Values.providers }}
+  {{- /* One name for the CR, its DeploymentRuntimeConfig, SA and binding -- they move together or not at all. */}}
+  {{- $crName := $p.name | required (printf "providers.%s.name is required" $key) }}
+  {{- if and (eq (toString (dig "derivedNames" false $.Values)) "true") (hasKey $p "derivedName") }}
+  {{- $crName = $p.derivedName }}
+  {{- end }}
   {{ $key }}:
     apiVersion: {{ dig "apiVersion" "pkg.crossplane.io/v1" $p }}
     kind: Provider
     metadata:
-      name: {{ $p.name | required (printf "providers.%s.name is required" $key) }}
+      name: {{ $crName }}
     spec:
       package: {{ $p.package | required (printf "providers.%s.package is required" $key) }}
       {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
       runtimeConfigRef:
         apiVersion: pkg.crossplane.io/v1beta1
         kind: DeploymentRuntimeConfig
-        name: {{ $p.name }}
+        name: {{ $crName }}
       {{- end }}
   {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
   {{ $key }}Runtimeconfig:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
     metadata:
-      name: {{ $p.name }}
+      name: {{ $crName }}
     spec:
       {{- if hasKey $p "rbac" }}
       serviceAccountTemplate:
         metadata:
-          name: {{ $p.name }}
+          name: {{ $crName }}
       {{- end }}
       {{- if or (hasKey $p "env") (hasKey $p "resources") }}
       # env, not args: every provider flag also has an environment variable,
@@ -54,15 +59,19 @@ customresources:
 
 clusterRoleBindings:
 {{- range $key, $p := .Values.providers }}
+  {{- $crName := $p.name }}
+  {{- if and (eq (toString (dig "derivedNames" false $.Values)) "true") (hasKey $p "derivedName") }}
+  {{- $crName = $p.derivedName }}
+  {{- end }}
   {{- if hasKey $p "rbac" }}
-  crossplane-{{ $p.name }}:
+  crossplane-{{ $crName }}:
     roleRef:
       kind: ClusterRole
       name: {{ $p.rbac.clusterRole }}
       apiGroup: rbac.authorization.k8s.io
     subjects:
       - kind: ServiceAccount
-        name: {{ $p.name }}
+        name: {{ $crName }}
         namespace: {{ $.Values.namespace }}
   {{- end }}
 {{- end }}

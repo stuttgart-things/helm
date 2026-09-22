@@ -3,6 +3,25 @@ environments:
   default:
     values:
       - namespace: crossplane-system
+      # derivedNames: false (default) keeps every CR name as it has always
+      # been. true switches each entry that carries a `derivedName` to it --
+      # the name Crossplane itself derives from the package path, and the one
+      # the flux machinery profile and the xplane-crossplane-catalog use
+      # (stuttgart-things/flux#506). Set it with
+      #   helmfile apply ... --state-values-set derivedNames=true
+      #
+      # FRESH CLUSTERS ONLY. A rename on a live cluster is not a rename: the
+      # release creates the new CR and helm deletes the old one, and deleting
+      # a Configuration takes its XRDs -- and every XR on them -- with it. Leaving the old CR in place instead
+      # gives two CRs for one source, a duplicate Lock node, and every package
+      # on the cluster goes Healthy=False. The kind_machinery play checks for
+      # CRs under the old names before it sets this, and stops.
+      #
+      # Opt-in rather than the default because not every consumer pins this
+      # repo: plays/kind-machinery-test.yaml (ansible), the
+      # platform-engineering-showcase Taskfile/bundle and dev3-kind apply
+      # these helmfiles from main, with no preflight in front of them.
+      - derivedNames: false
       - functions:
           autoReady:
             name: function-auto-ready
@@ -57,7 +76,12 @@ environments:
             name: crossplane-contrib-function-patch-and-transform
             apiVersion: pkg.crossplane.io/v1
             image: xpkg.crossplane.io/crossplane-contrib/function-patch-and-transform
-            tag: v0.10.8
+            # v0.10.9, the version of the short-named entry above: two versions
+            # of one function add nothing. Every dependsOn allows it
+            # (>=v0.10.6,<v0.11.0) and the digest is identical on both mirrors
+            # -- the pattern function-kcl already runs healthy on kind5.
+            # Level with xplane-crossplane-catalog 0.7.0.
+            tag: v0.10.9
       # Migrated from the decommissioned ghcr.io/stuttgart-things/crossplane/...
       # registry to ghcr.io/stuttgart-things/crossplane-configurations/...
       # (Crossplane v2, namespaced XRs). Entries are re-added one at a time as
@@ -65,10 +89,12 @@ environments:
       - configurations:
           namespace:
             name: namespace
+            derivedName: stuttgart-things-crossplane-configurations-namespace
             image: ghcr.io/stuttgart-things/crossplane-configurations/namespace
             tag: v0.1.2
           volumeClaim:
             name: volume-claim
+            derivedName: stuttgart-things-crossplane-configurations-volume-claim
             image: ghcr.io/stuttgart-things/crossplane-configurations/volume-claim
             tag: v0.1.0
 ---
