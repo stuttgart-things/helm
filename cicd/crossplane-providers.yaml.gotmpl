@@ -3,6 +3,26 @@ environments:
   default:
     values:
       - namespace: crossplane-system
+      # derivedNames: false (default) keeps every CR name as it has always
+      # been. true switches each entry that carries a `derivedName` to it --
+      # the name Crossplane itself derives from the package path, and the one
+      # the flux machinery profile and the xplane-crossplane-catalog use
+      # (stuttgart-things/flux#506). Set it with
+      #   helmfile apply ... --state-values-set derivedNames=true
+      #
+      # FRESH CLUSTERS ONLY. A rename on a live cluster is not a rename: the
+      # release creates the new CR and helm deletes the old one, and deleting
+      # a Provider or Configuration takes its CRDs/XRDs -- and every managed
+      # resource or XR on them -- with it. Leaving the old CR in place instead
+      # gives two CRs for one source, a duplicate Lock node, and every package
+      # on the cluster goes Healthy=False. The kind_machinery play checks for
+      # CRs under the old names before it sets this, and stops.
+      #
+      # Opt-in rather than the default because not every consumer pins this
+      # repo: plays/kind-machinery-test.yaml (ansible), the
+      # platform-engineering-showcase Taskfile/bundle and dev3-kind apply
+      # these helmfiles from main, with no preflight in front of them.
+      - derivedNames: false
       # Provider CRs (installed here rather than via the upstream crossplane
       # chart's provider.packages so they can carry a runtimeConfigRef).
       #   rbac: optional. When set, additionally emits a DeploymentRuntimeConfig
@@ -41,6 +61,7 @@ environments:
               clusterRole: cluster-admin
           providerOpentofu:
             name: provider-opentofu
+            derivedName: upbound-provider-opentofu
             package: xpkg.upbound.io/upbound/provider-opentofu:v1.1.6
             rbac:
               clusterRole: cluster-admin
@@ -67,6 +88,7 @@ environments:
                 memory: 2Gi
           providerKubeconfig:
             name: provider-kubeconfig
+            derivedName: stuttgart-things-provider-kubeconfig-xpkg
             package: ghcr.io/stuttgart-things/provider-kubeconfig-xpkg:v0.13.2
           # provider-kubernetes and provider-proxmox-bpg come in only through
           # Configurations' dependsOn. Not pinned, a fresh cluster got whatever
