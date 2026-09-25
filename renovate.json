@@ -18,6 +18,18 @@
       "/(^|/)values\\.ya?ml$/"
     ]
   },
+  "packageRules": [
+    {
+      "description": "The crossplane chart in cicd/crossplane.yaml.gotmpl is not bumped here. Its one pin source is the KCL catalog (stuttgart-things/kcl, crossplane/xplane-crossplane-catalog, crossplaneVersion), which also generates the Flux machinery profile; a Renovate bump in this repo alone puts kind clusters on a different Crossplane than Flux-built ones. Bump it by hand to what the catalog pins, as the providers, functions and configurations in cicd/crossplane-*.yaml.gotmpl already are (they carry no renovate annotation on purpose). Remove this rule once the kind play installs the Flux profile instead (stuttgart-things/stuttgart-things#3136). stuttgart-things/flux#521",
+      "matchFileNames": [
+        "cicd/crossplane.yaml.gotmpl"
+      ],
+      "matchPackageNames": [
+        "crossplane"
+      ],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "description": "Chart versions parameterized through helmfile environment values (invisible to the helmfile manager)",
