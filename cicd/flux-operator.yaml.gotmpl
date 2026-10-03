@@ -4,7 +4,7 @@ environments:
     values:
       - namespace: flux-system
       # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/charts/flux-operator
-      - version: 0.28.0
+      - version: 0.61.0
       - installOperator: true
 ---
 releases:
@@ -22,7 +22,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
+    version: 0.3.20
     values:
       - "values/secrets.values.yaml.gotmpl"
 {{- end }}
@@ -33,7 +33,7 @@ releases:
     installed: true
     namespace: {{ .Values.namespace }}
     chart: stuttgart-things/sthings-cluster
-    version: 0.3.15
+    version: 0.3.20
     values:
       - "values/flux-instance.values.yaml.gotmpl"
 {{- end }}
@@ -42,7 +42,7 @@ repositories:
   - name: fluxcd
     url: ghcr.io/controlplaneio-fluxcd/charts
     oci: true
-{{- if or (hasKey .Values "secrets") (hasKey .Values "instances") }}
+{{- if or (hasKey .Values "secrets") (hasKey .Values "instance") }}
   - name: stuttgart-things
     url: ghcr.io/stuttgart-things
     oci: true
