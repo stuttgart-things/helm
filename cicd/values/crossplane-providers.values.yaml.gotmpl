@@ -13,13 +13,13 @@ customresources:
       name: {{ $crName }}
     spec:
       package: {{ $p.package | required (printf "providers.%s.package is required" $key) }}
-      {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
+      {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") (hasKey $p "trustBundle") }}
       runtimeConfigRef:
         apiVersion: pkg.crossplane.io/v1beta1
         kind: DeploymentRuntimeConfig
         name: {{ $crName }}
       {{- end }}
-  {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") }}
+  {{- if or (hasKey $p "rbac") (hasKey $p "env") (hasKey $p "resources") (hasKey $p "trustBundle") }}
   {{ $key }}Runtimeconfig:
     apiVersion: pkg.crossplane.io/v1beta1
     kind: DeploymentRuntimeConfig
@@ -31,7 +31,18 @@ customresources:
         metadata:
           name: {{ $crName }}
       {{- end }}
-      {{- if or (hasKey $p "env") (hasKey $p "resources") }}
+      {{- if or (hasKey $p "env") (hasKey $p "resources") (hasKey $p "trustBundle") }}
+      {{- /* trustBundle: same shape as xplane-crossplane-catalog 0.39.0 renders
+             (flux gen-crossplane-profile, xplane-management-plane) -- a
+             configMap volume (optional), a read-only mount and SSL_CERT_DIR,
+             merged into env so the keys stay sorted like there. */}}
+      {{- $env := deepCopy (dig "env" (dict) $p) }}
+      {{- with (dig "trustBundle" "" $p) }}
+      {{- if hasKey $env "SSL_CERT_DIR" }}
+      {{- fail (printf "providers.%s: env sets SSL_CERT_DIR and trustBundle renders it" $key) }}
+      {{- end }}
+      {{- $_ := set $env "SSL_CERT_DIR" (printf "/etc/ssl/certs:%s" (.mountPath | default "/etc/ssl/custom")) }}
+      {{- end }}
       # env, not args: every provider flag also has an environment variable,
       # and args in a DeploymentRuntimeConfig REPLACE the image defaults
       # instead of adding to them.
@@ -42,7 +53,7 @@ customresources:
             spec:
               containers:
                 - name: package-runtime
-                  {{- with $p.env }}
+                  {{- with $env }}
                   env:
                     {{- range $name, $value := . }}
                     - name: {{ $name }}
@@ -53,6 +64,19 @@ customresources:
                   resources:
                     {{- toYaml . | nindent 20 }}
                   {{- end }}
+                  {{- with (dig "trustBundle" "" $p) }}
+                  volumeMounts:
+                    - name: trust-bundle
+                      mountPath: {{ .mountPath | default "/etc/ssl/custom" }}
+                      readOnly: true
+                  {{- end }}
+              {{- with (dig "trustBundle" "" $p) }}
+              volumes:
+                - name: trust-bundle
+                  configMap:
+                    name: {{ .configMap | default "cluster-trust-bundle" }}
+                    optional: true
+              {{- end }}
       {{- end }}
   {{- end }}
 {{- end }}

@@ -86,6 +86,14 @@ environments:
               limits:
                 cpu: "2"
                 memory: 2Gi
+            # The zitadel provider runs inside this pod (crossplane-configurations
+            # zitadel-oidc-client), and ZITADEL sits behind the lab's Vault PKI
+            # wildcard. trust-manager's cluster-trust-bundle carries that CA;
+            # optional, so a cluster without trust-manager is unaffected.
+            # Same as xplane-crossplane-catalog 0.39.0.
+            trustBundle:
+              configMap: cluster-trust-bundle
+              mountPath: /etc/ssl/custom
           providerKubeconfig:
             name: provider-kubeconfig
             derivedName: stuttgart-things-provider-kubeconfig-xpkg
